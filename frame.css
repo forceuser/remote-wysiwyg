@@ -1,0 +1,14 @@
+html, body {
+	min-height: 100vh;
+}
+
+html {
+	overflow: auto;
+}
+
+body {
+	overflow: hidden;
+	margin: 0;
+	padding: 1em;
+	box-sizing: border-box;
+}

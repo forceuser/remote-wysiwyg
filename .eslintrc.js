@@ -99,7 +99,7 @@ module.exports = {
 		"no-self-compare": 2,
 		"no-cond-assign": 1,
 		"no-useless-concat": 2,
-		// "no-useless-escape": 2,
+		"no-useless-escape": 0,
 		// "no-use-before-define": 2,
 		"no-implicit-coercion": 0,
 		"no-new-func": 0,

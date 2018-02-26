@@ -1,0 +1,49 @@
+<html>
+	<head>
+		<style>
+			*,
+			*:after,
+			*:before {
+				box-sizing: border-box;
+				background: none;
+				color: inherit;
+				font: inherit;
+				padding: 0;
+				margin: 0;
+				outline: none;
+				border: none;
+				box-shadow: none;
+				vertical-align: top;
+				min-height: 0;
+				min-width: 0;
+			}
+			html, body {
+				min-height: 100vh;
+			}
+
+			html {
+				overflow: auto;
+			}
+
+			body {
+				overflow: hidden;
+				margin: 0;
+				padding: 1em;
+				box-sizing: border-box;
+			}
+			#ace-editor {
+				position: absolute;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				right: 0;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="ace-editor"></div>
+		<script src="./dist/code-editor.js"></script>
+	</body>
+
+</html>
