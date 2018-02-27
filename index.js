@@ -82,6 +82,7 @@ function init ({color = "#275fa6", content = "", callbackId} = {}) {
 		toolbar: `${defaultToolbar} | forecolor backcolor | fullpage`,
 		language: "ru",
 		relative_urls: false,
+		remove_script_host: false,
 		force_p_newlines: true,
 		force_br_newlines: true,
 		remove_linebreaks: false,
