@@ -1,6 +1,6 @@
 {
 	"name": "wysiwyg",
-	"version": "1.0.5",
+	"version": "1.0.6",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
@@ -13,17 +13,6 @@
 		"major-release": "npm run build && va-release --version major -g",
 		"build-templates": "va-release -t",
 		"test": "echo \"Error: no test specified\" && exit 1"
-	},
-	"va-release": {
-		"files": [
-			{
-				"cwd": "templates/",
-				"src": [
-					"**/*"
-				],
-				"dest": "./"
-			}
-		]
 	},
 	"author": "",
 	"license": "ISC",
