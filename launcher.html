@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width">
+		<title>Launcher demo</title>
+		<style>
+			body {
+				display: flex;
+			}
+
+			form {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				max-width: 399px;
+				margin: 0 auto;
+			}
+
+			label {
+				display: flex;
+				flex-direction: column;
+				margin-bottom: 8px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<form>
+			<label>
+				id
+				<input type="text" name="ident">
+			</label>
+			<label>
+				color
+				<input type="color" name="color" value="#275fa6">
+			</label>
+			<label>
+				html
+				<textarea name="content"></textarea>
+			</label>
+			<button type="button">Launch</button>
+		</form>
+
+		<script>
+			const form = document.querySelector("form");
+			form.ident.value = btoa(Math.random()).replace(/\=/ig, "");
+			form.content.value =
+`<h1>Заголовок</h1>
+<p>пример списка</p>
+<ul>
+    <li>ычычцычцычцыч</li>
+    <li>цычцычцыцы</li>
+    <li>цычцычцычцы</li>
+    <li>цычцычцыч</li>
+</ul>
+<p>и картинка</p>
+<p><img src="https://cdn.rawgit.com/resource-storage/resources/fba9ac08/monobank/eshkin-kot/reminder-2.gif" alt="" width="230" height="456" /></p>
+`;
+
+
+			//form.color.value = '#'+Math.floor(Math.random()*16777215).toString(16);
+			const waitFor = [];
+			form.querySelector("button").addEventListener("click", () => {
+				const editor = window.open(`./index.html?init=${form.ident.value}`, form.ident.value);
+				waitFor.push(form.ident.value);
+			});
+
+			window.addEventListener("message", event => {
+				console.log("message", event);
+				if (event.data) {
+					const data = JSON.parse(event.data);
+					const {
+						type,
+						id
+					} = data;
+
+					function finish() {
+						const idx = waitFor.indexOf(id);
+						waitFor.splice(idx, 1);
+					}
+
+					if (waitFor.includes(id)) {
+						switch (type) {
+							case "init":
+								{
+
+									event.source.postMessage(JSON.stringify({
+										type: "init",
+										id,
+										data: {
+											color: form.color.value,
+											content: form.content.value,
+											callbackId: id,
+										},
+									}), "*");
+									break;
+								}
+							case "save":
+								{
+									console.log("data save", data.content);
+									form.content.value = data.content;
+									finish();
+									event.source.close();
+									break;
+								}
+							case "cancel":
+								{
+									finish();
+									break;
+								}
+						}
+					}
+				}
+			});
+		</script>
+	</body>
+
+</html>

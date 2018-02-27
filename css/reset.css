@@ -1,0 +1,16 @@
+*,
+*:after,
+*:before {
+	box-sizing: border-box;
+	background: none;
+	color: inherit;
+	font: inherit;
+	padding: 0;
+	margin: 0;
+	outline: none;
+	border: none;
+	box-shadow: none;
+	vertical-align: top;
+	min-height: 0;
+	min-width: 0;
+}

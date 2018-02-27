@@ -8,8 +8,6 @@ editor.session.setMode("ace/mode/html");
 editor.setOptions({
 	// fontFamily: "tahoma",
 	fontSize: "16px",
+	wrap: true,
 });
 window.editor = editor;
-window.editor.beautify = () => {
-	// beautify.beautify(editor.session);
-};

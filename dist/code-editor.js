@@ -6993,12 +6993,10 @@ editor.setTheme("ace/theme/chrome");
 editor.session.setMode("ace/mode/html");
 editor.setOptions({
 	// fontFamily: "tahoma",
-	fontSize: "16px"
+	fontSize: "16px",
+	wrap: true
 });
 window.editor = editor;
-window.editor.beautify = function () {
-	// beautify.beautify(editor.session);
-};
 
 /***/ }),
 /* 8 */

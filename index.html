@@ -2,103 +2,27 @@
 <html>
 
 	<head>
-		<title>Editor</title>
-		<style>
-			*,
-			*:after,
-			*:before {
-				box-sizing: border-box;
-				background: none;
-				color: inherit;
-				font: inherit;
-				padding: 0;
-				margin: 0;
-				outline: none;
-				border: none;
-				box-shadow: none;
-				vertical-align: top;
-				min-height: 0;
-				min-width: 0;
-			}
-			.editor-wrapper {
-				height: 100vh;
-				width: 100vw;
-				display: flex;
-				flex-direction: column;
-			}
-			.editor-wrapper-menu {
-				flex: 0 0 auto;
-				display: flex;
-				padding: 15px 20px;
-				color: white;
-				font-family: helvetica;
-				background-color: rgb(34, 167, 190);
-			}
-			.code-editor-panel {
-				display: flex !important;
-				flex-direction: column;
-			}
-
-			.code-editor-panel iframe {
-				width: 800px !important;
-				max-width: 50vw !important;
-				height: 100%;
-			}
-
-			.mce-tinymce .mce-sidebar .mce-sidebar-panel {
-				width: 800px !important;
-				max-width: 50vw !important;
-
-			}
-
-			.mce-tinymce {
-				width: auto !important;
-				height: auto !important;
-			    box-sizing: border-box !important;
-				display: flex !important;
-				flex-direction: column;
-				align-items: stretch;
-				flex: 1;
-			}
-			.mce-tinymce > .mce-container-body {
-				flex: 1 0 auto;
-				display: flex !important;
-				flex-direction: column;
-			}
-			.mce-tinymce > .mce-container-body > *{
-				flex: 0 auto;
-			}
-
-			.mce-tinymce > .mce-container-body .mce-edit-aria-container {
-				flex: 1 1 auto;
-				flex-direction: column;
-				display: flex;
-			}
-			.mce-tinymce > .mce-container-body .mce-edit-aria-container {
-				flex: 1 1 auto;
-				flex-direction: column;
-				display: flex;
-			}
-
-			.mce-tinymce > .mce-container-body .mce-edit-aria-container > .mce-stack-layout {
-				display: flex;
-				flex: 1 1 auto;
-			}
-			.mce-tinymce > .mce-container-body .mce-edit-area {
-				display: flex;
-				flex-direction: column;
-			}
-			.mce-tinymce > .mce-container-body .mce-edit-area iframe {
-				height: auto !important;
-				width: auto !important;
-				flex: 1;
-			}
-		</style>
+		<title>Редактирование HTML шаблона</title>
+		<link rel="stylesheet" href="./css/reset.css" />
+		<link rel="stylesheet" href="./css/index.css" />
+		<link rel="stylesheet" href="./css/scrollbar.css" />
 	</head>
 	<body>
 		<div class="editor-wrapper">
 			<div class="editor-wrapper-menu">
-			Редактирование HTML шаблона
+				<div>
+					Редактирование HTML шаблона
+				</div>
+				<div style="flex: 1;">
+				</div>
+				<div class="modal-buttons">
+					<button class="button primary button-ok" type="button">
+						Принять
+					</button>
+					<button class="button button-cancel" type="button">
+						Отмена
+					</button>
+				</div>
 			</div>
 			<div id="mytextarea"></div>
 		</div>

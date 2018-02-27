@@ -37086,140 +37086,189 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 // plugins
 
 
-// Initialize the app
-var defaultToolbar = "undo redo | styleselect | bold italic | alignleft\n                   aligncenter alignright alignjustify |\n                   bullist numlist outdent indent | link image";
-
-var waitForInit = _tinymce2.default.init({
-	// skin: false,
-	// content_style: `html, body {min-height: 100vh;} html { overflow: auto;} body { overflow: hidden; margin: 0; padding: 1em; box-sizing: border-box;}`,
-	content_css: "./frame.css",
-	selector: "#mytextarea",
-	plugins: ["contextmenu", "fullpage", "paste", "link", "lists", "table", "code", "codesample", "colorpicker", "textcolor", "hr", "image", "imagetools"],
-	table_toolbar: false,
-	toolbar: defaultToolbar + " | forecolor backcolor | fullpage",
-	language: "ru",
-	force_p_newlines: true,
-	force_br_newlines: true,
-	remove_linebreaks: false,
-	forced_root_block: false,
-	valid_elements: "+*[*]",
-	valid_children: "+body[style]",
-	branding: false,
-	setup: function setup(editor) {
-		editor.settings.fullpage_enabled = false;
-		editor.addSidebar("codebar", {
-			tooltip: "Code sidebar",
-			icon: "code",
-			classes: "code-btn",
-			onrender: function onrender(api) {
-				var _this = this;
-
-				return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-					var panel, iframe, codeEditor, ignoreInput, ignoreInputTimeout, updateCodeEditor, lastContent;
-					return regeneratorRuntime.wrap(function _callee$(_context) {
-						while (1) {
-							switch (_context.prev = _context.next) {
-								case 0:
-									updateCodeEditor = function updateCodeEditor() {
-										clearTimeout(ignoreInputTimeout);
-										ignoreInput = true;
-										var pos = codeEditor.session.selection.toJSON();
-										codeEditor.session.setValue((0, _jsBeautify.html)(editor.getContent(), {
-											"preserve-newlines": false,
-											"indent-with-tabs": true,
-											"indent-inner-html": true,
-											"max-preserve-newlines": 1
-										}));
-										codeEditor.beautify();
-										codeEditor.session.selection.fromJSON(pos);
-										ignoreInputTimeout = setTimeout(function () {
-											ignoreInput = false;
-										}, 50);
-									};
-
-									console.log("Render panel", api.element());
-									panel = api.element();
-
-									panel.classList.add("code-editor-panel");
-									panel.innerHTML = "<iframe id=\"code-editor\" src=\"./code-editor.html\"></iframe>";
-									iframe = panel.children[0];
-									_context.next = 8;
-									return new Promise(function (resolve) {
-										var inerv = setInterval(function () {
-											if (iframe.contentWindow && iframe.contentWindow.editor) {
-												clearInterval(inerv);
-												resolve(iframe.contentWindow.editor);
-											}
-										}, 100);
-									});
-
-								case 8:
-									codeEditor = _context.sent;
-
-									codeEditor.$blockScrolling = Infinity;
-									ignoreInput = false;
-									ignoreInputTimeout = void 0;
-
-									updateCodeEditor();
-									codeEditor.on("input", function () {
-										if (ignoreInput) {
-											return;
-										}
-										editor.setContent(codeEditor.getValue());
-									});
-									lastContent = "";
-
-									setInterval(function () {
-										console.log("iframe active", document.activeElement === iframe);
-										if (document.activeElement !== iframe) {
-											var content = editor.getContent();
-											if (lastContent !== content) {
-												lastContent = content;
-												updateCodeEditor();
-											}
-										}
-									}, 50);
-									console.log("editor", codeEditor);
-
-									// editor.on("Change", () => {
-									// 	updateCodeEditor();
-									// });
-									// editor.on("Dirty", () => {
-									// 	updateCodeEditor();
-									// });
-									// editor.on("input", () => {
-									// 	updateCodeEditor();
-									// });
-									// editor.on("Undo", () => {
-									// 	updateCodeEditor();
-									// });
-									// editor.on("Redo", () => {
-									// 	updateCodeEditor();
-									// });
-									// editor.on("Paste", () => {
-									// 	updateCodeEditor();
-									// });
-
-								case 17:
-								case "end":
-									return _context.stop();
-							}
-						}
-					}, _callee, _this);
-				}))();
-			},
-			onshow: function onshow(api) {},
-			onhide: function onhide(api) {}
-		});
+var inititalized = false;
+var params = window.location.search.substring(1).split("&").reduce(function (res, i) {
+	if (i.split("=")[0]) {
+		var val = i.split("=")[1];
+		val = val == null ? true : val;
+		res[i.split("=")[0]] = val;
 	}
-});
+	return res;
+}, {});
 
-waitForInit.then(function (_ref) {
-	var _ref2 = _slicedToArray(_ref, 1),
-	    editor = _ref2[0];
+console.log("params", params);
 
-	editor.theme.panel.find(".sidebar-toolbar button")[0].$el.trigger("click");
-});
+if (params.init && window.opener) {
+	window.addEventListener("message", function (event) {
+		console.log("message", event);
+		if (event.data) {
+			var data = JSON.parse(event.data);
+			if (data.id === params.init) {
+				if (data.type === "init" && !inititalized) {
+					init(data.data);
+				}
+			}
+		}
+	});
+
+	window.opener.postMessage(JSON.stringify({ type: "init", id: params.init }), "*");
+} else {
+	var topbar = document.querySelector(".editor-wrapper-menu");
+	topbar.parentElement.removeChild(topbar);
+	init();
+}
+
+function init() {
+	var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+	    _ref$color = _ref.color,
+	    color = _ref$color === undefined ? "#275fa6" : _ref$color,
+	    _ref$content = _ref.content,
+	    content = _ref$content === undefined ? "" : _ref$content,
+	    callbackId = _ref.callbackId;
+
+	var colorPrimary = color;
+	inititalized = true;
+
+	document.documentElement.style.setProperty("--color--primary", colorPrimary);
+
+	// Initialize the app
+	var defaultToolbar = "undo redo | styleselect | bold italic | alignleft\n\t                   aligncenter alignright alignjustify |\n\t                   bullist numlist outdent indent | link image";
+
+	var waitForInit = _tinymce2.default.init({
+		// skin: false,
+
+		content_style: ":root{--color--primary: " + colorPrimary + ";}",
+		content_css: ["./css/frame.css", "./css/scrollbar.css"],
+		selector: "#mytextarea",
+		plugins: ["contextmenu", "fullpage", "paste", "link", "lists", "table", "code", "codesample", "colorpicker", "textcolor", "hr", "image", "imagetools"],
+		table_toolbar: false,
+		toolbar: defaultToolbar + " | forecolor backcolor | fullpage",
+		language: "ru",
+		force_p_newlines: true,
+		force_br_newlines: true,
+		remove_linebreaks: false,
+		forced_root_block: false,
+		valid_elements: "+*[*]",
+		valid_children: "+body[style]",
+		branding: false,
+		setup: function setup(editor) {
+			editor.settings.fullpage_enabled = false;
+			editor.addSidebar("codebar", {
+				tooltip: "Code sidebar",
+				icon: "code",
+				classes: "code-btn",
+				onrender: function onrender(api) {
+					var _this = this;
+
+					return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+						var panel, iframe, codeEditor, ignoreInput, ignoreInputTimeout, updateCodeEditor, lastContent;
+						return regeneratorRuntime.wrap(function _callee$(_context) {
+							while (1) {
+								switch (_context.prev = _context.next) {
+									case 0:
+										updateCodeEditor = function updateCodeEditor() {
+											clearTimeout(ignoreInputTimeout);
+											ignoreInput = true;
+											var pos = codeEditor.session.selection.toJSON();
+											codeEditor.session.setValue((0, _jsBeautify.html)(editor.getContent(), {
+												"preserve-newlines": false,
+												"indent-with-tabs": true,
+												"indent-inner-html": true,
+												"max-preserve-newlines": 1
+											}));
+											codeEditor.session.selection.fromJSON(pos);
+											ignoreInputTimeout = setTimeout(function () {
+												ignoreInput = false;
+											}, 50);
+										};
+
+										console.log("Render panel", api.element());
+										panel = api.element();
+
+										panel.classList.add("code-editor-panel");
+										panel.innerHTML = "<iframe id=\"code-editor\" src=\"./code-editor.html\"></iframe>";
+										iframe = panel.children[0];
+										_context.next = 8;
+										return new Promise(function (resolve) {
+											var inerv = setInterval(function () {
+												if (iframe.contentWindow && iframe.contentWindow.editor) {
+													clearInterval(inerv);
+													resolve(iframe.contentWindow.editor);
+												}
+											}, 100);
+										});
+
+									case 8:
+										codeEditor = _context.sent;
+
+
+										if (window.opener && params.init) {
+											document.querySelector(".button-ok").addEventListener("click", function () {
+												window.opener.postMessage(JSON.stringify({
+													type: "save",
+													id: callbackId,
+													content: codeEditor.getValue()
+												}), "*");
+											});
+											document.querySelector(".button-cancel").addEventListener("click", function () {
+												window.close();
+											});
+											window.addEventListener("beforeunload", function (event) {
+												window.opener.postMessage(JSON.stringify({
+													type: "cancel",
+													id: callbackId
+												}), "*");
+											});
+										}
+
+										iframe.contentWindow.document.documentElement.style.setProperty("--color--primary", colorPrimary);
+										codeEditor.$blockScrolling = Infinity;
+										ignoreInput = false;
+										ignoreInputTimeout = void 0;
+
+
+										codeEditor.on("input", function () {
+											if (ignoreInput) {
+												return;
+											}
+											editor.setContent(codeEditor.getValue());
+										});
+										lastContent = "";
+
+										setInterval(function () {
+											if (document.activeElement !== iframe) {
+												var _content = editor.getContent();
+												if (lastContent !== _content) {
+													lastContent = _content;
+													updateCodeEditor();
+												}
+											}
+										}, 50);
+
+										editor.setContent(content);
+										updateCodeEditor();
+
+									case 19:
+									case "end":
+										return _context.stop();
+								}
+							}
+						}, _callee, _this);
+					}))();
+				},
+				onshow: function onshow(api) {},
+				onhide: function onhide(api) {}
+			});
+		}
+	});
+
+	waitForInit.then(function (_ref2) {
+		var _ref3 = _slicedToArray(_ref2, 1),
+		    editor = _ref3[0];
+
+		editor.theme.panel.find(".sidebar-toolbar button")[0].$el.trigger("click");
+	});
+}
 
 /***/ }),
 /* 11 */
