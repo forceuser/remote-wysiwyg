@@ -73,26 +73,17 @@ import tinymce from "tinymce/tinymce";
 		};
 		const htmlToData = function (editor, head) {
 			const headerFragment = parseHeader(head);
-			const data = {};
+			const data = {pagemode: editor.getParam("fullpage_pagemode", "body")};
 			let elm;
-			let matches;
 			function getAttr (elm, name) {
 				const value = elm.attr(name);
 				return value || "";
 			}
 			data.fontface = $_4aeordbdjdud7a9d.getDefaultFontFamily(editor);
 			data.fontsize = $_4aeordbdjdud7a9d.getDefaultFontSize(editor);
-			elm = headerFragment.firstChild;
-			if (elm.type === 7) {
-				data.xml_pi = true;
-				matches = /encoding="([^"]+)"/.exec(elm.value);
-				if (matches) {
-					data.docencoding = matches[1];
-				}
-			}
 			elm = headerFragment.getAll("#doctype")[0];
 			if (elm) {
-				data.doctype = "<!DOCTYPE" + elm.value + ">";
+				data.pagemode = elm.value.match(/XHTML/ig) ? "xhtml" : "html";
 			}
 			elm = headerFragment.getAll("title")[0];
 			if (elm && elm.firstChild) {
@@ -115,6 +106,7 @@ import tinymce from "tinymce/tinymce";
 			elm = headerFragment.getAll("html")[0];
 			if (elm) {
 				data.langcode = getAttr(elm, "lang") || getAttr(elm, "xml:lang");
+				data.htmlAttrs = [...elm.attributes].map(({name, value}) => ({name, value}));
 			}
 			data.stylesheets = [];
 			Tools.each(headerFragment.getAll("link"), (link) => {
@@ -124,11 +116,7 @@ import tinymce from "tinymce/tinymce";
 			});
 			elm = headerFragment.getAll("body")[0];
 			if (elm) {
-				data.langdir = getAttr(elm, "dir");
-				data.style = getAttr(elm, "style");
-				data.visited_color = getAttr(elm, "vlink");
-				data.link_color = getAttr(elm, "link");
-				data.active_color = getAttr(elm, "alink");
+				data.bodyAttrs = [...elm.attributes].map(({name, value}) => ({name, value}));
 			}
 			return data;
 		};
@@ -160,37 +148,22 @@ import tinymce from "tinymce/tinymce";
 					elm.append(headElement);
 				}
 			}
-			elm = headerFragment.firstChild;
-			if (data.xml_pi) {
-				value = "version=\"1.0\"";
-				if (data.docencoding) {
-					value += " encoding=\"" + data.docencoding + "\"";
+
+			elm = headerFragment.getAll("#doctype")[0];
+			const pagemode = data.pagemode || editor.getParam("fullpage_pagemode", "body");
+			if (pagemode !== "body") {
+				if (!elm) {
+					elm = new Node("#doctype", 10);
+					addHeadNode(elm);
 				}
-				if (elm.type !== 7) {
-					elm = new Node("xml", 7);
-					headerFragment.insert(elm, headerFragment.firstChild, true);
+				elm.value = data.pagemode === "html" ? " html" : ` html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"`;
+			}
+			else {
+				data.pagemode = "body";
+				if (elm) {
+					elm.remove();
 				}
-				elm.value = value;
 			}
-			else if (elm && elm.type === 7) {
-				elm.remove();
-			}
-			// elm = headerFragment.getAll("#doctype")[0];
-			// if (data.doctype) {
-			// 	if (!elm) {
-			// 		elm = new Node("#doctype", 10);
-			// 		if (data.xml_pi) {
-			// 			headerFragment.insert(elm, headerFragment.firstChild);
-			// 		}
-			// 		else {
-			// 			addHeadNode(elm);
-			// 		}
-			// 	}
-			// 	elm.value = data.doctype.substring(9, data.doctype.length - 1);
-			// }
-			// else if (elm) {
-			// 	elm.remove();
-			// }
 			elm = null;
 			Tools.each(headerFragment.getAll("meta"), (meta) => {
 				if (meta.attr("http-equiv") === "Content-Type") {
@@ -272,23 +245,34 @@ import tinymce from "tinymce/tinymce";
 			});
 			elm = headerFragment.getAll("body")[0];
 			if (elm) {
-				setAttr(elm, "dir", data.langdir);
-				setAttr(elm, "style", data.style);
-				setAttr(elm, "vlink", data.visited_color);
-				setAttr(elm, "link", data.link_color);
-				setAttr(elm, "alink", data.active_color);
-				dom.setAttribs(editor.getBody(), {
-					style: data.style,
-					dir: data.dir,
-					vLink: data.visited_color,
-					link: data.link_color,
-					aLink: data.active_color,
-				});
+				// setAttr(elm, "dir", data.langdir);
+				// setAttr(elm, "style", data.style);
+				// setAttr(elm, "vlink", data.visited_color);
+				// setAttr(elm, "link", data.link_color);
+				// setAttr(elm, "alink", data.active_color);
+				// dom.setAttribs(editor.getBody(), {
+				// 	style: data.style,
+				// 	dir: data.dir,
+				// 	vLink: data.visited_color,
+				// 	link: data.link_color,
+				// 	aLink: data.active_color,
+				// });
 			}
 			elm = headerFragment.getAll("html")[0];
 			if (elm) {
-				setAttr(elm, "lang", data.langcode);
-				setAttr(elm, "xml:lang", data.langcode);
+				if (data.pagemode === "xhtml") {
+					elm.attr("lang", null);
+					setAttr(elm, "xml:lang", data.langcode);
+					setAttr(elm, "xmlns", "http://www.w3.org/1999/xhtml");
+				}
+				else {
+					[...elm.attributes].map(({name}) => name).filter(n => {
+						return n.startsWith("xml");
+					}).forEach(n => {
+						elm.attr(n, null);
+					});
+					setAttr(elm, "lang", data.langcode);
+				}
 			}
 			if (!headElement.firstChild) {
 				headElement.remove();
@@ -309,12 +293,8 @@ import tinymce from "tinymce/tinymce";
 		};
 
 		const open = function (editor, headState) {
-			let data = {};
-			if (editor.getParam("fullpage_enabled") !== false) {
-				data = $_58tdt7b9jdud7a94.htmlToData(editor, headState.get());
-			}
-			data.pagemode = editor.getParam("fullpage_pagemode", "body");
-			data.fullpage = editor.getParam("fullpage_enabled");
+			const data = $_58tdt7b9jdud7a94.htmlToData(editor, headState.get());
+
 			editor.windowManager.open({
 				title: "Document properties",
 				data,
@@ -323,6 +303,17 @@ import tinymce from "tinymce/tinymce";
 					size: 40,
 				},
 				body: [
+					{
+						type: "listbox",
+						name: "pagemode",
+						label: "Page mode",
+						values: [
+							{text: "body", value: "body"},
+							{text: "xhtml", value: "xhtml"},
+							{text: "html", value: "html"},
+						],
+						value: data.pagemode,
+					},
 					{
 						name: "title",
 						label: "Title",
@@ -347,45 +338,20 @@ import tinymce from "tinymce/tinymce";
 						name: "docencoding",
 						label: "Encoding",
 					},
-					{
-						type: "listbox",
-						name: "pagemode",
-						label: "Page mode",
-						values: [
-							{text: "body", value: "body"},
-							{text: "xhtml", value: "xhtml"},
-							{text: "html", value: "html"},
-						],
-						value: data.pagemode,
-					},
 				],
 				onSubmit (e) {
-					if (editor.getParam("fullpage_enabled") !== false) {
-						const headHtml = $_58tdt7b9jdud7a94.dataToHtml(editor, Tools.extend(data, e.data), headState.get());
-						headState.set(headHtml);
-					}
 					editor.settings.fullpage_pagemode = e.data.pagemode;
+					editor.settings.fullpage_ignoreswitch = true;
 					if (e.data.pagemode !== "body") {
-						editor.settings.fullpage_enabled = true;
-						if (e.data.pagemode === "xhtml") {
-							editor.settings.fullpage_default_doctype = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">`;
-							editor.settings.fullpage_html_attrs = `xmlns="http://www.w3.org/1999/xhtml"`;
-						}
-						else {
-							editor.settings.fullpage_default_doctype = `<!DOCTYPE html>`;
-							delete editor.settings.fullpage_html_attrs;
-						}
-						const cont = editor.getContent().replace(/^<\!DOCTYPE.*?>/gi, editor.getParam("fullpage_default_doctype"));
-						console.log("cont", cont);
-						editor.setContent(cont);
+						editor.setContent(editor.getContent());
 						const headHtml = $_58tdt7b9jdud7a94.dataToHtml(editor, Tools.extend(data, e.data), headState.get());
 						headState.set(headHtml);
 					}
 					else {
-						editor.settings.fullpage_enabled = false;
+						headState.set("");
 						editor.setContent(editor.getContent());
 					}
-
+					editor.settings.fullpage_ignoreswitch = false;
 				},
 			});
 		};
@@ -517,7 +483,7 @@ import tinymce from "tinymce/tinymce";
 				header += "<?xml version=\"1.0\" encoding=\"" + (piEncoding ? piEncoding : "ISO-8859-1") + "\" ?>\n";
 			}
 			header += $_4aeordbdjdud7a9d.getDefaultDocType(editor);
-			header += `\n<html${editor.getParam("fullpage_html_attrs") ? " " + editor.getParam("fullpage_html_attrs") : ""}>\n<head>\n`;
+			header += `\n<html>\n<head>\n`;
 			if (value = $_4aeordbdjdud7a9d.getDefaultTitle(editor)) {
 				header += "<title>" + value + "</title>\n";
 			}
@@ -543,12 +509,27 @@ import tinymce from "tinymce/tinymce";
 		};
 		const setup = function (editor, headState, footState) {
 			editor.on("BeforeSetContent", (evt) => {
-				if (editor.getParam("fullpage_enabled") !== false) {
+				let pagemode = editor.getParam("fullpage_pagemode", "body");
+				if (!editor.settings.fullpage_ignoreswitch) {
+					if (pagemode !== "body" && !evt.content.match(/<html.*?>/)) {
+						pagemode = "body";
+						headState.set("");
+						editor.settings.fullpage_pagemode = pagemode;
+					}
+					else if (pagemode === "body" && evt.content.match(/<html.*?>/)) {
+						headState.set(evt.content.substring(0, evt.content.indexOf("</body>")));
+						pagemode = evt.content.match(/^<!DOCTYPE[^>]+XHTML.*?>/ig) ? "xhtml" : "html";
+						editor.settings.fullpage_pagemode = pagemode;
+					}
+				}
+
+				if (pagemode !== "body") {
 					handleSetContent(editor, headState, footState, evt);
 				}
 			});
 			editor.on("GetContent", (evt) => {
-				if (editor.getParam("fullpage_enabled") !== false) {
+				let pagemode = editor.getParam("fullpage_pagemode", "body");
+				if (pagemode !== "body") {
 					handleGetContent(editor, headState.get(), footState.get(), evt);
 				}
 			});

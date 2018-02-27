@@ -41,6 +41,10 @@ const waitForInit = tinymce.init({
 	table_toolbar: false,
 	toolbar: `${defaultToolbar} | forecolor backcolor | fullpage`,
 	language: "ru",
+	force_p_newlines: true,
+	force_br_newlines: true,
+	remove_linebreaks: false,
+	forced_root_block: false,
 	valid_elements: "+*[*]",
 	valid_children: "+body[style]",
 	branding: false,
@@ -92,27 +96,33 @@ const waitForInit = tinymce.init({
 				});
 				let lastContent = "";
 				setInterval(() => {
-					const content = editor.getContent();
-					if (lastContent !== content) {
-						lastContent = content;
-						updateCodeEditor();
+					console.log("iframe active", document.activeElement === iframe);
+					if (document.activeElement !== iframe) {
+						const content = editor.getContent();
+						if (lastContent !== content) {
+							lastContent = content;
+							updateCodeEditor();
+						}
 					}
 				}, 50);
+				console.log("editor", codeEditor);
 
-
-				// editor.on("change", () => {
+				// editor.on("Change", () => {
+				// 	updateCodeEditor();
+				// });
+				// editor.on("Dirty", () => {
 				// 	updateCodeEditor();
 				// });
 				// editor.on("input", () => {
 				// 	updateCodeEditor();
 				// });
-				// editor.on("undo", () => {
+				// editor.on("Undo", () => {
 				// 	updateCodeEditor();
 				// });
-				// editor.on("redo", () => {
+				// editor.on("Redo", () => {
 				// 	updateCodeEditor();
 				// });
-				// editor.on("paste", () => {
+				// editor.on("Paste", () => {
 				// 	updateCodeEditor();
 				// });
 			},
