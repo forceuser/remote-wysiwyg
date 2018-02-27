@@ -1,6 +1,6 @@
 {
-	"name": "wysiwyg",
-	"version": "1.0.8",
+	"name": "remote-wysiwyg",
+	"version": "1.0.10",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
@@ -13,6 +13,10 @@
 		"major-release": "npm run build && va-release --version major -g",
 		"build-templates": "va-release -t",
 		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/forceuser/remote-wysiwyg.git"
 	},
 	"va-release": {
 		"files": [
