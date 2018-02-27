@@ -1,6 +1,6 @@
 {
 	"name": "wysiwyg",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
@@ -8,9 +8,9 @@
 		"build": "webpack --config ./code-editor--webpack.config.js && webpack --config ./wysiwyg--webpack.config.js && cp -r ./node_modules/tinymce/skins ./dist/skins",
 		"fix": "eslint --fix .",
 		"release": "npm run patch-release",
-		"patch-release": "npm run build && va-release --version patch",
-		"minor-release": "npm run build && va-release --version minor",
-		"major-release": "npm run build && va-release --version major",
+		"patch-release": "npm run build && va-release --version patch -g",
+		"minor-release": "npm run build && va-release --version minor -g",
+		"major-release": "npm run build && va-release --version major -g",
 		"build-templates": "va-release -t",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
