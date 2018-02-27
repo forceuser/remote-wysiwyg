@@ -1,6 +1,6 @@
 {
 	"name": "wysiwyg",
-	"version": "1.0.7",
+	"version": "1.0.8",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
@@ -13,6 +13,17 @@
 		"major-release": "npm run build && va-release --version major -g",
 		"build-templates": "va-release -t",
 		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"va-release": {
+		"files": [
+			{
+				"cwd": "templates/",
+				"src": [
+					"**/*"
+				],
+				"dest": "./"
+			}
+		]
 	},
 	"author": "",
 	"license": "ISC",
@@ -31,7 +42,7 @@
 		"http-server": "^0.11.1",
 		"imports-loader": "^0.7.1",
 		"regenerator-runtime": "^0.11.1",
-		"va-release": "^1.0.21",
+		"va-release": "^1.0.22",
 		"webpack": "^3.11.0"
 	},
 	"dependencies": {
