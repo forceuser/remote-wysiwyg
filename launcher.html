@@ -37,8 +37,17 @@
 				<input type="color" name="color" value="#275fa6">
 			</label>
 			<label>
-				html
-				<textarea name="content"></textarea>
+				codeMode
+				<select name="codeMode">
+					<option value="html" selected>html</option>
+					<option value="markdown">markdown</option>
+					<option value="handlebars">handlebars</option>
+					<option value="freemarker">freemarker</option>
+				</select>
+			</label>
+			<label>
+				content
+				<textarea name="content" rows="10"></textarea>
 			</label>
 			<button type="button">Launch</button>
 		</form>
@@ -46,18 +55,7 @@
 		<script>
 			const form = document.querySelector("form");
 			form.ident.value = btoa(Math.random()).replace(/\=/ig, "");
-			form.content.value =
-`<h1>Заголовок</h1>
-<p>пример списка</p>
-<ul>
-    <li>ычычцычцычцыч</li>
-    <li>цычцычцыцы</li>
-    <li>цычцычцычцы</li>
-    <li>цычцычцыч</li>
-</ul>
-<p>и картинка</p>
-<p><img src="https://cdn.rawgit.com/resource-storage/resources/fba9ac08/monobank/eshkin-kot/reminder-2.gif" alt="" width="230" height="456" /></p>
-`;
+			form.content.value = ``;
 
 
 			//form.color.value = '#'+Math.floor(Math.random()*16777215).toString(16);
@@ -93,6 +91,10 @@
 											color: form.color.value,
 											content: form.content.value,
 											callbackId: id,
+											settings: {
+												menubar: true,
+												codeMode: form.codeMode.value,
+											},
 										},
 									}), "*");
 									break;

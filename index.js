@@ -1,3 +1,7 @@
+import Markdown from "markdown-it";
+import Turndown from "turndown";
+// import {gfm} from "turndown-plugin-gfm";
+
 import tinymce from "tinymce/tinymce";
 // theme
 import "tinymce/themes/modern/theme";
@@ -21,7 +25,8 @@ import "tinymce-i18n/langs/ru";
 
 import "./fullpage";
 
-import {html as beautify} from "js-beautify";
+// import {html as beautify} from "js-beautify";
+import pretty from "pretty";
 
 let inititalized = false;
 const params = window.location.search.substring(1).split("&").reduce((res, i) => {
@@ -51,137 +56,222 @@ if (params.init && window.opener) {
 	window.opener.postMessage(JSON.stringify({type: `init`, id: params.init}), "*");
 }
 else {
-	const topbar = document.querySelector(".editor-wrapper-menu");
-	topbar.parentElement.removeChild(topbar);
 	init();
 }
 
-function init ({color = "#275fa6", content = "", callbackId} = {}) {
+function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}) {
 	const colorPrimary = color;
+	let markdown;
+	let turndown;
 	inititalized = true;
+	settings = Object.assign({ // default settings
+		codeMode: "html",
+		topbar: params.init && window.opener,
+		menubar: true,
+		statusbar: true,
+	}, settings);
+	if (settings.codeMode === "markdown") {
+		markdown = new Markdown();
+		turndown = new Turndown();
+		// turndown.use(gfm);
+	}
+
+	if (!settings.topbar) {
+		const topbar = document.querySelector(".editor-wrapper-menu");
+		topbar.parentElement.removeChild(topbar);
+	}
 
 	document.documentElement.style.setProperty("--color--primary", colorPrimary);
-
-	// Initialize the app
+	const isMD = settings.codeMode === "markdown";
 	const defaultToolbar = `undo redo | styleselect | bold italic | alignleft
 	                   aligncenter alignright alignjustify |
 	                   bullist numlist outdent indent | link image`;
 
-	const waitForInit = tinymce.init({
-		// skin: false,
-
-		content_style: `:root{--color--primary: ${colorPrimary};}`,
-		content_css: ["./css/frame.css", "./css/scrollbar.css"],
-		selector: "#mytextarea",
-		plugins: [
-			"contextmenu", "fullpage",
-			"paste", "link", "lists", "table",
-			"code", "codesample", "colorpicker", "textcolor", "hr", "image", "imagetools",
-		],
-		table_toolbar: false,
-		toolbar: `${defaultToolbar} | forecolor backcolor | fullpage`,
-		language: "ru",
-		relative_urls: false,
-		remove_script_host: false,
-		force_p_newlines: true,
-		force_br_newlines: true,
-		remove_linebreaks: false,
-		forced_root_block: false,
-		valid_elements: "+*[*]",
-		valid_children: "+body[style]",
-		branding: false,
-		setup (editor) {
-			editor.settings.fullpage_enabled = false;
-			editor.addSidebar("codebar", {
-				tooltip: "Code sidebar",
-				icon: "code",
-				classes: "code-btn",
-				async onrender (api) {
-					console.log("Render panel", api.element());
-					const panel = api.element();
-					panel.classList.add("code-editor-panel");
-					panel.innerHTML = `<iframe id="code-editor" src="./code-editor.html"></iframe>`;
-					const iframe = panel.children[0];
-					const codeEditor = await (new Promise(resolve => {
-						const inerv = setInterval(() => {
-							if (iframe.contentWindow && iframe.contentWindow.editor) {
-								clearInterval(inerv);
-								resolve(iframe.contentWindow.editor);
-							}
-						}, 100);
-					}));
+	const formatMenuMD = [
+		{title: "Headers", items: [
+			{title: "Header 1", format: "h1"},
+			{title: "Header 2", format: "h2"},
+			{title: "Header 3", format: "h3"},
+			{title: "Header 4", format: "h4"},
+			{title: "Header 5", format: "h5"},
+			{title: "Header 6", format: "h6"},
+		]},
+		{title: "Inline", items: [
+			{title: "Bold", icon: "bold", format: "bold"},
+			{title: "Italic", icon: "italic", format: "italic"},
+		]},
+		{title: "Blocks", items: [
+			{title: "Blockquote", format: "blockquote"},
+			{title: "Code", format: "code"},
+		]},
+		{title: "Clear formatting", format: "removeformat"},
+	];
 
 
-					if (window.opener && params.init) {
-						document.querySelector(".button-ok").addEventListener("click", () => {
-							window.opener.postMessage(JSON.stringify({
-								type: "save",
-								id: callbackId,
-								content: codeEditor.getValue(),
-							}), "*");
-						});
-						document.querySelector(".button-cancel").addEventListener("click", () => {
-							window.close();
-						});
-						window.addEventListener("beforeunload", event => {
-							window.opener.postMessage(JSON.stringify({
-								type: "cancel",
-								id: callbackId,
-							}), "*");
-						});
+	const tinymceSettings = Object.assign({},
+		isMD
+			? {
+				object_resizing: false,
+				image_dimensions: false,
+				toolbar: `undo redo | styleselect | bold italic | bullist numlist | link image hr`,
+				plugins: [
+					"contextmenu", "paste", "link", "lists", "hr", "image",
+				],
+				menu: {
+					edit: {title: "Edit", items: "undo redo | cut copy paste pastetext | selectall"},
+					insert: {title: "Insert", items: "link image hr"},
+					view: {title: "View", items: "visualaid"},
+				},
+				style_formats: formatMenuMD,
+			}
+			: {
+				plugins: [
+					"contextmenu", "fullpage",
+					"paste", "link", "lists", "table",
+					"colorpicker", "textcolor", "hr", "image", "imagetools",
+				],
+				toolbar: `${defaultToolbar} | forecolor backcolor`,
+				table_toolbar: false,
+				valid_elements: "+*[*]",
+				valid_children: "+body[style]",
+				object_resizing: false,
+			},
+		{
+			content_style: `:root{--color--primary: ${colorPrimary};}`,
+			content_css: ["./css/frame.css", "./css/scrollbar.css"],
+			menubar: settings.menubar,
+			statusbar: settings.statusbar,
+			selector: "#wysiwyg",
+			language: "ru",
+			relative_urls: false,
+			remove_script_host: false,
+			force_p_newlines: true,
+			force_br_newlines: true,
+			remove_linebreaks: false,
+			forced_root_block: false,
+			branding: false,
+			setup,
+			init_instance_callback (editor) {
+				editor.on("paste", (e) => {
+					// console.log("Element clicked:", e.target.nodeName);
+					if (isMD) {
+						editor.setContent(markdown.render(turndown.turndown(editor.getContent())));
 					}
+				});
+			},
+		}
+	);
+	if (isMD) {
+		tinymceSettings.content_css.push("./css/markdown.css");
+	}
 
-
-					iframe.contentWindow.document.documentElement.style.setProperty("--color--primary", colorPrimary);
-					codeEditor.$blockScrolling = Infinity;
-					let ignoreInput = false;
-					let ignoreInputTimeout;
-					function updateCodeEditor () {
-						clearTimeout(ignoreInputTimeout);
-						ignoreInput = true;
-						const pos = codeEditor.session.selection.toJSON();
-						codeEditor.session.setValue(beautify(editor.getContent(), {
-							"preserve-newlines": false,
-							"indent-with-tabs": true,
-							"indent-inner-html": true,
-							"max-preserve-newlines": 1,
-						}));
-						codeEditor.session.selection.fromJSON(pos);
-						ignoreInputTimeout = setTimeout(() => {
-							ignoreInput = false;
-						}, 50);
-					}
-
-					codeEditor.on("input", () => {
-						if (ignoreInput) {
-							return;
+	function setup (editor) {
+		editor.addSidebar("codebar", {
+			tooltip: "Code sidebar",
+			icon: "code",
+			classes: "code-btn",
+			async onrender (api) {
+				const panel = api.element();
+				panel.classList.add("code-editor-panel");
+				panel.innerHTML = `<iframe id="code-editor" src="./code-editor.html"></iframe>`;
+				const iframe = panel.children[0];
+				const codeEditor = await (new Promise(resolve => {
+					const inerv = setInterval(() => {
+						if (iframe.contentWindow && iframe.contentWindow.editor) {
+							clearInterval(inerv);
+							iframe.contentWindow.setMode(settings.codeMode);
+							resolve(iframe.contentWindow.editor);
 						}
-						editor.setContent(codeEditor.getValue());
+					}, 100);
+				}));
+
+
+				if (window.opener && params.init) {
+					document.querySelector(".button-ok").addEventListener("click", () => {
+						window.opener.postMessage(JSON.stringify({
+							type: "save",
+							id: callbackId,
+							content: codeEditor.getValue(),
+						}), "*");
 					});
-					let lastContent = "";
-					setInterval(() => {
-						if (document.activeElement !== iframe) {
-							const content = editor.getContent();
-							if (lastContent !== content) {
-								lastContent = content;
-								updateCodeEditor();
-							}
-						}
+					document.querySelector(".button-cancel").addEventListener("click", () => {
+						window.close();
+					});
+					window.addEventListener("beforeunload", () => {
+						window.opener.postMessage(JSON.stringify({
+							type: "cancel",
+							id: callbackId,
+						}), "*");
+					});
+				}
+
+
+				iframe.contentWindow.document.documentElement.style.setProperty("--color--primary", colorPrimary);
+				codeEditor.$blockScrolling = Infinity;
+				let ignoreInput = false;
+				let ignoreInputTimeout;
+				function toWysiwyg (content) {
+					editor.settings.modifyingCode = true;
+					if (settings.codeMode === "markdown") {
+						editor.setContent(markdown.render(content));
+					}
+					else {
+						editor.setContent(content);
+					}
+					editor.settings.modifyingCode = false;
+				}
+
+				function updateCodeEditor () {
+					clearTimeout(ignoreInputTimeout);
+					ignoreInput = true;
+					const pos = codeEditor.session.selection.toJSON();
+					if (settings.codeMode === "markdown") {
+						codeEditor.session.setValue(turndown.turndown(editor.getContent()));
+					}
+					else {
+						codeEditor.session.setValue(pretty(editor.getContent(), {"indent-with-tabs": true, "indent_char": "\t", indent_size: 1}));
+						// codeEditor.session.setValue(beautify(editor.getContent(), {
+						// 	"preserve-newlines": false,
+						// 	"indent-with-tabs": true,
+						// 	"indent-inner-html": true,
+						// 	"max-preserve-newlines": 1,
+						// }));
+					}
+					codeEditor.session.selection.fromJSON(pos);
+					ignoreInputTimeout = setTimeout(() => {
+						ignoreInput = false;
 					}, 50);
+				}
 
-					editor.setContent(content);
-					updateCodeEditor();
-				},
-				onshow (api) {
-				},
-				onhide (api) {
-				},
-			});
+				codeEditor.on("input", () => {
+					if (ignoreInput) {
+						return;
+					}
+					toWysiwyg(codeEditor.getValue());
+				});
+				let lastContent = "";
+				setInterval(() => {
+					if (document.activeElement !== iframe) {
+						const content = editor.getContent();
+						if (lastContent !== content) {
+							lastContent = content;
+							updateCodeEditor();
+						}
+					}
+				}, 50);
 
-		},
-	});
+				toWysiwyg(content);
+				updateCodeEditor();
+				setTimeout(() => {
+					toWysiwyg(codeEditor.getValue());
+				}, 100);
+			},
+		});
+	}
 
-	waitForInit.then(([editor]) => {
-		editor.theme.panel.find(".sidebar-toolbar button")[0].$el.trigger("click");
-	});
+	tinymce
+		.init(tinymceSettings)
+		.then(([editor]) => {
+			editor.theme.panel.find(".sidebar-toolbar button")[0].$el.trigger("click");
+		});
 }

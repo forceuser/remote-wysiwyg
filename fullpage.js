@@ -508,23 +508,30 @@ import tinymce from "tinymce/tinymce";
 			}
 		};
 		const setup = function (editor, headState, footState) {
-			editor.on("BeforeSetContent", (evt) => {
+			editor.on("Undo", event => {
+				console.log("Undo", event);
+			});
+			editor.on("BeforeSetContent", event => {
+				console.log("BeforeSetContent", event);
+
 				let pagemode = editor.getParam("fullpage_pagemode", "body");
-				if (!editor.settings.fullpage_ignoreswitch) {
-					if (pagemode !== "body" && !evt.content.match(/<html.*?>/)) {
-						pagemode = "body";
-						headState.set("");
-						editor.settings.fullpage_pagemode = pagemode;
-					}
-					else if (pagemode === "body" && evt.content.match(/<html.*?>/)) {
-						headState.set(evt.content.substring(0, evt.content.indexOf("</body>")));
-						pagemode = evt.content.match(/^<!DOCTYPE[^>]+XHTML.*?>/ig) ? "xhtml" : "html";
-						editor.settings.fullpage_pagemode = pagemode;
+				if (editor.settings.modifyingCode) {
+					if (!editor.settings.fullpage_ignoreswitch) {
+						if (pagemode !== "body" && !event.content.match(/<html.*?>/)) {
+							pagemode = "body";
+							headState.set("");
+							editor.settings.fullpage_pagemode = pagemode;
+						}
+						else if (pagemode === "body" && event.content.match(/<html.*?>/)) {
+							headState.set(event.content.substring(0, event.content.indexOf("</body>")));
+							pagemode = event.content.match(/^<!DOCTYPE[^>]+XHTML.*?>/ig) ? "xhtml" : "html";
+							editor.settings.fullpage_pagemode = pagemode;
+						}
 					}
 				}
 
 				if (pagemode !== "body") {
-					handleSetContent(editor, headState, footState, evt);
+					handleSetContent(editor, headState, footState, event);
 				}
 			});
 			editor.on("GetContent", (evt) => {

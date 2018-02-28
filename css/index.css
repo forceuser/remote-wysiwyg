@@ -28,15 +28,13 @@
 }
 
 .code-editor-panel iframe {
-	width: 800px !important;
-	max-width: 50vw !important;
+	width: 100%;
 	height: 100%;
 }
 
 .mce-tinymce .mce-sidebar .mce-sidebar-panel {
-	width: 800px !important;
+	width: 900px !important;
 	max-width: 50vw !important;
-
 }
 
 .mce-tinymce {
