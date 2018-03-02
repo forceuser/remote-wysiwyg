@@ -215,8 +215,10 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 					};
 
 					if (masterWindow && params.init) {
-						document.querySelector(".button-ok").addEventListener("click", () => ctrl.save(true));
-						document.querySelector(".button-cancel").addEventListener("click", () => ctrl.cancel());
+						if (settings.topbar) {
+							document.querySelector(".button-ok").addEventListener("click", () => ctrl.save(true));
+							document.querySelector(".button-cancel").addEventListener("click", () => ctrl.cancel());
+						}
 						window.addEventListener("beforeunload", () => {
 							masterWindow.postMessage(JSON.stringify({
 								type: "cancel",
@@ -258,6 +260,9 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 							// }));
 						}
 						codeEditor.session.selection.fromJSON(pos);
+						if (settings.saveOnChange) {
+							ctrl.save();
+						}
 						ignoreInputTimeout = setTimeout(() => {
 							ignoreInput = false;
 						}, 50);

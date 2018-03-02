@@ -38483,6 +38483,9 @@ function init() {
 												// }));
 											}
 											codeEditor.session.selection.fromJSON(pos);
+											if (settings.saveOnChange) {
+												ctrl.save();
+											}
 											ignoreInputTimeout = setTimeout(function () {
 												ignoreInput = false;
 											}, 50);
@@ -38537,12 +38540,14 @@ function init() {
 
 
 										if (masterWindow && params.init) {
-											document.querySelector(".button-ok").addEventListener("click", function () {
-												return ctrl.save(true);
-											});
-											document.querySelector(".button-cancel").addEventListener("click", function () {
-												return ctrl.cancel();
-											});
+											if (settings.topbar) {
+												document.querySelector(".button-ok").addEventListener("click", function () {
+													return ctrl.save(true);
+												});
+												document.querySelector(".button-cancel").addEventListener("click", function () {
+													return ctrl.cancel();
+												});
+											}
 											window.addEventListener("beforeunload", function () {
 												masterWindow.postMessage(JSON.stringify({
 													type: "cancel",
