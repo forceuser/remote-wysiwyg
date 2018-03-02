@@ -49,16 +49,18 @@ if (params.init && masterWindow) {
 			const data = JSON.parse(event.data);
 			if (data.id === params.init) {
 				if (data.type === "init" && !inititalized) {
-					editors = init(data.data);
+					init(data.data).then(ed => {
+						editors = ed;
+					});
 				}
 				if (data.type === "save") {
-					editors.ctrl.save();
+					editors && editors.ctrl.save();
 				}
 				if (data.type === "cancel") {
-					editors.ctrl.save();
+					editors && editors.ctrl.cancel();
 				}
 				if (data.type === "changemode") {
-					editors.ctrl.changemode(data.mode);
+					editors && editors.ctrl.changemode(data.mode);
 				}
 			}
 		}
