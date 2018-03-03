@@ -116,7 +116,9 @@ import tinymce from "tinymce/tinymce";
 			});
 			elm = headerFragment.getAll("body")[0];
 			if (elm) {
+				console.log("BODY", elm);
 				data.bodyAttrs = [...elm.attributes].map(({name, value}) => ({name, value}));
+				console.log("bodyAttrs", data.bodyAttrs);
 			}
 			return data;
 		};
@@ -245,6 +247,8 @@ import tinymce from "tinymce/tinymce";
 			});
 			elm = headerFragment.getAll("body")[0];
 			if (elm) {
+				// (data.bodyAttrs || []).forEach(({name, value}) => elm.attr(name, value));
+
 				// setAttr(elm, "dir", data.langdir);
 				// setAttr(elm, "style", data.style);
 				// setAttr(elm, "vlink", data.visited_color);
@@ -430,15 +434,46 @@ import tinymce from "tinymce/tinymce";
 					styles += node.firstChild.value;
 				}
 			});
+
+			elm = headerFragment.getAll("html")[0];
+			if (elm) {
+				const html = editor.getBody().parentNode;
+				const htmlAttrs = [...html.attributes].reduce((res, {name}) => {
+					res[name] = false;
+					return res;
+				}, {});
+				const attrs = [...elm.attributes].map(({name, value}) => ({name, value}));
+				attrs.forEach(({name, value}) => {
+					htmlAttrs[name] = true;
+					html.setAttribute(name, value);
+				});
+				Object.keys(htmlAttrs).forEach(key => {
+					if (!htmlAttrs[key]) {
+						html.removeAttribute(key);
+					}
+				});
+			}
+
 			elm = headerFragment.getAll("body")[0];
 			if (elm) {
-				dom.setAttribs(editor.getBody(), {
-					style: elm.attr("style") || "",
-					dir: elm.attr("dir") || "",
-					vLink: elm.attr("vlink") || "",
-					link: elm.attr("link") || "",
-					aLink: elm.attr("alink") || "",
+				const body = editor.getBody();
+				const ignoreAttrs = ["id", "class", "data-id", "contenteditable", "spellcheck"];
+				const bodyAttrs = [...body.attributes].filter(attr => !ignoreAttrs.includes(attr.name)).reduce((res, {name}) => {
+					res[name] = false;
+					return res;
+				}, {});
+				const attrs = [...elm.attributes].filter(attr => !ignoreAttrs.includes(attr.name)).map(({name, value}) => ({name, value}));
+				attrs.forEach(({name, value}) => {
+					bodyAttrs[name] = true;
+					body.setAttribute(name, value);
 				});
+				Object.keys(bodyAttrs).forEach(key => {
+					if (!bodyAttrs[key]) {
+						body.removeAttribute(key);
+					}
+				});
+
+				body.setAttribute("class", "mce-content-body " + (elm.attr("class")));
 			}
 			dom.remove("fullpage_styles");
 			const headElm = editor.getDoc().getElementsByTagName("head")[0];

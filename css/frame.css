@@ -3,11 +3,12 @@ html, body {
 }
 
 html {
-	overflow: auto;
+	/* overflow: auto; */
 }
 
 body {
-	overflow: hidden;
+	overflow: auto;
+	height: 100vh;
 	margin: 0;
 	padding: 1em;
 	box-sizing: border-box;

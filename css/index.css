@@ -77,7 +77,20 @@ html, body {
 .mce-tinymce > .mce-container-body .mce-edit-area {
 	display: flex;
 	flex-direction: column;
+	position: relative;
 }
+
+/* .wysiwyg-frame-wrapper {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+} */
+
 .mce-tinymce > .mce-container-body .mce-edit-area iframe {
 	height: auto !important;
 	width: auto !important;

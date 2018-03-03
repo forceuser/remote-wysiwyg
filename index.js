@@ -180,6 +180,7 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 		}
 
 		function setup (editor) {
+			editor.hasVisual = false;
 			editor.addSidebar("codebar", {
 				tooltip: "Code sidebar",
 				icon: "code",
@@ -293,6 +294,17 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 						toWysiwyg(codeEditor.getValue());
 					}, 100);
 					resolve({codeEditor, editor, ctrl});
+
+					// setTimeout(() => {
+					// 	const area = document.querySelector(".mce-edit-area");
+					// 	const areaParent = area.parentElement;
+					// 	const wrapper = document.createElement("div");
+					// 	wrapper.classList.add("wysiwyg-frame-wrapper");
+					// 	const wysiwyg_ifr = area.querySelector("iframe");
+					// 	areaParent.appendChild(wrapper);
+					// 	wrapper.appendChild(area);
+					// }, 100);
+
 				},
 			});
 		}
