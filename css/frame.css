@@ -3,7 +3,7 @@ html, body {
 }
 
 html {
-	/* overflow: auto; */
+	overflow: hidden;
 }
 
 body {
