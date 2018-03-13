@@ -40,11 +40,9 @@ const params = window.location.search.substring(1).split("&").reduce((res, i) =>
 	return res;
 }, {});
 
-console.log("params", params);
 let editors;
 if (params.init && masterWindow) {
 	window.addEventListener("message", event => {
-		console.log("message", event);
 		if (event.data) {
 			const data = JSON.parse(event.data);
 			if (data.id === params.init) {
@@ -171,7 +169,6 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 				setup,
 				init_instance_callback (editor) {
 					editor.on("paste", (e) => {
-						// console.log("Element clicked:", e.target.nodeName);
 						if (isMD) {
 							editor.setContent(markdown.render(turndown.turndown(editor.getContent())));
 						}
@@ -222,8 +219,9 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 							iframe.contentWindow.setMode(mode);
 						},
 						settings (data = {}) {
-							const customCssClass = "customstyle-" + btoa(Math.random()).replace(/\=/ig, "");
-							function addStyleToDocument (document, css) {
+							const customCssClass = "customcss-" + btoa(Math.random()).replace(/\=/ig, "");
+							const customStyleClass = "customstyle-" + btoa(Math.random()).replace(/\=/ig, "");
+							function addCssToDocument (document, css) {
 								const tmp = document.createElement("div");
 								[...document.querySelectorAll(`.${customCssClass}`)].forEach(link => {
 									link.parentNode.removeChild(link);
@@ -234,12 +232,29 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 									head.appendChild(tmp.firstChild);
 								});
 							}
+							function addStyleToDocument (document, style) {
+								const tmp = document.createElement("div");
+								[...document.querySelectorAll(`.${customStyleClass}`)].forEach(link => {
+									link.parentNode.removeChild(link);
+								});
+								const head = document.querySelector("head");
+								[].concat(style).forEach(style => {
+									tmp.innerHTML = `<style>${style}</style>`;
+									head.appendChild(tmp.firstChild);
+								});
+							}
 
 							if (data.contentCss) {
-								addStyleToDocument(wysiwyg_ifr.iframe.contentWindow.document, data.contentCss);
+								addCssToDocument(wysiwyg_ifr.iframe.contentWindow.document, data.contentCss);
 							}
 							if (data.editorCss) {
-								addStyleToDocument(document, data.editorCss);
+								addCssToDocument(document, data.editorCss);
+							}
+							if (data.contentStyle) {
+								addStyleToDocument(wysiwyg_ifr.iframe.contentWindow.document, data.contentStyle);
+							}
+							if (data.editorStyle) {
+								addStyleToDocument(document, data.editorStyle);
 							}
 							if (data.theme) {
 								iframe.contentWindow.setTheme(data.theme);
@@ -285,12 +300,6 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 						}
 						else {
 							codeEditor.session.setValue(pretty(editor.getContent(), {"indent-with-tabs": true, "indent_char": "\t", indent_size: 1}));
-							// codeEditor.session.setValue(beautify(editor.getContent(), {
-							// 	"preserve-newlines": false,
-							// 	"indent-with-tabs": true,
-							// 	"indent-inner-html": true,
-							// 	"max-preserve-newlines": 1,
-							// }));
 						}
 						codeEditor.session.selection.fromJSON(pos);
 						if (settings.saveOnChange) {
@@ -324,17 +333,6 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 						toWysiwyg(codeEditor.getValue());
 					}, 100);
 					resolve({codeEditor, editor, ctrl});
-
-					// setTimeout(() => {
-					// 	const area = document.querySelector(".mce-edit-area");
-					// 	const areaParent = area.parentElement;
-					// 	const wrapper = document.createElement("div");
-					// 	wrapper.classList.add("wysiwyg-frame-wrapper");
-					// 	const wysiwyg_ifr = area.querySelector("iframe");
-					// 	areaParent.appendChild(wrapper);
-					// 	wrapper.appendChild(area);
-					// }, 100);
-
 				},
 			});
 		}

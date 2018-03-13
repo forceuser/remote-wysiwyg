@@ -38282,11 +38282,9 @@ var params = window.location.search.substring(1).split("&").reduce(function (res
 	return res;
 }, {});
 
-console.log("params", params);
 var editors = void 0;
 if (params.init && masterWindow) {
 	window.addEventListener("message", function (event) {
-		console.log("message", event);
 		if (event.data) {
 			var data = JSON.parse(event.data);
 			if (data.id === params.init) {
@@ -38390,7 +38388,6 @@ function init() {
 			setup: setup,
 			init_instance_callback: function init_instance_callback(editor) {
 				editor.on("paste", function (e) {
-					// console.log("Element clicked:", e.target.nodeName);
 					if (isMD) {
 						editor.setContent(markdown.render(turndown.turndown(editor.getContent())));
 					}
@@ -38424,12 +38421,6 @@ function init() {
 												codeEditor.session.setValue(turndown.turndown(editor.getContent()));
 											} else {
 												codeEditor.session.setValue((0, _pretty2.default)(editor.getContent(), { "indent-with-tabs": true, "indent_char": "\t", indent_size: 1 }));
-												// codeEditor.session.setValue(beautify(editor.getContent(), {
-												// 	"preserve-newlines": false,
-												// 	"indent-with-tabs": true,
-												// 	"indent-inner-html": true,
-												// 	"max-preserve-newlines": 1,
-												// }));
 											}
 											codeEditor.session.selection.fromJSON(pos);
 											if (settings.saveOnChange) {
@@ -38489,8 +38480,9 @@ function init() {
 											settings: function settings() {
 												var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-												var customCssClass = "customstyle-" + btoa(Math.random()).replace(/\=/ig, "");
-												function addStyleToDocument(document, css) {
+												var customCssClass = "customcss-" + btoa(Math.random()).replace(/\=/ig, "");
+												var customStyleClass = "customstyle-" + btoa(Math.random()).replace(/\=/ig, "");
+												function addCssToDocument(document, css) {
 													var tmp = document.createElement("div");
 													[].concat(_toConsumableArray(document.querySelectorAll("." + customCssClass))).forEach(function (link) {
 														link.parentNode.removeChild(link);
@@ -38501,12 +38493,29 @@ function init() {
 														head.appendChild(tmp.firstChild);
 													});
 												}
+												function addStyleToDocument(document, style) {
+													var tmp = document.createElement("div");
+													[].concat(_toConsumableArray(document.querySelectorAll("." + customStyleClass))).forEach(function (link) {
+														link.parentNode.removeChild(link);
+													});
+													var head = document.querySelector("head");
+													[].concat(style).forEach(function (style) {
+														tmp.innerHTML = "<style>" + style + "</style>";
+														head.appendChild(tmp.firstChild);
+													});
+												}
 
 												if (data.contentCss) {
-													addStyleToDocument(wysiwyg_ifr.iframe.contentWindow.document, data.contentCss);
+													addCssToDocument(wysiwyg_ifr.iframe.contentWindow.document, data.contentCss);
 												}
 												if (data.editorCss) {
-													addStyleToDocument(document, data.editorCss);
+													addCssToDocument(document, data.editorCss);
+												}
+												if (data.contentStyle) {
+													addStyleToDocument(wysiwyg_ifr.iframe.contentWindow.document, data.contentStyle);
+												}
+												if (data.editorStyle) {
+													addStyleToDocument(document, data.editorStyle);
 												}
 												if (data.theme) {
 													iframe.contentWindow.setTheme(data.theme);
@@ -38562,16 +38571,6 @@ function init() {
 											toWysiwyg(codeEditor.getValue());
 										}, 100);
 										resolve({ codeEditor: codeEditor, editor: editor, ctrl: ctrl });
-
-										// setTimeout(() => {
-										// 	const area = document.querySelector(".mce-edit-area");
-										// 	const areaParent = area.parentElement;
-										// 	const wrapper = document.createElement("div");
-										// 	wrapper.classList.add("wysiwyg-frame-wrapper");
-										// 	const wysiwyg_ifr = area.querySelector("iframe");
-										// 	areaParent.appendChild(wrapper);
-										// 	wrapper.appendChild(area);
-										// }, 100);
 
 									case 23:
 									case "end":
