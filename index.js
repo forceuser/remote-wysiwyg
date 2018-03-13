@@ -245,13 +245,13 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 							}
 
 							if (data.contentCss) {
-								addCssToDocument(wysiwyg_ifr.iframe.contentWindow.document, data.contentCss);
+								addCssToDocument(wysiwyg_ifr.contentWindow.document, data.contentCss);
 							}
 							if (data.editorCss) {
 								addCssToDocument(document, data.editorCss);
 							}
 							if (data.contentStyle) {
-								addStyleToDocument(wysiwyg_ifr.iframe.contentWindow.document, data.contentStyle);
+								addStyleToDocument(wysiwyg_ifr.contentWindow.document, data.contentStyle);
 							}
 							if (data.editorStyle) {
 								addStyleToDocument(document, data.editorStyle);
