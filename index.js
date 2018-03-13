@@ -177,7 +177,7 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 			}
 		);
 		if (isMD) {
-			tinymceSettings.content_css.push("./css/markdown.css");
+			// tinymceSettings.content_css.push("./css/markdown.css");
 		}
 
 		function setup (editor) {
@@ -239,7 +239,7 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 								});
 								const head = document.querySelector("head");
 								[].concat(style).forEach(style => {
-									tmp.innerHTML = `<style>${style}</style>`;
+									tmp.innerHTML = `<style class="${customStyleClass}">${style}</style>`;
 									head.appendChild(tmp.firstChild);
 								});
 							}
