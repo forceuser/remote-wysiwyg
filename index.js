@@ -250,11 +250,17 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 							if (data.editorCss) {
 								addCssToDocument(document, data.editorCss);
 							}
+							if (data.codeEditorCss) {
+								addCssToDocument(iframe.contentWindow.document, data.codeEditorCss);
+							}
 							if (data.contentStyle) {
 								addStyleToDocument(wysiwyg_ifr.contentWindow.document, data.contentStyle);
 							}
 							if (data.editorStyle) {
 								addStyleToDocument(document, data.editorStyle);
+							}
+							if (data.codeEditorStyle) {
+								addStyleToDocument(iframe.contentWindow.document, data.codeEditorStyle);
 							}
 							if (data.theme) {
 								iframe.contentWindow.setTheme(data.theme);
