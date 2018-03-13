@@ -38489,14 +38489,15 @@ function init() {
 											settings: function settings() {
 												var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
+												var customCssClass = "customstyle-" + btoa(Math.random()).replace(/\=/ig, "");
 												function addStyleToDocument(document, css) {
 													var tmp = document.createElement("div");
-													[].concat(_toConsumableArray(document.querySelectorAll(".customstyle_dhfjd"))).forEach(function (link) {
+													[].concat(_toConsumableArray(document.querySelectorAll("." + customCssClass))).forEach(function (link) {
 														link.parentNode.removeChild(link);
 													});
 													var head = document.querySelector("head");
-													[].concat(data.css).forEach(function (link) {
-														tmp.innerHTML = "<link rel=\"stylesheet\" type=\"text/css\" class=\"customstyle_dhfjd\" href=\"" + link + "\">";
+													[].concat(css).forEach(function (link) {
+														tmp.innerHTML = "<link rel=\"stylesheet\" type=\"text/css\" class=\"" + customCssClass + "\" href=\"" + link + "\">";
 														head.appendChild(tmp.firstChild);
 													});
 												}

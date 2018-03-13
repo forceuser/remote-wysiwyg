@@ -222,14 +222,15 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 							iframe.contentWindow.setMode(mode);
 						},
 						settings (data = {}) {
+							const customCssClass = "customstyle-" + btoa(Math.random()).replace(/\=/ig, "");
 							function addStyleToDocument (document, css) {
 								const tmp = document.createElement("div");
-								[...document.querySelectorAll(".customstyle_dhfjd")].forEach(link => {
+								[...document.querySelectorAll(`.${customCssClass}`)].forEach(link => {
 									link.parentNode.removeChild(link);
 								});
 								const head = document.querySelector("head");
-								[].concat(data.css).forEach(link => {
-									tmp.innerHTML = `<link rel="stylesheet" type="text/css" class="customstyle_dhfjd" href="${link}">`;
+								[].concat(css).forEach(link => {
+									tmp.innerHTML = `<link rel="stylesheet" type="text/css" class="${customCssClass}" href="${link}">`;
 									head.appendChild(tmp.firstChild);
 								});
 							}
