@@ -38292,6 +38292,7 @@ if (params.init && masterWindow) {
 			if (data.id === params.init) {
 				if (data.type === "init" && !inititalized) {
 					init(data.data).then(function (ed) {
+						masterWindow.postMessage(JSON.stringify({ type: "initialized", id: params.init }), "*");
 						editors = ed;
 					});
 				}
@@ -38311,7 +38312,7 @@ if (params.init && masterWindow) {
 		}
 	});
 
-	masterWindow.postMessage(JSON.stringify({ type: "init", id: params.init }), "*");
+	masterWindow.postMessage(JSON.stringify({ type: "preinit", id: params.init }), "*");
 } else {
 	init();
 }
