@@ -7027,8 +7027,8 @@ editor.setOptions({
 	// fontFamily: "tahoma",
 	displayIndentGuides: true,
 	fontSize: "16px",
-	scrollPastEnd: 0.5,
-	wrap: true
+	scrollPastEnd: 0.5
+	// wrap: true,
 });
 window.editorModes = {
 	"html": "ace/mode/html",
