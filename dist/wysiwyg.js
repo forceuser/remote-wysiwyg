@@ -38257,6 +38257,8 @@ var _pretty2 = _interopRequireDefault(_pretty);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 // import {gfm} from "turndown-plugin-gfm";
 
@@ -38301,6 +38303,9 @@ if (params.init && masterWindow) {
 				}
 				if (data.type === "changemode") {
 					editors && editors.ctrl.changemode(data.mode);
+				}
+				if (data.type === "settings") {
+					editors && editors.ctrl.settings(data.data);
 				}
 			}
 		}
@@ -38405,7 +38410,7 @@ function init() {
 					var _this = this;
 
 					return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-						var panel, iframe, codeEditor, ctrl, ignoreInput, ignoreInputTimeout, toWysiwyg, updateCodeEditor, lastContent;
+						var panel, iframe, codeEditor, wysiwyg_ifr, ctrl, ignoreInput, ignoreInputTimeout, toWysiwyg, updateCodeEditor, lastContent;
 						return regeneratorRuntime.wrap(function _callee$(_context) {
 							while (1) {
 								switch (_context.prev = _context.next) {
@@ -38462,6 +38467,7 @@ function init() {
 
 									case 8:
 										codeEditor = _context.sent;
+										wysiwyg_ifr = document.querySelector("#wysiwyg_ifr");
 										ctrl = {
 											save: function save() {
 												var close = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
@@ -38478,6 +38484,31 @@ function init() {
 											},
 											changemode: function changemode(mode) {
 												iframe.contentWindow.setMode(mode);
+											},
+											settings: function settings() {
+												var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+												function addStyleToDocument(document, css) {
+													var tmp = document.createElement("div");
+													[].concat(_toConsumableArray(document.querySelectorAll(".customstyle_dhfjd"))).forEach(function (link) {
+														link.parentNode.removeChild(link);
+													});
+													var head = document.querySelector("head");
+													[].concat(data.css).forEach(function (link) {
+														tmp.innerHTML = "<link rel=\"stylesheet\" type=\"text/css\" class=\"customstyle_dhfjd\" href=\"" + link + "\">";
+														head.appendChild(tmp.firstChild);
+													});
+												}
+
+												if (data.contentCss) {
+													addStyleToDocument(wysiwyg_ifr.iframe.contentWindow.document, data.contentCss);
+												}
+												if (data.editorCss) {
+													addStyleToDocument(document, data.editorCss);
+												}
+												if (data.theme) {
+													iframe.contentWindow.setTheme(data.theme);
+												}
 											}
 										};
 
@@ -38540,7 +38571,7 @@ function init() {
 										// 	wrapper.appendChild(area);
 										// }, 100);
 
-									case 22:
+									case 23:
 									case "end":
 										return _context.stop();
 								}

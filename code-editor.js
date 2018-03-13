@@ -4,6 +4,7 @@ import "brace/mode/handlebars";
 import "brace/mode/markdown";
 import "brace/mode/ftl";
 import "brace/theme/chrome";
+import "brace/theme/idle_fingers";
 
 const editor = ace.edit("ace-editor");
 editor.setTheme("ace/theme/chrome");
@@ -26,5 +27,8 @@ window.editorModes = {
 };
 window.setMode = (mode) => {
 	editor.session.setMode(window.editorModes[mode] || "html");
+};
+window.setTheme = (theme) => {
+	editor.setTheme(theme === "dark" ? "ace/theme/idle_fingers" : "ace/theme/chrome");
 };
 window.editor = editor;

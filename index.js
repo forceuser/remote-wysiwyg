@@ -62,6 +62,9 @@ if (params.init && masterWindow) {
 				if (data.type === "changemode") {
 					editors && editors.ctrl.changemode(data.mode);
 				}
+				if (data.type === "settings") {
+					editors && editors.ctrl.settings(data.data);
+				}
 			}
 		}
 	});
@@ -199,6 +202,8 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 							}
 						}, 100);
 					}));
+					const wysiwyg_ifr = document.querySelector("#wysiwyg_ifr");
+
 
 					const ctrl = {
 						save (close = false) {
@@ -214,6 +219,29 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 						},
 						changemode (mode) {
 							iframe.contentWindow.setMode(mode);
+						},
+						settings (data = {}) {
+							function addStyleToDocument (document, css) {
+								const tmp = document.createElement("div");
+								[...document.querySelectorAll(".customstyle_dhfjd")].forEach(link => {
+									link.parentNode.removeChild(link);
+								});
+								const head = document.querySelector("head");
+								[].concat(data.css).forEach(link => {
+									tmp.innerHTML = `<link rel="stylesheet" type="text/css" class="customstyle_dhfjd" href="${link}">`;
+									head.appendChild(tmp.firstChild);
+								});
+							}
+
+							if (data.contentCss) {
+								addStyleToDocument(wysiwyg_ifr.iframe.contentWindow.document, data.contentCss);
+							}
+							if (data.editorCss) {
+								addStyleToDocument(document, data.editorCss);
+							}
+							if (data.theme) {
+								iframe.contentWindow.setTheme(data.theme);
+							}
 						},
 					};
 
