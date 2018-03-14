@@ -116,9 +116,7 @@ import tinymce from "tinymce/tinymce";
 			});
 			elm = headerFragment.getAll("body")[0];
 			if (elm) {
-				console.log("BODY", elm);
 				data.bodyAttrs = [...elm.attributes].map(({name, value}) => ({name, value}));
-				console.log("bodyAttrs", data.bodyAttrs);
 			}
 			return data;
 		};
@@ -543,11 +541,9 @@ import tinymce from "tinymce/tinymce";
 			}
 		};
 		const setup = function (editor, headState, footState) {
-			editor.on("Undo", event => {
-				console.log("Undo", event);
-			});
+			// editor.on("Undo", event => {
+			// });
 			editor.on("BeforeSetContent", event => {
-				console.log("BeforeSetContent", event);
 
 				let pagemode = editor.getParam("fullpage_pagemode", "body");
 				if (editor.settings.modifyingCode) {

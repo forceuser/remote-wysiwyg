@@ -67506,13 +67506,11 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 			});
 			elm = headerFragment.getAll("body")[0];
 			if (elm) {
-				console.log("BODY", elm);
 				data.bodyAttrs = [].concat(_toConsumableArray(elm.attributes)).map(function (_ref2) {
 					var name = _ref2.name,
 					    value = _ref2.value;
 					return { name: name, value: value };
 				});
-				console.log("bodyAttrs", data.bodyAttrs);
 			}
 			return data;
 		};
@@ -67940,11 +67938,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 			}
 		};
 		var setup = function setup(editor, headState, footState) {
-			editor.on("Undo", function (event) {
-				console.log("Undo", event);
-			});
+			// editor.on("Undo", event => {
+			// });
 			editor.on("BeforeSetContent", function (event) {
-				console.log("BeforeSetContent", event);
 
 				var pagemode = editor.getParam("fullpage_pagemode", "body");
 				if (editor.settings.modifyingCode) {
