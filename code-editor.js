@@ -27,6 +27,9 @@ window.editorModes = {
 };
 window.setMode = (mode) => {
 	editor.session.setMode(window.editorModes[mode] || "html");
+	if (mode === "markdown") {
+		editor.setOptions({wrap: true});
+	}
 };
 window.setTheme = (theme) => {
 	editor.setTheme(theme === "dark" ? "ace/theme/idle_fingers" : "ace/theme/chrome");
