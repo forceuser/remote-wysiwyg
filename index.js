@@ -171,6 +171,20 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 			// tinymceSettings.content_css.push("./css/markdown.css");
 		}
 
+		const iframe = document.createElement("iframe");
+		iframe.id = "code-editor";
+		iframe.src = "./code-editor.html";
+
+		const codeEditorLoading = (new Promise(resolve => {
+			const inerv = setInterval(() => {
+				if (iframe.contentWindow && iframe.contentWindow.editor) {
+					clearInterval(inerv);
+					iframe.contentWindow.setMode(settings.codeMode);
+					resolve(iframe.contentWindow.editor);
+				}
+			}, 30);
+		}));
+
 		function setup (editor) {
 			editor.hasVisual = false;
 			editor.addSidebar("codebar", {
@@ -180,17 +194,9 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 				async onrender (api) {
 					const panel = api.element();
 					panel.classList.add("code-editor-panel");
-					panel.innerHTML = `<iframe id="code-editor" src="./code-editor.html"></iframe>`;
-					const iframe = panel.children[0];
-					const codeEditor = await (new Promise(resolve => {
-						const inerv = setInterval(() => {
-							if (iframe.contentWindow && iframe.contentWindow.editor) {
-								clearInterval(inerv);
-								iframe.contentWindow.setMode(settings.codeMode);
-								resolve(iframe.contentWindow.editor);
-							}
-						}, 100);
-					}));
+					panel.appendChild(iframe);
+
+					const codeEditor = await codeEditorLoading;
 					const wysiwyg_ifr = document.querySelector("#wysiwyg_ifr");
 
 

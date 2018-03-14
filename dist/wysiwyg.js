@@ -32202,6 +32202,20 @@ function init() {
 			// tinymceSettings.content_css.push("./css/markdown.css");
 		}
 
+		var iframe = document.createElement("iframe");
+		iframe.id = "code-editor";
+		iframe.src = "./code-editor.html";
+
+		var codeEditorLoading = new Promise(function (resolve) {
+			var inerv = setInterval(function () {
+				if (iframe.contentWindow && iframe.contentWindow.editor) {
+					clearInterval(inerv);
+					iframe.contentWindow.setMode(settings.codeMode);
+					resolve(iframe.contentWindow.editor);
+				}
+			}, 30);
+		});
+
 		function setup(editor) {
 			editor.hasVisual = false;
 			editor.addSidebar("codebar", {
@@ -32212,7 +32226,7 @@ function init() {
 					var _this = this;
 
 					return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-						var panel, iframe, codeEditor, wysiwyg_ifr, ctrl, ignoreInput, ignoreInputTimeout, toWysiwyg, updateCodeEditor, lastContent;
+						var panel, codeEditor, wysiwyg_ifr, ctrl, ignoreInput, ignoreInputTimeout, toWysiwyg, updateCodeEditor, lastContent;
 						return regeneratorRuntime.wrap(function _callee$(_context) {
 							while (1) {
 								switch (_context.prev = _context.next) {
@@ -32248,20 +32262,12 @@ function init() {
 										panel = api.element();
 
 										panel.classList.add("code-editor-panel");
-										panel.innerHTML = "<iframe id=\"code-editor\" src=\"./code-editor.html\"></iframe>";
-										iframe = panel.children[0];
-										_context.next = 8;
-										return new Promise(function (resolve) {
-											var inerv = setInterval(function () {
-												if (iframe.contentWindow && iframe.contentWindow.editor) {
-													clearInterval(inerv);
-													iframe.contentWindow.setMode(settings.codeMode);
-													resolve(iframe.contentWindow.editor);
-												}
-											}, 100);
-										});
+										panel.appendChild(iframe);
 
-									case 8:
+										_context.next = 7;
+										return codeEditorLoading;
+
+									case 7:
 										codeEditor = _context.sent;
 										wysiwyg_ifr = document.querySelector("#wysiwyg_ifr");
 										ctrl = {
@@ -32382,7 +32388,7 @@ function init() {
 										}, 100);
 										resolve({ codeEditor: codeEditor, editor: editor, ctrl: ctrl });
 
-									case 23:
+									case 22:
 									case "end":
 										return _context.stop();
 								}
