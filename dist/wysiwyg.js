@@ -32094,8 +32094,8 @@ if (params.init && masterWindow) {
 			if (data.id === params.init) {
 				if (data.type === "init" && !inititalized) {
 					init(data.data).then(function (ed) {
-						editors = ed;
 						masterWindow.postMessage(JSON.stringify({ type: "initialized", id: params.init }), "*");
+						editors = ed;
 					});
 				}
 				if (data.type === "save") {
@@ -32202,21 +32202,6 @@ function init() {
 			// tinymceSettings.content_css.push("./css/markdown.css");
 		}
 
-		var iframe = document.createElement("iframe");
-		iframe.id = "code-editor";
-		iframe.src = "./code-editor.html";
-		document.body.appendChild(iframe);
-
-		var codeEditorLoading = new Promise(function (resolve) {
-			var inerv = setInterval(function () {
-				if (iframe.contentWindow && iframe.contentWindow.editor && iframe.contentWindow.document && iframe.contentWindow.document.querySelector("head")) {
-					clearInterval(inerv);
-					iframe.contentWindow.setMode(settings.codeMode);
-					resolve(iframe.contentWindow.editor);
-				}
-			}, 30);
-		});
-
 		function setup(editor) {
 			editor.hasVisual = false;
 			editor.addSidebar("codebar", {
@@ -32227,7 +32212,7 @@ function init() {
 					var _this = this;
 
 					return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-						var panel, codeEditor, wysiwyg_ifr, ctrl, ignoreInput, ignoreInputTimeout, toWysiwyg, updateCodeEditor, lastContent;
+						var panel, iframe, codeEditor, wysiwyg_ifr, ctrl, ignoreInput, ignoreInputTimeout, toWysiwyg, updateCodeEditor, lastContent;
 						return regeneratorRuntime.wrap(function _callee$(_context) {
 							while (1) {
 								switch (_context.prev = _context.next) {
@@ -32263,12 +32248,20 @@ function init() {
 										panel = api.element();
 
 										panel.classList.add("code-editor-panel");
-										panel.appendChild(iframe);
+										panel.innerHTML = "<iframe id=\"code-editor\" src=\"./code-editor.html\"></iframe>";
+										iframe = panel.children[0];
+										_context.next = 8;
+										return new Promise(function (resolve) {
+											var inerv = setInterval(function () {
+												if (iframe.contentWindow && iframe.contentWindow.editor) {
+													clearInterval(inerv);
+													iframe.contentWindow.setMode(settings.codeMode);
+													resolve(iframe.contentWindow.editor);
+												}
+											}, 100);
+										});
 
-										_context.next = 7;
-										return codeEditorLoading;
-
-									case 7:
+									case 8:
 										codeEditor = _context.sent;
 										wysiwyg_ifr = document.querySelector("#wysiwyg_ifr");
 										ctrl = {
@@ -32293,31 +32286,29 @@ function init() {
 
 												var customCssClass = "customcss-" + btoa(Math.random()).replace(/\=/ig, "");
 												var customStyleClass = "customstyle-" + btoa(Math.random()).replace(/\=/ig, "");
-												function addCssToDocument(doc, css) {
-													var tmp = doc.createElement("div");
-													[].concat(_toConsumableArray(doc.querySelectorAll("." + customCssClass))).forEach(function (link) {
+												function addCssToDocument(document, css) {
+													var tmp = document.createElement("div");
+													[].concat(_toConsumableArray(document.querySelectorAll("." + customCssClass))).forEach(function (link) {
 														link.parentNode.removeChild(link);
 													});
-													var head = doc.querySelector("head");
-													console.log("addCssToDocument", doc, doc.documentElement.outerHTML, head);
+													var head = document.querySelector("head");
 													[].concat(css).forEach(function (link) {
 														tmp.innerHTML = "<link rel=\"stylesheet\" type=\"text/css\" class=\"" + customCssClass + "\" href=\"" + link + "\">";
 														head.appendChild(tmp.firstChild);
 													});
 												}
-												function addStyleToDocument(doc, style) {
-													var tmp = doc.createElement("div");
-													[].concat(_toConsumableArray(doc.querySelectorAll("." + customStyleClass))).forEach(function (link) {
+												function addStyleToDocument(document, style) {
+													var tmp = document.createElement("div");
+													[].concat(_toConsumableArray(document.querySelectorAll("." + customStyleClass))).forEach(function (link) {
 														link.parentNode.removeChild(link);
 													});
-													var head = doc.querySelector("head");
-													console.log("addStyleToDocument", doc, doc.documentElement.outerHTML, head);
+													var head = document.querySelector("head");
 													[].concat(style).forEach(function (style) {
 														tmp.innerHTML = "<style class=\"" + customStyleClass + "\">" + style + "</style>";
 														head.appendChild(tmp.firstChild);
 													});
 												}
-												console.log("settings", document, wysiwyg_ifr, iframe);
+
 												if (data.contentCss) {
 													addCssToDocument(wysiwyg_ifr.contentWindow.document, data.contentCss);
 												}
@@ -32391,7 +32382,7 @@ function init() {
 										}, 100);
 										resolve({ codeEditor: codeEditor, editor: editor, ctrl: ctrl });
 
-									case 22:
+									case 23:
 									case "end":
 										return _context.stop();
 								}

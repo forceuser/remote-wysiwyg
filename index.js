@@ -39,8 +39,8 @@ if (params.init && masterWindow) {
 			if (data.id === params.init) {
 				if (data.type === "init" && !inititalized) {
 					init(data.data).then(ed => {
-						editors = ed;
 						masterWindow.postMessage(JSON.stringify({type: `initialized`, id: params.init}), "*");
+						editors = ed;
 					});
 				}
 				if (data.type === "save") {
@@ -171,25 +171,6 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 			// tinymceSettings.content_css.push("./css/markdown.css");
 		}
 
-		const iframe = document.createElement("iframe");
-		iframe.id = "code-editor";
-		iframe.src = "./code-editor.html";
-		document.body.appendChild(iframe);
-
-		const codeEditorLoading = (new Promise(resolve => {
-			const inerv = setInterval(() => {
-				if (iframe.contentWindow
-					&& iframe.contentWindow.editor
-					&& iframe.contentWindow.document
-					&& iframe.contentWindow.document.querySelector("head")
-				) {
-					clearInterval(inerv);
-					iframe.contentWindow.setMode(settings.codeMode);
-					resolve(iframe.contentWindow.editor);
-				}
-			}, 30);
-		}));
-
 		function setup (editor) {
 			editor.hasVisual = false;
 			editor.addSidebar("codebar", {
@@ -199,9 +180,17 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 				async onrender (api) {
 					const panel = api.element();
 					panel.classList.add("code-editor-panel");
-					panel.appendChild(iframe);
-
-					const codeEditor = await codeEditorLoading;
+					panel.innerHTML = `<iframe id="code-editor" src="./code-editor.html"></iframe>`;
+					const iframe = panel.children[0];
+					const codeEditor = await (new Promise(resolve => {
+						const inerv = setInterval(() => {
+							if (iframe.contentWindow && iframe.contentWindow.editor) {
+								clearInterval(inerv);
+								iframe.contentWindow.setMode(settings.codeMode);
+								resolve(iframe.contentWindow.editor);
+							}
+						}, 100);
+					}));
 					const wysiwyg_ifr = document.querySelector("#wysiwyg_ifr");
 
 
@@ -223,31 +212,29 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 						settings (data = {}) {
 							const customCssClass = "customcss-" + btoa(Math.random()).replace(/\=/ig, "");
 							const customStyleClass = "customstyle-" + btoa(Math.random()).replace(/\=/ig, "");
-							function addCssToDocument (doc, css) {
-								const tmp = doc.createElement("div");
-								[...doc.querySelectorAll(`.${customCssClass}`)].forEach(link => {
+							function addCssToDocument (document, css) {
+								const tmp = document.createElement("div");
+								[...document.querySelectorAll(`.${customCssClass}`)].forEach(link => {
 									link.parentNode.removeChild(link);
 								});
-								const head = doc.querySelector("head");
-								console.log("addCssToDocument", doc, doc.documentElement.outerHTML, head);
+								const head = document.querySelector("head");
 								[].concat(css).forEach(link => {
 									tmp.innerHTML = `<link rel="stylesheet" type="text/css" class="${customCssClass}" href="${link}">`;
 									head.appendChild(tmp.firstChild);
 								});
 							}
-							function addStyleToDocument (doc, style) {
-								const tmp = doc.createElement("div");
-								[...doc.querySelectorAll(`.${customStyleClass}`)].forEach(link => {
+							function addStyleToDocument (document, style) {
+								const tmp = document.createElement("div");
+								[...document.querySelectorAll(`.${customStyleClass}`)].forEach(link => {
 									link.parentNode.removeChild(link);
 								});
-								const head = doc.querySelector("head");
-								console.log("addStyleToDocument", doc, doc.documentElement.outerHTML, head);
+								const head = document.querySelector("head");
 								[].concat(style).forEach(style => {
 									tmp.innerHTML = `<style class="${customStyleClass}">${style}</style>`;
 									head.appendChild(tmp.firstChild);
 								});
 							}
-							console.log("settings", document, wysiwyg_ifr, iframe);
+
 							if (data.contentCss) {
 								addCssToDocument(wysiwyg_ifr.contentWindow.document, data.contentCss);
 							}
