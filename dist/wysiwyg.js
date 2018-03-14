@@ -32119,11 +32119,6 @@ if (params.init && masterWindow) {
 	init();
 }
 
-var iframe = document.createElement("iframe");
-iframe.id = "code-editor";
-iframe.src = "./code-editor.html";
-document.body.appendChild(iframe);
-
 function init() {
 	var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
 	    _ref$color = _ref.color,
@@ -32206,6 +32201,11 @@ function init() {
 		if (isMD) {
 			// tinymceSettings.content_css.push("./css/markdown.css");
 		}
+
+		var iframe = document.createElement("iframe");
+		iframe.id = "code-editor";
+		iframe.src = "./code-editor.html";
+		document.body.appendChild(iframe);
 
 		var codeEditorLoading = new Promise(function (resolve) {
 			var inerv = setInterval(function () {
@@ -32299,6 +32299,7 @@ function init() {
 														link.parentNode.removeChild(link);
 													});
 													var head = document.querySelector("head");
+													console.log("addCssToDocument", document, head);
 													[].concat(css).forEach(function (link) {
 														tmp.innerHTML = "<link rel=\"stylesheet\" type=\"text/css\" class=\"" + customCssClass + "\" href=\"" + link + "\">";
 														head.appendChild(tmp.firstChild);
@@ -32310,12 +32311,13 @@ function init() {
 														link.parentNode.removeChild(link);
 													});
 													var head = document.querySelector("head");
+													console.log("addStyleToDocument", document, head);
 													[].concat(style).forEach(function (style) {
 														tmp.innerHTML = "<style class=\"" + customStyleClass + "\">" + style + "</style>";
 														head.appendChild(tmp.firstChild);
 													});
 												}
-
+												console.log("settings", document, wysiwyg_ifr, iframe);
 												if (data.contentCss) {
 													addCssToDocument(wysiwyg_ifr.contentWindow.document, data.contentCss);
 												}

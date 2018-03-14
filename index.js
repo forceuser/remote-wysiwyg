@@ -65,11 +65,6 @@ else {
 	init();
 }
 
-const iframe = document.createElement("iframe");
-iframe.id = "code-editor";
-iframe.src = "./code-editor.html";
-document.body.appendChild(iframe);
-
 function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}) {
 	return new Promise(resolve => {
 		const colorPrimary = color;
@@ -176,6 +171,11 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 			// tinymceSettings.content_css.push("./css/markdown.css");
 		}
 
+		const iframe = document.createElement("iframe");
+		iframe.id = "code-editor";
+		iframe.src = "./code-editor.html";
+		document.body.appendChild(iframe);
+
 		const codeEditorLoading = (new Promise(resolve => {
 			const inerv = setInterval(() => {
 				if (iframe.contentWindow && iframe.contentWindow.editor) {
@@ -225,6 +225,7 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 									link.parentNode.removeChild(link);
 								});
 								const head = document.querySelector("head");
+								console.log("addCssToDocument", document, head);
 								[].concat(css).forEach(link => {
 									tmp.innerHTML = `<link rel="stylesheet" type="text/css" class="${customCssClass}" href="${link}">`;
 									head.appendChild(tmp.firstChild);
@@ -236,12 +237,13 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 									link.parentNode.removeChild(link);
 								});
 								const head = document.querySelector("head");
+								console.log("addStyleToDocument", document, head);
 								[].concat(style).forEach(style => {
 									tmp.innerHTML = `<style class="${customStyleClass}">${style}</style>`;
 									head.appendChild(tmp.firstChild);
 								});
 							}
-
+							console.log("settings", document, wysiwyg_ifr, iframe);
 							if (data.contentCss) {
 								addCssToDocument(wysiwyg_ifr.contentWindow.document, data.contentCss);
 							}
