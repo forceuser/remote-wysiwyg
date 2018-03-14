@@ -32094,8 +32094,8 @@ if (params.init && masterWindow) {
 			if (data.id === params.init) {
 				if (data.type === "init" && !inititalized) {
 					init(data.data).then(function (ed) {
-						masterWindow.postMessage(JSON.stringify({ type: "initialized", id: params.init }), "*");
 						editors = ed;
+						masterWindow.postMessage(JSON.stringify({ type: "initialized", id: params.init }), "*");
 					});
 				}
 				if (data.type === "save") {
@@ -32209,7 +32209,7 @@ function init() {
 
 		var codeEditorLoading = new Promise(function (resolve) {
 			var inerv = setInterval(function () {
-				if (iframe.contentWindow && iframe.contentWindow.editor) {
+				if (iframe.contentWindow && iframe.contentWindow.editor && iframe.contentWindow.document && iframe.contentWindow.document.querySelector("head")) {
 					clearInterval(inerv);
 					iframe.contentWindow.setMode(settings.codeMode);
 					resolve(iframe.contentWindow.editor);

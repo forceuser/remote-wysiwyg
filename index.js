@@ -39,8 +39,8 @@ if (params.init && masterWindow) {
 			if (data.id === params.init) {
 				if (data.type === "init" && !inititalized) {
 					init(data.data).then(ed => {
-						masterWindow.postMessage(JSON.stringify({type: `initialized`, id: params.init}), "*");
 						editors = ed;
+						masterWindow.postMessage(JSON.stringify({type: `initialized`, id: params.init}), "*");
 					});
 				}
 				if (data.type === "save") {
@@ -178,7 +178,11 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 
 		const codeEditorLoading = (new Promise(resolve => {
 			const inerv = setInterval(() => {
-				if (iframe.contentWindow && iframe.contentWindow.editor) {
+				if (iframe.contentWindow
+					&& iframe.contentWindow.editor
+					&& iframe.contentWindow.document
+					&& iframe.contentWindow.document.querySelector("head")
+				) {
 					clearInterval(inerv);
 					iframe.contentWindow.setMode(settings.codeMode);
 					resolve(iframe.contentWindow.editor);
