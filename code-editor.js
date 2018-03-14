@@ -8,10 +8,6 @@ import "brace/theme/idle_fingers";
 
 const editor = ace.edit("ace-editor");
 editor.setTheme("ace/theme/chrome");
-// editor.session.setMode("ace/mode/html");
-// editor.session.setMode("ace/mode/handlebars");
-// editor.session.setMode("ace/mode/markdown");
-// editor.session.setMode("ace/mode/ftl");
 editor.setOptions({
 	// fontFamily: "tahoma",
 	displayIndentGuides: true,

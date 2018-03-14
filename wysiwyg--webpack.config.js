@@ -3,7 +3,7 @@ const path = require("path");
 
 module.exports = {
 	entry: {
-		"wysiwyg": ["./polyfill/polyfill.js", "regenerator-runtime/runtime", path.resolve(__dirname, "./index.js")],
+		"wysiwyg": ["regenerator-runtime/runtime", path.resolve(__dirname, "./index.js")],
 	},
 	output: {
 		path: path.resolve(__dirname, "./dist"),

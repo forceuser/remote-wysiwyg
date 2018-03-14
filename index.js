@@ -1,28 +1,19 @@
 import Markdown from "markdown-it";
 import Turndown from "turndown";
 // import {gfm} from "turndown-plugin-gfm";
-
 import tinymce from "tinymce/tinymce";
-// theme
 import "tinymce/themes/modern/theme";
-// plugins
 import "tinymce/plugins/contextmenu";
 import "tinymce/plugins/paste";
 import "tinymce/plugins/link";
 import "tinymce/plugins/lists";
 import "tinymce/plugins/table";
-
-
 import "tinymce/plugins/code";
-import "tinymce/plugins/codesample";
 import "tinymce/plugins/colorpicker";
 import "tinymce/plugins/textcolor";
 import "tinymce/plugins/hr";
 import "tinymce/plugins/image";
-import "tinymce/plugins/imagetools";
-
 import "tinymce-i18n/langs/ru";
-
 import "./fullpage";
 
 // import {html as beautify} from "js-beautify";
@@ -144,7 +135,7 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 					plugins: [
 						"contextmenu", "fullpage",
 						"paste", "link", "lists", "table",
-						"colorpicker", "textcolor", "hr", "image", "imagetools",
+						"colorpicker", "textcolor", "hr", "image",
 					],
 					toolbar: `${defaultToolbar} | forecolor backcolor`,
 					table_toolbar: false,

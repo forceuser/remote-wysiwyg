@@ -3,7 +3,7 @@ const path = require("path");
 
 module.exports = {
 	entry: {
-		"code-editor": ["./polyfill/polyfill.js", "regenerator-runtime/runtime", path.resolve(__dirname, "./code-editor.js")],
+		"code-editor": [path.resolve(__dirname, "./code-editor.js")],
 	},
 	output: {
 		path: path.resolve(__dirname, "./dist"),
@@ -20,7 +20,7 @@ module.exports = {
 				loader: "babel-loader",
 				options: {
 					presets: ["env"],
-					plugins: ["transform-async-to-generator"],
+					// plugins: ["transform-async-to-generator"],
 				},
 			}],
 		}],
