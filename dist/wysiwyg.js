@@ -32293,25 +32293,25 @@ function init() {
 
 												var customCssClass = "customcss-" + btoa(Math.random()).replace(/\=/ig, "");
 												var customStyleClass = "customstyle-" + btoa(Math.random()).replace(/\=/ig, "");
-												function addCssToDocument(document, css) {
-													var tmp = document.createElement("div");
-													[].concat(_toConsumableArray(document.querySelectorAll("." + customCssClass))).forEach(function (link) {
+												function addCssToDocument(doc, css) {
+													var tmp = doc.createElement("div");
+													[].concat(_toConsumableArray(doc.querySelectorAll("." + customCssClass))).forEach(function (link) {
 														link.parentNode.removeChild(link);
 													});
-													var head = document.querySelector("head");
-													console.log("addCssToDocument", document, head);
+													var head = doc.querySelector("head");
+													console.log("addCssToDocument", doc, doc.documentElement.outerHTML, head);
 													[].concat(css).forEach(function (link) {
 														tmp.innerHTML = "<link rel=\"stylesheet\" type=\"text/css\" class=\"" + customCssClass + "\" href=\"" + link + "\">";
 														head.appendChild(tmp.firstChild);
 													});
 												}
-												function addStyleToDocument(document, style) {
-													var tmp = document.createElement("div");
-													[].concat(_toConsumableArray(document.querySelectorAll("." + customStyleClass))).forEach(function (link) {
+												function addStyleToDocument(doc, style) {
+													var tmp = doc.createElement("div");
+													[].concat(_toConsumableArray(doc.querySelectorAll("." + customStyleClass))).forEach(function (link) {
 														link.parentNode.removeChild(link);
 													});
-													var head = document.querySelector("head");
-													console.log("addStyleToDocument", document, head);
+													var head = doc.querySelector("head");
+													console.log("addStyleToDocument", doc, doc.documentElement.outerHTML, head);
 													[].concat(style).forEach(function (style) {
 														tmp.innerHTML = "<style class=\"" + customStyleClass + "\">" + style + "</style>";
 														head.appendChild(tmp.firstChild);
