@@ -1,14 +1,14 @@
 {
 	"name": "remote-wysiwyg",
-	"version": "1.0.36",
+	"version": "1.0.37",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
 		"serve": "http-server -a localhost -p 8061",
 		"build": "webpack --config ./code-editor--webpack.config.js && webpack --config ./wysiwyg--webpack.config.js && cp -r ./node_modules/tinymce/skins ./dist/skins && npm run minify-code-editor && npm run minify-wysiwyg",
 		"fix": "eslint --fix .",
-		"minify-code-editor": "uglifyjs ./dist/code-editor.js -o ./dist/code-editor.min.js  --compress --keep-fnames --source-map",
-		"minify-wysiwyg": "uglifyjs ./dist/wysiwyg.js -o ./dist/wysiwyg.min.js  --compress --keep-fnames --source-map",
+		"minify-code-editor": "uglifyjs ./dist/code-editor.js -o ./dist/code-editor.min.js --keep-fnames --source-map",
+		"minify-wysiwyg": "uglifyjs ./dist/wysiwyg.js -o ./dist/wysiwyg.min.js --keep-fnames --source-map",
 		"release": "npm run patch-release",
 		"patch-release": "npm run build && va-release --version patch -g",
 		"minor-release": "npm run build && va-release --version minor -g",
