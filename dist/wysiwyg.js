@@ -32085,7 +32085,7 @@ var params = window.location.search.substring(1).split("&").reduce(function (res
 	}
 	return res;
 }, {});
-var iframe = document.querySelector("#code-editor");
+
 var editors = void 0;
 if (params.init && masterWindow) {
 	window.addEventListener("message", function (event) {
@@ -32118,6 +32118,11 @@ if (params.init && masterWindow) {
 } else {
 	init();
 }
+
+var iframe = document.createElement("iframe");
+iframe.id = "code-editor";
+iframe.src = "./code-editor.html";
+document.body.appendChild(iframe);
 
 function init() {
 	var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},

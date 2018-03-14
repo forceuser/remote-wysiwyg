@@ -30,7 +30,7 @@ const params = window.location.search.substring(1).split("&").reduce((res, i) =>
 	}
 	return res;
 }, {});
-const iframe = document.querySelector("#code-editor");
+
 let editors;
 if (params.init && masterWindow) {
 	window.addEventListener("message", event => {
@@ -64,6 +64,11 @@ if (params.init && masterWindow) {
 else {
 	init();
 }
+
+const iframe = document.createElement("iframe");
+iframe.id = "code-editor";
+iframe.src = "./code-editor.html";
+document.body.appendChild(iframe);
 
 function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}) {
 	return new Promise(resolve => {
