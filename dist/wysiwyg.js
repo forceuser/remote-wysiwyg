@@ -32085,7 +32085,7 @@ var params = window.location.search.substring(1).split("&").reduce(function (res
 	}
 	return res;
 }, {});
-
+var iframe = document.querySelector("#code-editor");
 var editors = void 0;
 if (params.init && masterWindow) {
 	window.addEventListener("message", function (event) {
@@ -32201,10 +32201,6 @@ function init() {
 		if (isMD) {
 			// tinymceSettings.content_css.push("./css/markdown.css");
 		}
-
-		var iframe = document.createElement("iframe");
-		iframe.id = "code-editor";
-		iframe.src = "./code-editor.html";
 
 		var codeEditorLoading = new Promise(function (resolve) {
 			var inerv = setInterval(function () {

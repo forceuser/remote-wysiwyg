@@ -30,7 +30,7 @@ const params = window.location.search.substring(1).split("&").reduce((res, i) =>
 	}
 	return res;
 }, {});
-
+const iframe = document.querySelector("#code-editor");
 let editors;
 if (params.init && masterWindow) {
 	window.addEventListener("message", event => {
@@ -170,10 +170,6 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 		if (isMD) {
 			// tinymceSettings.content_css.push("./css/markdown.css");
 		}
-
-		const iframe = document.createElement("iframe");
-		iframe.id = "code-editor";
-		iframe.src = "./code-editor.html";
 
 		const codeEditorLoading = (new Promise(resolve => {
 			const inerv = setInterval(() => {
