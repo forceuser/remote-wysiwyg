@@ -3,17 +3,18 @@ import Turndown from "turndown";
 // import {gfm} from "turndown-plugin-gfm";
 import tinymce from "tinymce/tinymce";
 import "tinymce/themes/modern/theme";
-import "tinymce/plugins/contextmenu";
-import "tinymce/plugins/paste";
+// import "tinymce/plugins/contextmenu";
+// import "tinymce/plugins/paste";
 import "tinymce/plugins/link";
 import "tinymce/plugins/lists";
 import "tinymce/plugins/table";
-import "tinymce/plugins/code";
+// import "tinymce/plugins/code";
 import "tinymce/plugins/colorpicker";
 import "tinymce/plugins/textcolor";
 import "tinymce/plugins/hr";
 import "tinymce/plugins/image";
 import "tinymce-i18n/langs/ru";
+import sanitize from "sanitize-html";
 import "./fullpage";
 
 // import {html as beautify} from "js-beautify";
@@ -122,7 +123,7 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 					image_dimensions: false,
 					toolbar: `undo redo | styleselect | bold italic | bullist numlist | link image hr`,
 					plugins: [
-						"contextmenu", "paste", "link", "lists", "hr", "image",
+						"link", "lists", "hr", "image",
 					],
 					menu: {
 						edit: {title: "Edit", items: "undo redo | cut copy paste pastetext | selectall"},
@@ -133,8 +134,8 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 				}
 				: {
 					plugins: [
-						"contextmenu", "fullpage",
-						"paste", "link", "lists", "table",
+						"fullpage",
+						"link", "lists", "table",
 						"colorpicker", "textcolor", "hr", "image",
 					],
 					toolbar: `${defaultToolbar} | forecolor backcolor`,
@@ -192,7 +193,76 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 						}, 100);
 					}));
 					const wysiwyg_ifr = document.querySelector("#wysiwyg_ifr");
+					const ce = wysiwyg_ifr.contentWindow.document.body;
+					ce.addEventListener("paste", event => {
+						const window = wysiwyg_ifr.contentWindow;
+						const document = window.document;
+						const text = event.clipboardData.getData("text/plain");
+						let html = event.clipboardData.getData("text/html");
+						console.log("PASTE", text, html);
+						event.preventDefault();
+						let sel;
+						let range;
+						if (window.getSelection) {
+							sel = window.getSelection();
+							if (sel.getRangeAt && sel.rangeCount) {
+								range = sel.getRangeAt(0);
+								range.deleteContents();
+								const tmp = document.createElement("div");
+								tmp.innerHTML = html;
+								let root = tmp.querySelector(`:scope > b[id^="docs-internal-guid"]`) || tmp;
+								[...root.querySelectorAll("*")].forEach(node => {
+									const italic = node.style.fontStyle === "italic";
+									const bold = node.style.fontWeight === "bold" || node.style.fontWeight > 400;
+									if (italic && bold) {
+										const b = document.createElement("b");
+										const i = document.createElement("i");
+										i.appendChild(b);
+										[...node.childNodes].forEach(n => b.appendChild(n));
+										node.parentNode.replaceChild(i, node);
+									}
+									else if (italic) {
+										const i = document.createElement("i");
+										[...node.childNodes].forEach(n => i.appendChild(n));
+										node.parentNode.replaceChild(i, node);
+									}
+									else if (bold) {
+										const b = document.createElement("b");
+										[...node.childNodes].forEach(n => b.appendChild(n));
+										node.parentNode.replaceChild(b, node);
+									}
+								});
+								html = root.innerHTML;
 
+
+								const sanitized = sanitize(html, {
+									allowedTags: [
+										"h1", "h2", "h3", "h4", "h5",
+										"ul", "ol", "li", "b", "i", "p", "strong",
+										"hr", "br", "img", "a",
+										"table", "thead", "caption", "tbody", "tr", "th", "td",
+									],
+									allowedAttributes: {
+										a: ["href", "target"],
+										img: ["src", "width", "height"],
+									},
+								});
+								console.log("sanitized", sanitized);
+								tmp.innerHTML = sanitized;
+								[...tmp.childNodes].forEach((node, idx, arr) => {
+									range.insertNode(node);
+									range.selectNode(node);
+									range.collapse(false);
+								});
+
+								sel.removeAllRanges();
+								sel.addRange(range);
+							}
+						}
+						else if (document.selection && document.selection.createRange) {
+							document.selection.createRange().text = text;
+						}
+					});
 
 					const ctrl = {
 						save (close = false) {
