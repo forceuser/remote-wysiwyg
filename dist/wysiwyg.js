@@ -45001,7 +45001,7 @@ function init() {
 											var window = wysiwyg_ifr.contentWindow;
 											var document = window.document;
 											var text = event.clipboardData.getData("text/plain");
-											var html = event.clipboardData.getData("text/html");
+											var html = event.clipboardData.getData("text/html") || text;
 											console.log("PASTE", text, html);
 											event.preventDefault();
 											var sel = void 0;

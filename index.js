@@ -198,7 +198,7 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 						const window = wysiwyg_ifr.contentWindow;
 						const document = window.document;
 						const text = event.clipboardData.getData("text/plain");
-						let html = event.clipboardData.getData("text/html");
+						let html = event.clipboardData.getData("text/html") || text;
 						console.log("PASTE", text, html);
 						event.preventDefault();
 						let sel;
@@ -210,7 +210,7 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 								range.deleteContents();
 								const tmp = document.createElement("div");
 								tmp.innerHTML = html;
-								let root = tmp.querySelector(`:scope > b[id^="docs-internal-guid"]`) || tmp;
+								const root = tmp.querySelector(`:scope > b[id^="docs-internal-guid"]`) || tmp;
 								[...root.querySelectorAll("*")].forEach(node => {
 									const italic = node.style.fontStyle === "italic";
 									const bold = node.style.fontWeight === "bold" || node.style.fontWeight > 400;

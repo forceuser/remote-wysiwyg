@@ -6,6 +6,7 @@
   "scripts": {
     "serve": "http-server -a localhost -p 8061",
     "build": "webpack --config ./code-editor--webpack.config.js && webpack --config ./wysiwyg--webpack.config.js && cp -r ./node_modules/tinymce/skins ./dist/skins && npm run minify-code-editor && npm run minify-wysiwyg",
+    "build-and-serve": "npm run build && npm run serve",
     "fix": "eslint --fix .",
     "minify-code-editor": "uglifyjs ./dist/code-editor.js -o ./dist/code-editor.min.js -b beautify=false,ascii_only=true --compress --keep-fnames --source-map ",
     "minify-wysiwyg": "uglifyjs ./dist/wysiwyg.js -o ./dist/wysiwyg.min.js -b beautify=false,ascii_only=true --compress --keep-fnames --source-map",
