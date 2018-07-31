@@ -19,6 +19,7 @@ import "./fullpage";
 
 // import {html as beautify} from "js-beautify";
 import pretty from "pretty";
+import selectionMan from "./selection-man";
 
 let inititalized = false;
 const masterWindow = (window.opener || window.parent);
@@ -31,6 +32,7 @@ const params = window.location.search.substring(1).split("&").reduce((res, i) =>
 	}
 	return res;
 }, {});
+
 
 let editors;
 if (params.init && masterWindow) {
@@ -193,14 +195,35 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 						}, 100);
 					}));
 					const wysiwyg_ifr = document.querySelector("#wysiwyg_ifr");
+					const sl = selectionMan(wysiwyg_ifr.contentWindow);
+
+
 					const ce = wysiwyg_ifr.contentWindow.document.body;
+					let lastSelection;
+					let lastAbsSelection;
+					wysiwyg_ifr.contentWindow.document.addEventListener("selectionchange", event => {
+						lastAbsSelection = sl.saveAbsSelection(ce);
+						lastSelection = sl.saveSelection();
+					});
+
 					ce.addEventListener("paste", event => {
+						event.preventDefault();
+						event.stopPropagation();
+						if (lastSelection &&
+							lastSelection.startContainer && lastSelection.startContainer.parentNode &&
+							lastSelection.endContainer && lastSelection.endContainer.parentNode) {
+							sl.restoreSelection(lastSelection);
+						}
+						else {
+							sl.restoreAbsSelection(ce, lastAbsSelection);
+						}
+
 						const window = wysiwyg_ifr.contentWindow;
 						const document = window.document;
 						const text = event.clipboardData.getData("text/plain");
 						let html = event.clipboardData.getData("text/html") || text;
 						console.log("PASTE", text, html);
-						event.preventDefault();
+
 						let sel;
 						let range;
 						if (window.getSelection) {
@@ -233,7 +256,7 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 									}
 								});
 								html = root.innerHTML;
-								html = html.replace(/&nbsp;/ig, "");
+								html = html.replace(/&nbsp;/ig, " ");
 
 
 								const sanitized = sanitize(html, {
@@ -263,7 +286,8 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 						else if (document.selection && document.selection.createRange) {
 							document.selection.createRange().text = text;
 						}
-					});
+						return false;
+					}, true);
 
 					const ctrl = {
 						save (close = false) {

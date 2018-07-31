@@ -44789,6 +44789,10 @@ var _pretty = __webpack_require__(209);
 
 var _pretty2 = _interopRequireDefault(_pretty);
 
+var _selectionMan = __webpack_require__(217);
+
+var _selectionMan2 = _interopRequireDefault(_selectionMan);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -44943,7 +44947,7 @@ function init() {
 					var _this = this;
 
 					return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-						var panel, iframe, codeEditor, wysiwyg_ifr, ce, ctrl, ignoreInput, ignoreInputTimeout, toWysiwyg, updateCodeEditor, lastContent;
+						var panel, iframe, codeEditor, wysiwyg_ifr, sl, ce, lastSelection, lastAbsSelection, ctrl, ignoreInput, ignoreInputTimeout, toWysiwyg, updateCodeEditor, lastContent;
 						return regeneratorRuntime.wrap(function _callee$(_context) {
 							while (1) {
 								switch (_context.prev = _context.next) {
@@ -44995,15 +44999,31 @@ function init() {
 									case 8:
 										codeEditor = _context.sent;
 										wysiwyg_ifr = document.querySelector("#wysiwyg_ifr");
+										sl = (0, _selectionMan2.default)(wysiwyg_ifr.contentWindow);
 										ce = wysiwyg_ifr.contentWindow.document.body;
+										lastSelection = void 0;
+										lastAbsSelection = void 0;
+
+										wysiwyg_ifr.contentWindow.document.addEventListener("selectionchange", function (event) {
+											lastAbsSelection = sl.saveAbsSelection(ce);
+											lastSelection = sl.saveSelection();
+										});
 
 										ce.addEventListener("paste", function (event) {
+											event.preventDefault();
+											event.stopPropagation();
+											if (lastSelection && lastSelection.startContainer && lastSelection.startContainer.parentNode && lastSelection.endContainer && lastSelection.endContainer.parentNode) {
+												sl.restoreSelection(lastSelection);
+											} else {
+												sl.restoreAbsSelection(ce, lastAbsSelection);
+											}
+
 											var window = wysiwyg_ifr.contentWindow;
 											var document = window.document;
 											var text = event.clipboardData.getData("text/plain");
 											var html = event.clipboardData.getData("text/html") || text;
 											console.log("PASTE", text, html);
-											event.preventDefault();
+
 											var sel = void 0;
 											var range = void 0;
 											if (window.getSelection) {
@@ -45040,7 +45060,7 @@ function init() {
 														}
 													});
 													html = root.innerHTML;
-													html = html.replace(/&nbsp;/ig, "");
+													html = html.replace(/&nbsp;/ig, " ");
 
 													var sanitized = (0, _sanitizeHtml2.default)(html, {
 														allowedTags: ["h1", "h2", "h3", "h4", "h5", "ul", "ol", "li", "b", "i", "p", "strong", "hr", "br", "img", "a", "table", "thead", "caption", "tbody", "tr", "th", "td"],
@@ -45063,7 +45083,8 @@ function init() {
 											} else if (document.selection && document.selection.createRange) {
 												document.selection.createRange().text = text;
 											}
-										});
+											return false;
+										}, true);
 
 										ctrl = {
 											save: function save() {
@@ -45183,7 +45204,7 @@ function init() {
 										}, 100);
 										resolve({ codeEditor: codeEditor, editor: editor, ctrl: ctrl });
 
-									case 25:
+									case 29:
 									case "end":
 										return _context.stop();
 								}
@@ -91592,6 +91613,151 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
+
+/***/ }),
+/* 217 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+exports.default = function (window) {
+	var document = window.document;
+	var saveSelection = void 0;
+	var restoreSelection = void 0;
+	var saveAbsSelection = void 0;
+	var restoreAbsSelection = void 0;
+
+	saveSelection = function saveSelection() {
+		if (window.getSelection) {
+			var sel = window.getSelection();
+			if (sel.getRangeAt && sel.rangeCount) {
+				return dehydrateRange(sel.getRangeAt(0));
+			}
+		} else if (document.selection && document.selection.createRange) {
+			return document.selection.createRange();
+		}
+		return null;
+	};
+
+	restoreSelection = function restoreSelection(range) {
+		range = hydrateRange(range);
+		if (range) {
+			if (window.getSelection) {
+				var sel = window.getSelection();
+				sel.removeAllRanges();
+				sel.addRange(range);
+			} else if (document.selection && range.select) {
+				range.select();
+			}
+		}
+	};
+
+	if (window.getSelection && document.createRange) {
+		saveAbsSelection = function saveAbsSelection(containerEl) {
+			var range = window.getSelection().getRangeAt(0);
+			var preSelectionRange = range.cloneRange();
+			preSelectionRange.selectNodeContents(containerEl);
+			preSelectionRange.setEnd(range.startContainer, range.startOffset);
+			var start = preSelectionRange.toString().length;
+
+			return {
+				start: start,
+				end: start + range.toString().length
+			};
+		};
+
+		restoreAbsSelection = function restoreAbsSelection(containerEl, savedSel) {
+			var charIndex = 0;
+			var range = document.createRange();
+			range.setStart(containerEl, 0);
+			range.collapse(true);
+			var nodeStack = [containerEl];
+			var node = void 0;
+			var foundStart = false;
+			var stop = false;
+
+			while (!stop && (node = nodeStack.pop())) {
+				if (node.nodeType == 3) {
+					var nextCharIndex = charIndex + node.length;
+					if (!foundStart && savedSel.start >= charIndex && savedSel.start <= nextCharIndex) {
+						range.setStart(node, savedSel.start - charIndex);
+						foundStart = true;
+					}
+					if (foundStart && savedSel.end >= charIndex && savedSel.end <= nextCharIndex) {
+						range.setEnd(node, savedSel.end - charIndex);
+						stop = true;
+					}
+					charIndex = nextCharIndex;
+				} else {
+					var i = node.childNodes.length;
+					while (i--) {
+						nodeStack.push(node.childNodes[i]);
+					}
+				}
+			}
+
+			var sel = window.getSelection();
+			sel.removeAllRanges();
+			sel.addRange(range);
+		};
+	} else if (document.selection) {
+		saveAbsSelection = function saveAbsSelection(containerEl) {
+			var selectedTextRange = document.selection.createRange();
+			var preSelectionTextRange = document.body.createTextRange();
+			preSelectionTextRange.moveToElementText(containerEl);
+			preSelectionTextRange.setEndPoint("EndToStart", selectedTextRange);
+			var start = preSelectionTextRange.text.length;
+
+			return {
+				start: start,
+				end: start + selectedTextRange.text.length
+			};
+		};
+
+		restoreAbsSelection = function restoreAbsSelection(containerEl, savedSel) {
+			var textRange = document.body.createTextRange();
+			textRange.moveToElementText(containerEl);
+			textRange.collapse(true);
+			textRange.moveEnd("character", savedSel.end);
+			textRange.moveStart("character", savedSel.start);
+			textRange.select();
+		};
+	}
+
+	return {
+		saveSelection: saveSelection,
+		restoreSelection: restoreSelection,
+		saveAbsSelection: saveAbsSelection,
+		restoreAbsSelection: restoreAbsSelection
+	};
+};
+
+function dehydrateRange(range) {
+	if (range) {
+		return {
+			startContainer: range.startContainer,
+			startOffset: range.startOffset,
+			endContainer: range.endContainer,
+			endOffset: range.endOffset
+		};
+	}
+	return null;
+}
+
+function hydrateRange(window, range) {
+	if (range) {
+		var newRange = window.document.createRange();
+		newRange.setStart(range.startContainer, range.startOffset);
+		newRange.setEnd(range.endContainer, range.endOffset);
+		return newRange;
+	}
+	return null;
+}
 
 /***/ })
 /******/ ]);
