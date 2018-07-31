@@ -233,6 +233,7 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 									}
 								});
 								html = root.innerHTML;
+								html = html.replace(/&nbsp;/ig, "");
 
 
 								const sanitized = sanitize(html, {

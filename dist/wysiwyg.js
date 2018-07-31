@@ -45040,6 +45040,7 @@ function init() {
 														}
 													});
 													html = root.innerHTML;
+													html = html.replace(/&nbsp;/ig, "");
 
 													var sanitized = (0, _sanitizeHtml2.default)(html, {
 														allowedTags: ["h1", "h2", "h3", "h4", "h5", "ul", "ol", "li", "b", "i", "p", "strong", "hr", "br", "img", "a", "table", "thead", "caption", "tbody", "tr", "th", "td"],
