@@ -17,7 +17,6 @@ import "tinymce-i18n/langs/ru";
 import sanitize from "sanitize-html";
 import "./fullpage";
 
-// import {html as beautify} from "js-beautify";
 import pretty from "pretty";
 import selectionMan from "./selection-man";
 
