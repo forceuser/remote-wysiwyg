@@ -146,8 +146,9 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 					object_resizing: false,
 				},
 			{
+				skin_url: "./css/tinymce/lightgray",
 				content_style: `:root{--color--primary: ${colorPrimary};}`,
-				content_css: ["./css/frame.css", "./css/scrollbar.css"],
+				content_css: ["./css/wisywig-content.css"],
 				menubar: settings.menubar,
 				statusbar: settings.statusbar,
 				selector: "#wysiwyg",
@@ -179,11 +180,40 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 				tooltip: "Code sidebar",
 				icon: "code",
 				classes: "code-btn",
+				onshow () {
+					const sidebar = document.body.querySelector(".mce-tinymce .mce-sidebar");
+					sidebar.classList.add("sidebar-visible");
+					sidebar.classList.remove("sidebar-hidden");
+				},
+				onhide () {
+					const sidebar = document.body.querySelector(".mce-tinymce .mce-sidebar");
+					sidebar.classList.add("sidebar-hidden");
+					sidebar.classList.remove("sidebar-visible");
+				},
 				async onrender (api) {
 					const panel = api.element();
 					panel.classList.add("code-editor-panel");
-					panel.innerHTML = `<iframe id="code-editor" src="./code-editor.html"></iframe>`;
-					const iframe = panel.children[0];
+					panel.innerHTML = `<div class="divider-splitter"></div><iframe id="code-editor" src="./code-editor.html"></iframe>`;
+					const divider = panel.children[0];
+					const iframe = panel.children[1];
+					const sidebar = document.body.querySelector(".mce-tinymce .mce-sidebar");
+					const sidebarContainer = sidebar.offsetParent;
+					handleDrag(divider, {
+						start: (startPoint, type, pressure) => {
+							console.log("start", startPoint);
+							document.body.classList.add("dragging");
+						},
+						move: (point, delta, type, pressure) => {
+							console.log("move", delta);
+							const crect = sidebarContainer.getBoundingClientRect();
+							sidebar.style.setProperty("width", `${(1 - (point.x - crect.left) / crect.width) * 100}%`);
+						},
+						end: () => {
+							console.log("end");
+							document.body.classList.remove("dragging");
+						},
+					});
+
 					const codeEditor = await (new Promise(resolve => {
 						const inerv = setInterval(() => {
 							if (iframe.contentWindow && iframe.contentWindow.editor) {
@@ -434,4 +464,56 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 				editor.theme.panel.find(".sidebar-toolbar button")[0].$el.trigger("click");
 			});
 	});
+}
+
+function handleDrag (el, {start, move, end}) {
+	let last;
+	let point;
+	let pointerId;
+	const onstart = event => {
+		if (pointerId) {
+			return;
+		}
+		if (![1, 2].includes(event.button)) {
+			pointerId = event.pointerId;
+			event.stopPropagation();
+			event.preventDefault();
+			event.stopImmediatePropagation();
+			last = {x: event.pageX, y: event.pageY};
+			const rect = el.getBoundingClientRect();
+			point = {x: event.pageX - rect.x, y: event.pageY - rect.y};
+			if (start && start(point, event.pointerType, event.pressure) !== false) {
+				document.addEventListener("pointermove", onmove, {passive: false});
+				document.addEventListener("pointerup", onend, {passive: false});
+			}
+		}
+	};
+	const onmove = event => {
+		if (event.pointerId === pointerId) {
+			event.stopPropagation();
+			event.preventDefault();
+			event.stopImmediatePropagation();
+			if (move) {
+				const point = {x: event.pageX, y: event.pageY};
+				const delta = {x: point.x - last.x, y: point.y - last.y};
+				last = point;
+				move(point, delta, event.pointerType, event.pressure);
+			}
+		}
+	};
+	const onend = event => {
+		if (event.pointerId === pointerId) {
+			pointerId = null;
+			document.removeEventListener("pointermove", onmove, {passive: false});
+			document.removeEventListener("pointerup", onend, {passive: false});
+			end && end();
+		}
+	};
+
+	el.addEventListener("pointerdown", onstart, {passive: false});
+	return function unbind () {
+		el.removeEventListener("pointerdown", onstart, {passive: false});
+		document.removeEventListener("pointermove", onmove, {passive: false});
+		document.removeEventListener("pointerup", onend, {passive: false});
+	};
 }

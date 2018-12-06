@@ -1,2 +1,0 @@
-https://cdn.polyfill.io/v2/polyfill.js?features=default,es6,es7,caniuse:console-basic&flags=gated&unknown=polyfill
-https://cdn.polyfill.io/v2/polyfill.min.js?features=default,es6,es7,caniuse:console-basic&flags=gated&unknown=polyfill

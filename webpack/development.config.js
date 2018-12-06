@@ -5,12 +5,15 @@ const baseConfig = require("./base.config.js");
 const webpack = require("webpack");
 
 module.exports = (env = {}) => {
-	let result = merge(baseConfig(env), {
+	const base = baseConfig(env);
+	let result = merge(base, {
 		mode: "development",
 		devServer: {},
 	});
-	result.entry.index = ["webpack-hot-middleware/client?reload=true", ...result.entry.index];
-	result.plugins = result.plugins.slice();
+
+	Object.keys(result.entry).forEach(key => {
+		result.entry[key] = ["webpack-hot-middleware/client?reload=true"].concat(result.entry[key]);
+	});
 	result.plugins.push(new webpack.HotModuleReplacementPlugin());
 	return result;
 }

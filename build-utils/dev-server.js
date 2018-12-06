@@ -5,14 +5,10 @@ import fp from "find-free-port";
 import fs from "fs-extra";
 import os from "os";
 import url from "url";
-import minimatch from "minimatch";
-import ngrok from "ngrok";
-import proxyMiddleware from "http-proxy-middleware";
 import webpackDevMiddleware from "webpack-dev-middleware";
 import webpackHotMiddleware from "webpack-hot-middleware";
 import webpack from "webpack";
-import invokeMiddleware from "./invoke-middleware";
-import webpackConfig from "../webpack/development.config";
+import webpackConfigRaw from "../webpack/development.config";
 import {URL} from "universal-url";
 import open from "open";
 import merge from "deepmerge";
@@ -65,7 +61,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const devSettingsDefault = {host: "0.0.0.0"};
 const pkg = getJSON("../package.json");
 let devSettings = merge(merge(devSettingsDefault, pkg.devSettings || {}), getJSON("../devserver.json"));
-console.log("argv.env", argv.env);
+
 if (argv.env) {
 	argv.env.split(",").forEach(env => {
 		if (devSettings.env && devSettings.env[env]) {
@@ -77,16 +73,9 @@ if (argv.env) {
 const ifc = os.networkInterfaces();
 
 async function runOnPort (port) {
-	const bs = browserSync.create();
-	// const proxyConfig = (webpackConfig && webpackConfig.devServer && webpackConfig.devServer.proxy) || {};
-	// const proxyMiddlewares = Object.keys(proxyConfig).map(key => proxyMiddleware(key, proxyConfig[key]));
-	const proxyMiddlewares = [
-		proxyMiddleware("**", {
-			target: tpl(devSettings.proxy, devSettings),
-			secure: false,
-		}),
-	];
+	const webpackConfig = typeof webpackConfigRaw === "function" ? webpackConfigRaw() : webpackConfigRaw;
 	const webpackCompiler = webpack(webpackConfig);
+	const bs = browserSync.create();
 	const webpackMiddlewares = [
 		webpackDevMiddleware(webpackCompiler, {
 			publicPath: webpackConfig.output.publicPath,
@@ -97,52 +86,9 @@ async function runOnPort (port) {
 			reload: true,
 		}),
 	];
+
 	const middleware = [
 		...webpackMiddlewares,
-		async (req, res, next) => {
-			let fileName = url.parse(req.url);
-			fileName = fileName.href.split(fileName.search).join("");
-			let match;
-			match = fileName.match(/^\/resources\/[^/\\]+\/js\/(.*)/);
-			if (match && match[1]) {
-				req.url = `/resources/${pkg.version}/js/${match[1]}`;
-				return invokeMiddleware(webpackMiddlewares, req, res)
-					.then(next)
-					.catch(next);
-			}
-
-			match = fileName.match(/^\/resources\/[^/\\]+\/(.*)/);
-			if (match && match[1]) {
-				req.url = `/${match[1]}`;
-				return next();
-			}
-			match = fileName.match(/^\/res\/(.*)/);
-			if (match && match[1]) {
-				req.url = `/${match[1]}`;
-				return next();
-			}
-			if (minimatch(fileName, "/icons/")) {
-				req.url = `/icons/sprites/index.html`;
-				return next();
-			}
-
-			let pathExists;
-			try {
-				pathExists = (await fs.stat(path.resolve(__dirname, "../dist/", req.url.replace(/^\//, "")))).isFile();
-			}
-			catch (error) {
-				//
-			}
-
-			if (!pathExists) {
-				return invokeMiddleware(proxyMiddlewares, req, res)
-					.then(next)
-					.catch(next);
-			}
-			else {
-				return next();
-			}
-		},
 	];
 
 	bs.init({
@@ -152,7 +98,7 @@ async function runOnPort (port) {
 		// localOnly: true,
 		// host: devSettings.host,
 		port,
-		files: ["dist/**/*", "../templates/**/*", "../i18n/**/*"],
+		files: ["dist/**/*"],
 		// watchEvents: ["change", "add", "unlink"],
 		reloadDebounce: 300,
 		ghostMode: {
@@ -169,17 +115,8 @@ async function runOnPort (port) {
 		},
 	});
 
-	let ngrokUrl;
-	if (devSettings.serveExternal) {
-		try {
-			ngrokUrl = await ngrok.connect(port);
-		}
-		catch (error) {
-			console.log("ngrok error", error);
-		}
-	}
 	setTimeout(() => {
-		// if (devSettings.host === "0.0.0.0") {
+		console.log("212");
 		Object.keys(ifc).forEach(i => {
 			(ifc[i] || []).forEach(x => {
 				if (x.family === "IPv4") {
@@ -187,15 +124,7 @@ async function runOnPort (port) {
 				}
 			});
 		});
-		// }
-		// else {
-		// 	console.log(`listening at http://${devSettings.host}:${port}`);
-		// }
 
-
-		if (devSettings.serveExternal) {
-			console.log(`listening at ${ngrokUrl}`);
-		}
 		if (devSettings.open) {
 			console.log("opening", tpl(devSettings.open, devSettings));
 			open(tpl(devSettings.open, devSettings));
@@ -206,6 +135,7 @@ if (argv.port || devSettings.port) {
 	runOnPort(argv.port || devSettings.port);
 }
 else {
+	console.log("FP");
 	fp(8080).then(async ([port]) => {
 		runOnPort(port);
 	})

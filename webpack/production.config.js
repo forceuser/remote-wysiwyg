@@ -13,12 +13,11 @@ module.exports = (env = {}) => {
 			minimizer: [new UglifyJsPlugin({
 				// minimize: true,
 				// compress: false,
-				include: /\.min\.js$/,
+				// include: /\.min\.js$/,
 				parallel: isWSL ? false : true,
 			})]
 		},
 	});
-	result.plugins = result.plugins.slice();
 	// result.plugins.push(new webpack.optimize.MinChunkSizePlugin({minChunkSize: 100000}));
 
 	return result;

@@ -24,7 +24,7 @@ module.exports = (env = {}) => {
 			filename: "[name].js",
 			library: "[name]",
 			libraryTarget: "umd",
-			publicPath: `/resources/${pkg.version}/js/`,
+			publicPath: `/js/`,
 		},
 		resolve: {
 			alias: alias,

@@ -5,6 +5,7 @@
 
 html, body {
 	overflow: hidden;
+	touch-action: none;
 }
 
 .editor-wrapper {
@@ -33,7 +34,7 @@ html, body {
 }
 .code-editor-panel {
 	display: flex !important;
-	flex-direction: column;
+	flex-direction: row;
 }
 
 .code-editor-panel iframe {
@@ -41,9 +42,15 @@ html, body {
 	height: 100%;
 }
 
+.mce-tinymce .mce-sidebar {
+	width: 50%;
+	min-width: 250px;
+}
+
 .mce-tinymce .mce-sidebar .mce-sidebar-panel {
-	width: 900px !important;
-	max-width: 50vw !important;
+	// width: 50vw;
+    /* max-width: 50vw!important; */
+    max-width: none !important;
 }
 
 .mce-tinymce {
@@ -54,6 +61,7 @@ html, body {
 	flex-direction: column;
 	align-items: stretch;
 	flex: 1;
+	touch-action: none;
 }
 .mce-tinymce > .mce-container-body {
 	flex: 1 0 auto;
@@ -100,4 +108,27 @@ html, body {
 	height: auto !important;
 	width: auto !important;
 	flex: 1;
+}
+
+.code-editor-panel .divider-splitter.divider-splitter.divider-splitter {
+	width: 15px;
+	cursor: w-resize;
+	background: rgba(150, 150, 150, 0.1);
+	position: absolute;
+	height: 100%;
+}
+
+.dragging iframe {
+	pointer-events: none;
+}
+
+.mce-edit-aria-container>.mce-container-body .mce-sidebar-panel {
+	min-width: none;
+	flex: 1;
+	touch-action: none;
+}
+
+.mce-sidebar.sidebar-hidden {
+	width: auto !important;
+	min-width: 0 !important;
 }
