@@ -1,6 +1,6 @@
 {
 	"name": "remote-wysiwyg",
-	"version": "1.0.66",
+	"version": "1.0.68",
 	"description": "",
 	"main": "index.js",
 	"_moduleAliases": {
@@ -13,7 +13,7 @@
 		"clean-js": "rm -rf ./dist/js/ > /dev/null",
 		"clean-and-build-dev-js": "run-s clean-js build-dev-js",
 		"bld": "run-s clean-js build:* copyfiles minify:*",
-		"build": "run-s clean-js build:* copyfiles minify:*",
+		"build": "run-s clean-js bump build:* copyfiles minify:*",
 		"build-dev": "run-p build:templates build-and-minify:less copyfiles clean-and-build-dev-js",
 		"build-dev-js": "NODE_ENV=development BABEL_ENV=development webpack --config ./webpack/development.config.js",
 		"bump": "npm version patch --no-git-tag-version",
@@ -32,6 +32,7 @@
 		"release": "npm run patch-release",
 		"analyse-build": "NODE_ENV=production BABEL_ENV=production webpack --config ./webpack/production.config.js --profile",
 		"analyse-build-2": "webpack-bundle-analyzer ./webpack/analyse.json ./dist/js/",
+		"plain-release": "npm run build && va-release -g",
 		"patch-release": "npm run build && va-release --version patch -g",
 		"minor-release": "npm run build && va-release --version minor -g",
 		"major-release": "npm run build && va-release --version major -g"
