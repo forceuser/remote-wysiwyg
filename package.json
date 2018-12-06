@@ -1,6 +1,6 @@
 {
 	"name": "remote-wysiwyg",
-	"version": "1.0.64",
+	"version": "1.0.65",
 	"description": "",
 	"main": "index.js",
 	"_moduleAliases": {
@@ -13,7 +13,7 @@
 		"clean-js": "rm -rf ./dist/js/ > /dev/null",
 		"clean-and-build-dev-js": "run-s clean-js build-dev-js",
 		"bld": "run-s clean-js build:* copyfiles minify:*",
-		"build": "run-s clean-js bump build:* copyfiles minify:*",
+		"build": "run-s clean-js build:* copyfiles minify:*",
 		"build-dev": "run-p build:templates build-and-minify:less copyfiles clean-and-build-dev-js",
 		"build-dev-js": "NODE_ENV=development BABEL_ENV=development webpack --config ./webpack/development.config.js",
 		"bump": "npm version patch --no-git-tag-version",
@@ -117,7 +117,7 @@
 	"va-release": {
 		"files": [
 			{
-				"cwd": "templates/",
+				"cwd": "src/templates/",
 				"src": [
 					"**/*"
 				],
