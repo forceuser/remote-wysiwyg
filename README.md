@@ -4,9 +4,9 @@
 
 для работы с ним желательно использовать модуль [remote-wysiwyg-ctrl](https://github.com/forceuser/remote-wysiwyg-ctrl)
 
-[демо запуска редактора standalone](https://cdn.rawgit.com/forceuser/remote-wysiwyg/1.0.68/dist/wysiwyg.html)
+[демо запуска редактора standalone](https://cdn.rawgit.com/forceuser/remote-wysiwyg/1.0.69/dist/wysiwyg.html)
 
-[демо запуска с лаунчером](https://cdn.rawgit.com/forceuser/remote-wysiwyg/1.0.68/dist/index.html)
+[демо запуска с лаунчером](https://cdn.rawgit.com/forceuser/remote-wysiwyg/1.0.69/dist/index.html)
 
 поддерживает 3 режима работы:
 - body - только тело документа
