@@ -1,6 +1,6 @@
 {
 	"name": "remote-wysiwyg",
-	"version": "1.0.65",
+	"version": "1.0.66",
 	"description": "",
 	"main": "index.js",
 	"_moduleAliases": {
@@ -117,9 +117,9 @@
 	"va-release": {
 		"files": [
 			{
-				"cwd": "src/templates/",
+				"cwd": "./src/",
 				"src": [
-					"**/*"
+					"README.md"
 				],
 				"dest": "./"
 			}
