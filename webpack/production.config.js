@@ -14,6 +14,16 @@ module.exports = (env = {}) => {
 				// minimize: true,
 				// compress: false,
 				// include: /\.min\.js$/,
+				uglifyOptions: {
+					output: {
+						comments: false,
+						ascii_only: true,
+						beautify: false,
+					},
+					keep_fnames: true,
+					ie8: false,
+				},
+
 				parallel: isWSL ? false : true,
 			})]
 		},
