@@ -153,8 +153,6 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 				statusbar: settings.statusbar,
 				selector: "#wysiwyg",
 				language: "ru",
-				relative_urls: false,
-				remove_script_host: false,
 				force_p_newlines: true,
 				force_br_newlines: true,
 				remove_linebreaks: false,
@@ -168,11 +166,16 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 						}
 					});
 				},
+			}, {
+				relative_urls: false,
+				convert_urls: false,
+				remove_script_host: false,
 			}
 		);
 		if (isMD) {
 			// tinymceSettings.content_css.push("./css/markdown.css");
 		}
+		console.log("tinymceSettings", tinymceSettings);
 
 		function setup (editor) {
 			editor.hasVisual = false;
