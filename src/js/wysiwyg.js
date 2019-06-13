@@ -144,6 +144,7 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 					valid_elements: "+*[*]",
 					valid_children: "+body[style]",
 					object_resizing: false,
+					paste_data_images: true,
 				},
 			{
 				skin_url: "./css/tinymce/lightgray",
@@ -165,6 +166,9 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 							editor.setContent(markdown.render(turndown.turndown(editor.getContent())));
 						}
 					});
+				},
+				images_dataimg_filter (img) {
+					return img.hasAttribute("internal-blob");
 				},
 			}, {
 				relative_urls: false,
@@ -292,6 +296,7 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 
 
 								const sanitized = sanitize(html, {
+									allowedSchemes: ["data", "http"],
 									allowedTags: [
 										"h1", "h2", "h3", "h4", "h5",
 										"ul", "ol", "li", "b", "i", "p", "strong",
@@ -412,6 +417,14 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 						else {
 							editor.setContent(content);
 						}
+						try {
+							const bg = editor.iframeElement.contentWindow.document.body.getAttribute("data-preview-bg");
+							editor.iframeElement.style.background = bg || "";
+						}
+						catch (error) {
+							//
+						}
+						// console.log("editor", editor);
 						editor.settings.modifyingCode = false;
 					}
 

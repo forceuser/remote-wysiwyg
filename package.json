@@ -1,6 +1,6 @@
 {
 	"name": "remote-wysiwyg",
-	"version": "1.0.76",
+	"version": "1.0.77",
 	"description": "",
 	"main": "index.js",
 	"_moduleAliases": {
@@ -100,7 +100,7 @@
 		"uglifycss": "0.0.29",
 		"uglifyjs-webpack-plugin": "^2.0.1",
 		"universal-url": "^1.0.1",
-		"va-release": "^1.0.22",
+		"va-release": "^1.1.14",
 		"watch-cli": "^0.2.3",
 		"webpack": "4.20.2",
 		"webpack-bundle-analyzer": "^3.0.3",
