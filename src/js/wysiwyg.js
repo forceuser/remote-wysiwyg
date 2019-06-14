@@ -85,9 +85,12 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 			// turndown.use(gfm);
 		}
 
+		const topbar = document.querySelector(".editor-wrapper-menu");
 		if (!settings.topbar) {
-			const topbar = document.querySelector(".editor-wrapper-menu");
 			topbar.parentElement.removeChild(topbar);
+		}
+		else {
+			topbar.style.display = "";
 		}
 
 		document.documentElement.style.setProperty("--color--primary", colorPrimary);
