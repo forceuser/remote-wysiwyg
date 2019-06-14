@@ -419,7 +419,7 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 						}
 						try {
 							const bg = editor.iframeElement.contentWindow.document.body.getAttribute("data-preview-bg");
-							editor.iframeElement.style.background = bg || "";
+							editor.iframeElement.contentWindow.document.documentElement.style.background = bg || "";
 						}
 						catch (error) {
 							//
