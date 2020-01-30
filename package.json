@@ -42,7 +42,7 @@
 		"markdown-it": "^8.4.1",
 		"pretty": "^2.0.0",
 		"sanitize-html": "^1.18.2",
-		"tinymce": "^4.7.7",
+		"tinymce": "^4.9.7",
 		"tinymce-i18n": "^18.2.15",
 		"turndown": "^4.0.1",
 		"turndown-plugin-gfm": "^1.0.1"
