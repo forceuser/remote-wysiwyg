@@ -75,6 +75,7 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 		const colorPrimary = color;
 		let markdown;
 		let turndown;
+		let colorScheme = "";
 		inititalized = true;
 		settings = Object.assign({ // default settings
 			codeMode: "html",
@@ -166,6 +167,12 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 				forced_root_block: false,
 				branding: false,
 				setup,
+				onchange_callback (inst) {
+					console.log("TINYMCE CHANGE CALLBACK", inst, inst.getBody());
+					if (colorScheme) {
+						inst.getBody().dataset.colorScheme = colorScheme;
+					}
+				},
 				init_instance_callback (editor) {
 					editor.on("paste", (e) => {
 						if (isMD) {
@@ -347,8 +354,9 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 						changemode (mode) {
 							iframe.contentWindow.setMode(mode);
 						},
-						setColorScheme (colorScheme) {
-							wysiwyg_ifr.contentWindow.document.body.dataset.colorScheme = colorScheme;
+						setColorScheme (_colorScheme) {
+							colorScheme = _colorScheme;
+							wysiwyg_ifr.contentWindow.document.body.dataset.colorScheme = _colorScheme;
 						},
 						settings (data = {}) {
 							const customCssClass = "customcss-" + btoa(Math.random()).replace(/\=/ig, "");
