@@ -1,13 +1,13 @@
 {
 	"name": "remote-wysiwyg",
-	"version": "1.0.81",
+	"version": "1.0.84",
 	"description": "",
 	"main": "index.js",
 	"_moduleAliases": {
 		"root": "./src/js"
 	},
 	"scripts": {
-		"init": "rm -rf ./node-modules/ > /dev/null && npm i",
+		"init": "rm -rf ./node-modules/ > /dev/null && npm ci",
 		"fix": "eslint --fix ./src/app/",
 		"start": "node ./build-utils/run-esm.js -s ./src/server",
 		"clean-js": "rm -rf ./dist/js/ > /dev/null",
@@ -124,7 +124,8 @@
 				],
 				"dest": "./"
 			}
-		]
+		],
+		"library": "remoteWysiwyg"
 	},
 	"author": "",
 	"license": "ISC"

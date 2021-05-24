@@ -54,6 +54,9 @@ if (params.init && masterWindow) {
 				if (data.type === "changemode") {
 					editors && editors.ctrl.changemode(data.mode);
 				}
+				if (data.type === "setColorScheme") {
+					editors && editors.ctrl.setColorScheme(data.colorScheme);
+				}
 				if (data.type === "settings") {
 					editors && editors.ctrl.settings(data.data);
 				}
@@ -344,6 +347,9 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 						changemode (mode) {
 							iframe.contentWindow.setMode(mode);
 						},
+						setColorScheme (colorScheme) {
+							wysiwyg_ifr.contentWindow.document.body.dataset.colorScheme = colorScheme;
+						},
 						settings (data = {}) {
 							const customCssClass = "customcss-" + btoa(Math.random()).replace(/\=/ig, "");
 							const customStyleClass = "customstyle-" + btoa(Math.random()).replace(/\=/ig, "");
@@ -373,23 +379,26 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 							if (data.contentCss) {
 								addCssToDocument(wysiwyg_ifr.contentWindow.document, data.contentCss);
 							}
-							if (data.editorCss) {
-								addCssToDocument(document, data.editorCss);
-							}
-							if (data.codeEditorCss) {
-								addCssToDocument(iframe.contentWindow.document, data.codeEditorCss);
-							}
 							if (data.contentStyle) {
 								addStyleToDocument(wysiwyg_ifr.contentWindow.document, data.contentStyle);
 							}
+							if (data.editorCss) {
+								addCssToDocument(document, data.editorCss);
+							}
 							if (data.editorStyle) {
 								addStyleToDocument(document, data.editorStyle);
+							}
+							if (data.codeEditorCss) {
+								addCssToDocument(iframe.contentWindow.document, data.codeEditorCss);
 							}
 							if (data.codeEditorStyle) {
 								addStyleToDocument(iframe.contentWindow.document, data.codeEditorStyle);
 							}
 							if (data.theme) {
 								iframe.contentWindow.setTheme(data.theme);
+							}
+							if (data.colorScheme) {
+								ctrl.setColorScheme(data.colorScheme);
 							}
 						},
 					};
