@@ -167,11 +167,12 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 				forced_root_block: false,
 				branding: false,
 				setup,
+				cleanup_callback (type, value) {
+					console.log("TINYMCE", "cleanup_callback", type, value);
+					return value;
+				},
 				onchange_callback (inst) {
 					console.log("TINYMCE CHANGE CALLBACK", inst, inst.getBody());
-					if (colorScheme) {
-						inst.getBody().dataset.colorScheme = colorScheme;
-					}
 				},
 				init_instance_callback (editor) {
 					editor.on("paste", (e) => {
@@ -497,6 +498,14 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 		tinymce
 			.init(tinymceSettings)
 			.then(([editor]) => {
+				console.log("editor", editor);
+				window.mceEditor = editor;
+				editor.on("SetContent", () => {
+					editor.getBody().dataset.preview = "editor";
+					if (colorScheme) {
+						editor.getBody().dataset.colorScheme = colorScheme;
+					}
+				});
 				editor.theme.panel.find(".sidebar-toolbar button")[0].$el.trigger("click");
 			});
 	});
