@@ -357,7 +357,12 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 						},
 						setColorScheme (_colorScheme) {
 							colorScheme = _colorScheme;
-							wysiwyg_ifr.contentWindow.document.body.dataset.colorScheme = _colorScheme;
+							if (colorScheme === "system" || !colorScheme) {
+								delete wysiwyg_ifr.contentWindow.document.body.dataset.colorScheme;
+							}
+							else {
+								wysiwyg_ifr.contentWindow.document.body.dataset.colorScheme = _colorScheme;
+							}
 						},
 						settings (data = {}) {
 							const customCssClass = "customcss-" + btoa(Math.random()).replace(/\=/ig, "");
@@ -503,7 +508,13 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 				editor.on("SetContent", () => {
 					editor.getBody().dataset.preview = "editor";
 					if (colorScheme) {
-						editor.getBody().dataset.colorScheme = colorScheme;
+						const body = editor.getBody();
+						if (colorScheme === "system" || !colorScheme) {
+							delete body.dataset.colorScheme;
+						}
+						else {
+							body.dataset.colorScheme = colorScheme;
+						}
 					}
 				});
 				editor.theme.panel.find(".sidebar-toolbar button")[0].$el.trigger("click");
