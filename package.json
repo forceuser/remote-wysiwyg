@@ -41,7 +41,7 @@
 		"brace": "^0.11.1",
 		"markdown-it": "^8.4.1",
 		"pretty": "^2.0.0",
-		"sanitize-html": "^1.18.2",
+		"sanitize-html": "^2.3.2",
 		"tinymce": "^4.7.7",
 		"tinymce-i18n": "^18.2.15",
 		"turndown": "^4.0.1",
