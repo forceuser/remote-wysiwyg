@@ -1,6 +1,9 @@
 import Markdown from "markdown-it";
+import MarkdownItGitHubAlerts from "markdown-it-github-alerts";
+import MarkdownItCheckbox from "@gerhobbelt/markdown-it-checkbox";
 import Turndown from "turndown";
-// import {gfm} from "turndown-plugin-gfm";
+import {gfm as turndownGFM} from "@truto/turndown-plugin-gfm";
+import turndownGithubAlerts from "./turndown-github-alerts.js";
 import tinymce from "tinymce/tinymce";
 import "tinymce/themes/modern/theme";
 // import "tinymce/plugins/contextmenu";
@@ -84,9 +87,12 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 			statusbar: true,
 		}, settings);
 		if (settings.codeMode === "markdown") {
-			markdown = new Markdown();
+			markdown = new Markdown({linkify: true, breaks: true, typographer: true});
+			markdown.use(MarkdownItGitHubAlerts);
+			markdown.use(MarkdownItCheckbox, {divWrap: true, divClass: "checkbox"});
 			turndown = new Turndown();
-			// turndown.use(gfm);
+			turndown.use(turndownGFM);
+			turndown.use(turndownGithubAlerts);
 		}
 
 		const topbar = document.querySelector(".editor-wrapper-menu");
