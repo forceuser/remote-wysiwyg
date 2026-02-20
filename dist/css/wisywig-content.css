@@ -83,6 +83,14 @@ html:hover::-webkit-scrollbar-thumb {
   align-items: center;
   line-height: 1;
   display: flex;
+  gap: 0.5em;
+}
+.markdown-alert .markdown-alert-title::before {
+  display: none;
+  font-style: normal;
+  font-size: 1em;
+  line-height: 1;
+  flex-shrink: 0;
 }
 .markdown-alert.markdown-alert-note {
   border-left-color: var(--borderColor-accent-emphasis, #1f6feb);
@@ -90,11 +98,17 @@ html:hover::-webkit-scrollbar-thumb {
 .markdown-alert.markdown-alert-note .markdown-alert-title {
   color: var(--fgColor-accent, #4493f8);
 }
+.markdown-alert.markdown-alert-note .markdown-alert-title::before {
+  content: 'ℹ️';
+}
 .markdown-alert.markdown-alert-important {
   border-left-color: var(--borderColor-done-emphasis, #8957e5);
 }
 .markdown-alert.markdown-alert-important .markdown-alert-title {
   color: var(--fgColor-done, #ab7df8);
+}
+.markdown-alert.markdown-alert-important .markdown-alert-title::before {
+  content: '💬';
 }
 .markdown-alert.markdown-alert-warning {
   border-left-color: var(--borderColor-attention-emphasis, #9e6a03);
@@ -102,15 +116,32 @@ html:hover::-webkit-scrollbar-thumb {
 .markdown-alert.markdown-alert-warning .markdown-alert-title {
   color: var(--fgColor-attention, #d29922);
 }
+.markdown-alert.markdown-alert-warning .markdown-alert-title::before {
+  content: '⚠️';
+}
 .markdown-alert.markdown-alert-tip {
   border-left-color: var(--borderColor-success-emphasis, #238636);
 }
 .markdown-alert.markdown-alert-tip .markdown-alert-title {
   color: var(--fgColor-success, #3fb950);
 }
+.markdown-alert.markdown-alert-tip .markdown-alert-title::before {
+  content: '💡';
+}
 .markdown-alert.markdown-alert-caution {
   border-left-color: var(--borderColor-danger-emphasis, #da3633);
 }
 .markdown-alert.markdown-alert-caution .markdown-alert-title {
   color: var(--fgColor-danger, #f85149);
+}
+.markdown-alert.markdown-alert-caution .markdown-alert-title::before {
+  content: '🛑';
+}
+.task-list {
+  list-style: none;
+  padding-left: 0;
+}
+.task-list > li {
+  position: relative;
+  padding-left: 1.5em;
 }

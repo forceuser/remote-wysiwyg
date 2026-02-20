@@ -1,9 +1,11 @@
 import Markdown from "markdown-it";
-import MarkdownItGitHubAlerts from "markdown-it-github-alerts";
-import MarkdownItCheckbox from "@gerhobbelt/markdown-it-checkbox";
+import MarkdownItAlertsPlugin from './markdown-it-alerts-plugin.js';
+// import MarkdownItCheckbox from "@gerhobbelt/markdown-it-checkbox";
+import MarkdownItChecklistPlugin from './markdown-it-checklist-plugin.js';
 import Turndown from "turndown";
-import {gfm as turndownGFM} from "@truto/turndown-plugin-gfm";
+import * as turndownGFM from "@truto/turndown-plugin-gfm";
 import turndownGithubAlerts from "./turndown-github-alerts.js";
+import trundownChecklistPlugin from "./turndown-checklist-plugin.js";
 import tinymce from "tinymce/tinymce";
 import "tinymce/themes/modern/theme";
 // import "tinymce/plugins/contextmenu";
@@ -87,12 +89,20 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 			statusbar: true,
 		}, settings);
 		if (settings.codeMode === "markdown") {
-			markdown = new Markdown({linkify: true, breaks: true, typographer: true});
-			markdown.use(MarkdownItGitHubAlerts);
-			markdown.use(MarkdownItCheckbox, {divWrap: true, divClass: "checkbox"});
+			markdown = new Markdown({linkify: true, breaks: true, typographer: true, html: true});
+			markdown.use(MarkdownItAlertsPlugin, {
+				ignoreUnknownTypes: false,
+			});
+			markdown.use(MarkdownItChecklistPlugin);
 			turndown = new Turndown();
-			turndown.use(turndownGFM);
+			turndown.use(trundownChecklistPlugin);
+			turndown.use([
+				turndownGFM.tables,
+				turndownGFM.strikethrough,
+				turndownGFM.highlightedCodeBlock,
+			]);
 			turndown.use(turndownGithubAlerts);
+
 		}
 
 		const topbar = document.querySelector(".editor-wrapper-menu");
@@ -145,6 +155,7 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 						view: {title: "View", items: "visualaid"},
 					},
 					style_formats: formatMenuMD,
+					extended_valid_elements: "svg[*],path[*],circle[*],rect[*],line[*],polyline[*],polygon[*],g[*],defs[*],use[*]",
 				}
 				: {
 					plugins: [
@@ -183,7 +194,11 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 				init_instance_callback (editor) {
 					editor.on("paste", (e) => {
 						if (isMD) {
-							editor.setContent(markdown.render(turndown.turndown(editor.getContent())));
+							const turned = turndown.turndown(editor.getContent());
+							console.log("TURNED", turned, editor.getContent());
+							const markdowned = markdown.render(turned);
+							console.log("MARKDOWNED", markdowned);
+							editor.setContent(markdowned);
 						}
 					});
 				},
@@ -444,7 +459,10 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 					function toWysiwyg (content) {
 						editor.settings.modifyingCode = true;
 						if (settings.codeMode === "markdown") {
-							editor.setContent(markdown.render(content));
+							const markdowned = markdown.render(content);
+							console.log("MARKDOWNED2", markdowned);
+							editor.setContent(markdowned);
+
 						}
 						else {
 							editor.setContent(content);
@@ -465,7 +483,9 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 						ignoreInput = true;
 						const pos = codeEditor.session.selection.toJSON();
 						if (settings.codeMode === "markdown") {
-							codeEditor.session.setValue(turndown.turndown(editor.getContent()));
+							const turned = turndown.turndown(editor.getContent());
+							console.log("TURNED2", turned, editor.getContent());
+							codeEditor.session.setValue(turned);
 						}
 						else {
 							codeEditor.session.setValue(pretty(editor.getContent(), {"indent-with-tabs": true, "indent_char": "\t", indent_size: 1}));

@@ -5306,22 +5306,22 @@ function requireRuler() {
     });
   };
   Ruler.prototype.at = function(name, fn, options2) {
-    var index2 = this.__find__(name);
+    var index = this.__find__(name);
     var opt = options2 || {};
-    if (index2 === -1) {
+    if (index === -1) {
       throw new Error("Parser rule not found: " + name);
     }
-    this.__rules__[index2].fn = fn;
-    this.__rules__[index2].alt = opt.alt || [];
+    this.__rules__[index].fn = fn;
+    this.__rules__[index].alt = opt.alt || [];
     this.__cache__ = null;
   };
   Ruler.prototype.before = function(beforeName, ruleName, fn, options2) {
-    var index2 = this.__find__(beforeName);
+    var index = this.__find__(beforeName);
     var opt = options2 || {};
-    if (index2 === -1) {
+    if (index === -1) {
       throw new Error("Parser rule not found: " + beforeName);
     }
-    this.__rules__.splice(index2, 0, {
+    this.__rules__.splice(index, 0, {
       name: ruleName,
       enabled: true,
       fn,
@@ -5330,12 +5330,12 @@ function requireRuler() {
     this.__cache__ = null;
   };
   Ruler.prototype.after = function(afterName, ruleName, fn, options2) {
-    var index2 = this.__find__(afterName);
+    var index = this.__find__(afterName);
     var opt = options2 || {};
-    if (index2 === -1) {
+    if (index === -1) {
       throw new Error("Parser rule not found: " + afterName);
     }
-    this.__rules__.splice(index2 + 1, 0, {
+    this.__rules__.splice(index + 1, 0, {
       name: ruleName,
       enabled: true,
       fn,
@@ -5640,8 +5640,8 @@ function requireSmartquotes() {
   var QUOTE_TEST_RE = /['"]/;
   var QUOTE_RE = /['"]/g;
   var APOSTROPHE = "’";
-  function replaceAt(str, index2, ch) {
-    return str.slice(0, index2) + ch + str.slice(index2 + 1);
+  function replaceAt(str, index, ch) {
+    return str.slice(0, index) + ch + str.slice(index + 1);
   }
   function process_inlines(tokens, state) {
     var i, token2, text2, t, pos, max, thisLevel, item, lastChar, nextChar, isLastPunctChar, isNextPunctChar, isLastWhiteSpace, isNextWhiteSpace, canOpen, canClose, j, isSingle, stack, openQuote, closeQuote;
@@ -8903,13 +8903,13 @@ const decode = function(input) {
     }
     output2.push(input.charCodeAt(j));
   }
-  for (let index2 = basic > 0 ? basic + 1 : 0; index2 < inputLength; ) {
+  for (let index = basic > 0 ? basic + 1 : 0; index < inputLength; ) {
     const oldi = i;
     for (let w = 1, k = base; ; k += base) {
-      if (index2 >= inputLength) {
+      if (index >= inputLength) {
         error("invalid-input");
       }
-      const digit = basicToDigit(input.charCodeAt(index2++));
+      const digit = basicToDigit(input.charCodeAt(index++));
       if (digit >= base) {
         error("invalid-input");
       }
@@ -9411,277 +9411,175 @@ function requireMarkdownIt() {
 }
 var markdownItExports = requireMarkdownIt();
 const Markdown = /* @__PURE__ */ getDefaultExportFromCjs(markdownItExports);
-const DEFAULT_GITHUB_ICONS = {
-  note: '<svg class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>',
-  tip: '<svg class="octicon octicon-light-bulb mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg>',
-  important: '<svg class="octicon octicon-report mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>',
-  warning: '<svg class="octicon octicon-alert mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>',
-  caution: '<svg class="octicon octicon-stop mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M4.47.22A.749.749 0 0 1 5 0h6c.199 0 .389.079.53.22l4.25 4.25c.141.14.22.331.22.53v6a.749.749 0 0 1-.22.53l-4.25 4.25A.749.749 0 0 1 11 16H5a.749.749 0 0 1-.53-.22L.22 11.53A.749.749 0 0 1 0 11V5c0-.199.079-.389.22-.53Zm.84 1.28L1.5 5.31v5.38l3.81 3.81h5.38l3.81-3.81V5.31L10.69 1.5ZM8 4a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>'
+const ICONS = {
+  note: `<svg class="octicon octicon-info" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path stroke="currentColor" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/></svg>`,
+  tip: `<svg class="octicon octicon-lightbulb" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path stroke="currentColor" d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"/></svg>`,
+  important: `<svg class="octicon octicon-report" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path stroke="currentColor" d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/></svg>`,
+  warning: `<svg class="octicon octicon-alert" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path stroke="currentColor" d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/></svg>`,
+  caution: `<svg class="octicon octicon-stop" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path stroke="currentColor" d="M4.47.22A.749.749 0 0 1 5 0h6c.199 0 .389.079.53.22l4.25 4.25c.141.14.22.331.22.53v6a.749.749 0 0 1-.22.53l-4.25 4.25A.749.749 0 0 1 11 16H5a.749.749 0 0 1-.53-.22L.22 11.53A.749.749 0 0 1 0 11V5c0-.199.079-.389.22-.53Zm.84 1.28L1.5 5.31v5.38l3.81 3.81h5.38l3.81-3.81V5.31L10.69 1.5ZM8 4a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/></svg>`
 };
-const MarkdownItGitHubAlerts = (md, options2 = {}) => {
-  const {
-    markers = ["TIP", "NOTE", "IMPORTANT", "WARNING", "CAUTION"],
-    icons = DEFAULT_GITHUB_ICONS,
-    matchCaseSensitive = false,
-    titles = {},
-    classPrefix = "markdown-alert"
-  } = options2;
-  const markerNameRE = markers === "*" ? "\\w+" : markers.join("|");
-  const RE = new RegExp(`^\\\\?\\[\\!(${markerNameRE})\\]([^\\n\\r]*)`, matchCaseSensitive ? "" : "i");
-  md.core.ruler.after("block", "github-alerts", (state) => {
-    var _a;
+const DEFAULT_TYPES = {
+  note: { label: "Note", icon: ICONS.note },
+  tip: { label: "Tip", icon: ICONS.tip },
+  important: { label: "Important", icon: ICONS.important },
+  warning: { label: "Warning", icon: ICONS.warning },
+  caution: { label: "Caution", icon: ICONS.caution }
+};
+function findBlockquoteClose(tokens, bqStart) {
+  let depth = 0;
+  for (let j = bqStart; j < tokens.length; j++) {
+    if (tokens[j].type === "blockquote_open") depth++;
+    if (tokens[j].type === "blockquote_close") {
+      depth--;
+      if (depth === 0) return j;
+    }
+  }
+  return -1;
+}
+function countInlineTokens(tokens, bqStart, bqEnd) {
+  let count = 0;
+  let depth = 0;
+  for (let j = bqStart; j <= bqEnd; j++) {
+    if (tokens[j].type === "blockquote_open") depth++;
+    if (tokens[j].type === "blockquote_close") depth--;
+    if (depth === 1 && tokens[j].type === "inline") count++;
+  }
+  return count;
+}
+function findFirstDirectInline(tokens, bqStart, bqEnd) {
+  let depth = 0;
+  for (let j = bqStart; j <= bqEnd; j++) {
+    if (tokens[j].type === "blockquote_open") depth++;
+    if (tokens[j].type === "blockquote_close") depth--;
+    if (depth === 1 && tokens[j].type === "inline") return j;
+  }
+  return -1;
+}
+function alertsPlugin(md, options2 = {}) {
+  const ignoreUnknown = options2.ignoreUnknownTypes !== false;
+  const alertTypes = Object.assign({}, DEFAULT_TYPES, options2.types || {});
+  md.core.ruler.push("github_alerts", (state) => {
     const tokens = state.tokens;
-    for (let i = 0; i < tokens.length; i++) {
-      if (tokens[i].type === "blockquote_open") {
-        const open = tokens[i];
-        const startIndex = i;
-        while (((_a = tokens[i]) == null ? void 0 : _a.type) !== "blockquote_close" && i <= tokens.length)
-          i += 1;
-        const close = tokens[i];
-        const endIndex = i;
-        const firstContent = tokens.slice(startIndex, endIndex + 1).find((token2) => token2.type === "inline");
-        if (!firstContent)
+    let i = 0;
+    while (i < tokens.length) {
+      if (tokens[i].type !== "blockquote_open") {
+        i++;
+        continue;
+      }
+      const bqStart = i;
+      const bqEnd = findBlockquoteClose(tokens, bqStart);
+      if (bqEnd === -1) {
+        i++;
+        continue;
+      }
+      const firstInlineIdx = findFirstDirectInline(tokens, bqStart, bqEnd);
+      if (firstInlineIdx === -1) {
+        i++;
+        continue;
+      }
+      const rawContent = tokens[firstInlineIdx].content;
+      const firstLine = rawContent.split("\n")[0];
+      const headerMatch = firstLine.match(/^\[!([\w-]+)\][ \t]?(.*)?$/);
+      if (!headerMatch) {
+        i++;
+        continue;
+      }
+      const typeKey = headerMatch[1].toLowerCase();
+      const typeInfo = alertTypes[typeKey];
+      if (!typeInfo && ignoreUnknown) {
+        i++;
+        continue;
+      }
+      const sameLine = (headerMatch[2] || "").trim();
+      const nlPos = rawContent.indexOf("\n");
+      const restLines = nlPos !== -1 ? rawContent.slice(nlPos + 1) : "";
+      const inlineCount = countInlineTokens(tokens, bqStart, bqEnd);
+      const isOneLiner = sameLine !== "" && restLines === "" && inlineCount === 1;
+      const firstParaContent = restLines || null;
+      const newTokens = [];
+      const label = typeInfo ? typeInfo.label : typeKey.charAt(0).toUpperCase() + typeKey.slice(1);
+      const titleText = sameLine || label;
+      const icon = typeInfo ? typeInfo.icon || "" : "";
+      const extraClass = isOneLiner ? " markdown-alert-oneliner" : "";
+      const divOpenTok = new state.Token("html_block", "", 0);
+      divOpenTok.content = `<div class="markdown-alert markdown-alert-${typeKey}${extraClass}">
+`;
+      newTokens.push(divOpenTok);
+      const titleTok = new state.Token("html_block", "", 0);
+      titleTok.content = `<p class="markdown-alert-title" dir="auto">${icon}${titleText}</p>
+`;
+      newTokens.push(titleTok);
+      let skipFirstPara = false;
+      for (let j = bqStart + 1; j < bqEnd; j++) {
+        const tok = tokens[j];
+        if (!skipFirstPara && tok.type === "paragraph_open") {
+          if (firstParaContent === null) {
+            skipFirstPara = true;
+            j += 2;
+            continue;
+          }
+          newTokens.push(tok);
+          j++;
+          const newInline = new state.Token("inline", "", 0);
+          newInline.content = firstParaContent;
+          newInline.children = [];
+          state.md.inline.parse(newInline.content, state.md, state.env, newInline.children);
+          newTokens.push(newInline);
+          j++;
+          newTokens.push(tokens[j]);
+          skipFirstPara = true;
           continue;
-        const match = firstContent.content.match(RE);
-        if (!match)
-          continue;
-        const type = match[1].toLowerCase();
-        const title = match[2].trim() || (titles[type] ?? capitalize(type));
-        const icon = icons[type] ?? "";
-        firstContent.content = firstContent.content.slice(match[0].length).trimStart();
-        open.type = "alert_open";
-        open.tag = "div";
-        open.meta = {
-          title,
-          type,
-          icon
-        };
-        close.type = "alert_close";
-        close.tag = "div";
+        }
+        newTokens.push(tok);
+      }
+      const divCloseTok = new state.Token("html_block", "", 0);
+      divCloseTok.content = `</div>
+`;
+      newTokens.push(divCloseTok);
+      tokens.splice(bqStart, bqEnd - bqStart + 1, ...newTokens);
+      i = bqStart + newTokens.length;
+    }
+  });
+}
+const PATTERN = /^\[([ xX])\]\s+/;
+function checklistPlugin$1(md) {
+  md.core.ruler.after("inline", "task_list", (state) => {
+    const tokens = state.tokens;
+    for (let i = 2; i < tokens.length; i++) {
+      if (!isTaskListItem(tokens, i)) {
+        continue;
+      }
+      const inlineToken = tokens[i];
+      const children = inlineToken.children;
+      if (!children || !children.length) {
+        continue;
+      }
+      const firstChild = children[0];
+      if (firstChild.type !== "text") {
+        continue;
+      }
+      const match = firstChild.content.match(PATTERN);
+      if (!match) {
+        continue;
+      }
+      const checked = match[1].toLowerCase() === "x";
+      firstChild.content = firstChild.content.slice(match[0].length);
+      const checkbox = new state.Token("html_inline", "", 0);
+      checkbox.content = checked ? `<input type="checkbox" checked disabled> ` : `<input type="checkbox" disabled> `;
+      children.unshift(checkbox);
+      const liOpenToken = tokens[i - 2];
+      liOpenToken.attrSet("class", "task-list-item");
+      for (let j = i - 3; j >= 0; j--) {
+        if (tokens[j].type === "bullet_list_open") {
+          tokens[j].attrSet("class", "task-list");
+          break;
+        }
       }
     }
   });
-  md.renderer.rules.alert_open = function(tokens, idx) {
-    const { title, type, icon } = tokens[idx].meta;
-    return `<div class="${classPrefix} ${classPrefix}-${type}"><p class="${classPrefix}-title">${icon}${title}</p>`;
-  };
-};
-function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
 }
-/*! markdown-it-checkbox 1.2.0-3 https://github.com//GerHobbelt/markdown-it-checkbox @license MIT */
-let checkboxReplace, move;
-move = function(arr, element, offset) {
-  let index2, newIndex, removedElement;
-  index2 = arr.indexOf(element);
-  if (index2 < 0) {
-    return index2;
-  }
-  newIndex = index2 + offset;
-  if (newIndex < 0) {
-    newIndex = 0;
-  }
-  if (newIndex >= arr.length) {
-    newIndex = arr.length - 1;
-  }
-  removedElement = arr.splice(index2, 1)[0];
-  arr.splice(newIndex, 0, removedElement);
-  return newIndex;
-};
-checkboxReplace = function(md, options2, Token) {
-  let arrayReplaceAt, createTokens, defaults, lastId, pattern2, splitTextToken;
-  arrayReplaceAt = md.utils.arrayReplaceAt;
-  lastId = 0;
-  defaults = {
-    divWrap: false,
-    divClass: "checkbox",
-    idPrefix: "checkbox",
-    readonly: false,
-    disabled: false,
-    customHTML: false
-  };
-  options2 = md.utils.assign(defaults, options2);
-  pattern2 = /\[(X|\s|\_|\-)\]\s(.*)/i;
-  createTokens = function(checked, label, Token2) {
-    let attr, customHTML, getTag, id, inputTag, labelTag, newInputTag, newLabelTag, nodes, token2;
-    nodes = [];
-    id = options2.idPrefix + lastId;
-    lastId += 1;
-    if (options2.customHTML) {
-      token2 = new Token2("html_inline", "", 0);
-      customHTML = options2.customHTML;
-      getTag = function(str, tagName, content = "") {
-        let matches, regexp, res;
-        regexp = new RegExp(`(<${tagName}.*?>)(${content})?`, "igm");
-        res = regexp.exec(str);
-        if (!res) {
-          return res;
-        }
-        matches = regexp.exec(str);
-        while (matches) {
-          if (~matches.indexOf(content) && content.length) {
-            res = matches;
-          }
-          matches = regexp.exec(str);
-        }
-        return res[0];
-      };
-      attr = function(tag, attributes = {}) {
-        let addAttr, attrName, attrRegexp, attrValue, replaceAttr;
-        replaceAttr = function(regexp, value) {
-          return tag.replace(regexp, `$1${value}$2`);
-        };
-        addAttr = function(attr2, val) {
-          let regexp, tagName;
-          tagName = tag.match(/<(\w+?)\s/)[1];
-          regexp = new RegExp(`(<${tagName})(.+?>)`);
-          if (val === true) {
-            val = "";
-          }
-          return tag.replace(regexp, `$1 ${attr2}="${val}"$2`);
-        };
-        for (attrName in attributes) {
-          attrValue = attributes[attrName];
-          attrRegexp = new RegExp(`(${attrName}=['"]).+?(['"])`);
-          if (attrValue === false) {
-            continue;
-          }
-          if (~tag.search(attrRegexp)) {
-            tag = replaceAttr(attrRegexp, attrValue);
-          } else {
-            tag = addAttr(attrName, attrValue);
-          }
-        }
-        return tag;
-      };
-      labelTag = getTag(customHTML, "label", "{label}");
-      inputTag = getTag(customHTML, "input");
-      if (labelTag) {
-        newLabelTag = attr(labelTag, {
-          "for": id
-        });
-        if (~newLabelTag.search("{label}")) {
-          newLabelTag = newLabelTag.replace("{label}", label);
-          customHTML = customHTML.replace(labelTag, newLabelTag);
-        } else {
-          customHTML = customHTML.replace(/<label.*?>/, newLabelTag + label);
-        }
-      }
-      if (inputTag) {
-        newInputTag = attr(inputTag, {
-          id,
-          checked,
-          disabled: options2.disabled
-        });
-        customHTML = customHTML.replace(/<input.+?>/, newInputTag);
-      }
-      token2.content = customHTML;
-      nodes.push(token2);
-      return nodes;
-    }
-    if (options2.divWrap) {
-      token2 = new Token2("checkbox_open", "div", 1);
-      token2.attrs = [["class", options2.divClass]];
-      nodes.push(token2);
-    }
-    token2 = new Token2("checkbox_input", "input", 0);
-    token2.attrs = [["type", "checkbox"], ["id", id]];
-    if (checked === true) {
-      token2.attrs.push(["checked", ""]);
-    }
-    if (options2.readonly) {
-      token2.attrs.push(["readonly", ""]);
-    }
-    if (options2.disabled) {
-      token2.attrs.push(["disabled", ""]);
-    }
-    nodes.push(token2);
-    token2 = new Token2("label_open", "label", 1);
-    token2.attrs = [["for", id]];
-    nodes.push(token2);
-    token2 = new Token2("text", "", 0);
-    token2.content = label;
-    nodes.push(token2);
-    nodes.push(new Token2("label_close", "label", -1));
-    if (options2.divWrap) {
-      nodes.push(new Token2("checkbox_close", "div", -1));
-    }
-    return nodes;
-  };
-  splitTextToken = function(original, Token2) {
-    let checked, label, matches, text2, value;
-    text2 = original.content;
-    matches = text2.match(pattern2);
-    if (matches === null) {
-      return original;
-    }
-    checked = false;
-    value = matches[1];
-    label = matches[2];
-    if (value === "X" || value === "x") {
-      checked = true;
-    }
-    return createTokens(checked, label, Token2);
-  };
-  return function(state) {
-    let blockTokens, i, j, k, l, labelClose, labelOpens, len, mappedTokens, open, ref, ref1, suitableIdx, token2, tokens;
-    blockTokens = state.tokens;
-    j = 0;
-    l = blockTokens.length;
-    while (j < l) {
-      if (blockTokens[j].type !== "inline") {
-        j++;
-        continue;
-      }
-      tokens = blockTokens[j].children;
-      i = tokens.length - 1;
-      while (i >= 0) {
-        token2 = tokens[i];
-        blockTokens[j].children = tokens = arrayReplaceAt(tokens, i, splitTextToken(token2, state.Token));
-        i--;
-      }
-      j++;
-    }
-    j = 0;
-    l = blockTokens.length;
-    while (j < l) {
-      if (blockTokens[j].type !== "inline") {
-        j++;
-        continue;
-      }
-      tokens = blockTokens[j].children;
-      mappedTokens = tokens.map(function(t, idx) {
-        return {
-          idx,
-          type: t.type,
-          token: t
-        };
-      });
-      suitableIdx = tokens.length - 1;
-      labelOpens = mappedTokens.filter(function(t) {
-        return t.type === "label_open";
-      });
-      ref = labelOpens.reverse();
-      for (k = 0, len = ref.length; k < len; k++) {
-        open = ref[k];
-        if (suitableIdx < 0) {
-          suitableIdx = 0;
-        }
-        while ((ref1 = mappedTokens[suitableIdx].type) === "softbreak" || ref1 === "checkbox_close") {
-          suitableIdx--;
-        }
-        labelClose = mappedTokens.find(function(t, idx) {
-          return open.idx < idx && idx <= suitableIdx && t.type === "label_close";
-        });
-        move(tokens, labelClose.token, suitableIdx - labelClose.idx);
-        suitableIdx = open.idx - 2;
-      }
-      j++;
-    }
-  };
-};
-function index(md, options2) {
-  md.core.ruler.push("checkbox", checkboxReplace(md, options2));
+function isTaskListItem(tokens, index) {
+  return tokens[index].type === "inline" && tokens[index - 1].type === "paragraph_open" && tokens[index - 2].type === "list_item_open";
 }
 function extend(destination) {
   for (var i = 1; i < arguments.length; i++) {
@@ -9861,8 +9759,8 @@ rules$1.listItem = {
     var parent = node.parentNode;
     if (parent.nodeName === "OL") {
       var start = parent.getAttribute("start");
-      var index2 = Array.prototype.indexOf.call(parent.children, node);
-      prefix = (start ? Number(start) + index2 : index2 + 1) + ".  ";
+      var index = Array.prototype.indexOf.call(parent.children, node);
+      prefix = (start ? Number(start) + index : index + 1) + ".  ";
     }
     var isParagraph = /\n$/.test(content);
     content = trimNewlines(content) + (isParagraph ? "\n" : "");
@@ -10457,13 +10355,13 @@ function cleanCellContent(content) {
   }
   return cleaned;
 }
-function cell(content, node, index2) {
-  if (index2 === null && node && node.parentNode) {
-    index2 = Array.prototype.indexOf.call(node.parentNode.childNodes, node);
+function cell(content, node, index) {
+  if (index === null && node && node.parentNode) {
+    index = Array.prototype.indexOf.call(node.parentNode.childNodes, node);
   }
-  if (index2 === null) index2 = 0;
+  if (index === null) index = 0;
   var prefix = " ";
-  if (index2 === 0) prefix = "| ";
+  if (index === 0) prefix = "| ";
   let cellContent = cleanCellContent(content);
   let colspan = 1;
   if (node && node.getAttribute) {
@@ -10607,58 +10505,75 @@ function tables(turndownService) {
     turndownService.addRule(key, rules[key]);
   }
 }
-function taskListItems(turndownService) {
-  turndownService.addRule("taskListItems", {
-    filter: function(node) {
-      return node.type === "checkbox" && node.parentNode.nodeName === "LI";
-    },
-    replacement: function(content, node) {
-      return (node.checked ? "[x]" : "[ ]") + " ";
-    }
-  });
-}
-function gfm(turndownService) {
-  turndownService.use([
-    highlightedCodeBlock,
-    strikethrough,
-    tables,
-    taskListItems
-  ]);
-}
 function githubAlerts(turndownService) {
-  const alertTypes = ["note", "tip", "important", "warning", "caution"];
+  function getAlertType(node) {
+    for (const cls of node.classList) {
+      const m = cls.match(/^markdown-alert-(.+)$/);
+      if (m && cls !== "markdown-alert" && !cls.startsWith("markdown-alert-oneliner")) {
+        return m[1];
+      }
+    }
+    return null;
+  }
   turndownService.addRule("githubAlerts", {
     filter: (node) => {
       if (node.nodeName !== "DIV") return false;
       if (!node.classList.contains("markdown-alert")) return false;
-      for (const type of alertTypes) {
-        if (node.classList.contains(`markdown-alert-${type}`)) return true;
-      }
-      return false;
+      return getAlertType(node) !== null;
     },
     replacement: (content, node) => {
-      let alertType = "";
-      for (const type of alertTypes) {
-        if (node.classList.contains(`markdown-alert-${type}`)) {
-          alertType = type.toUpperCase();
-          break;
-        }
-      }
+      const alertType = getAlertType(node);
+      const typeStr = alertType.toUpperCase();
+      const titleEl = node.querySelector(":scope > p.markdown-alert-title");
+      const titleText = titleEl ? titleEl.textContent.trim() : "";
+      const defaultLabel = alertType.charAt(0).toUpperCase() + alertType.slice(1);
+      const inlineTitle = titleText && titleText !== defaultLabel ? ` ${titleText}` : "";
       const paragraphs = node.querySelectorAll(":scope > p:not(.markdown-alert-title)");
       let bodyContent = "";
-      paragraphs.forEach((p, index2) => {
+      paragraphs.forEach((p, index) => {
         const text2 = turndownService.turndown(p.innerHTML);
-        if (index2 === 0) {
+        if (index === 0) {
           bodyContent += text2;
         } else {
           bodyContent += "\n>\n> " + text2;
         }
       });
-      return `> [!${alertType}]
+      if (inlineTitle && !bodyContent) {
+        return `> [!${typeStr}]${inlineTitle}
+
+`;
+      }
+      return `> [!${typeStr}]${inlineTitle}
 > ${bodyContent}
 
 `;
     }
+  });
+}
+function checklistPlugin(turndownService) {
+  turndownService.addRule("taskListItem", {
+    filter: (node) => {
+      if (node.nodeName !== "LI") return false;
+      const checkbox = node.querySelector(':scope > input[type="checkbox"]');
+      return checkbox !== null;
+    },
+    replacement: (content, node) => {
+      const checkbox = node.querySelector(':scope > input[type="checkbox"]');
+      const checked = checkbox.checked || checkbox.hasAttribute("checked");
+      const mark = checked ? "[x]" : "[ ]";
+      const text2 = content.replace(/^\s*\[[ xX]\]\s*/m, "").replace(/^\s*/, "").replace(/\n/g, "\n    ");
+      return `- ${mark} ${text2}
+`;
+    }
+  });
+  turndownService.addRule("taskListCheckbox", {
+    filter: (node) => {
+      if (node.nodeName !== "INPUT") return false;
+      if (node.getAttribute("type") !== "checkbox") return false;
+      const parent = node.parentNode;
+      return parent && parent.nodeName === "LI";
+    },
+    replacement: () => ""
   });
 }
 var tinymce$2 = { exports: {} };
@@ -12757,15 +12672,15 @@ function requireTinymce() {
         };
         var map$12 = function(array, callback) {
           var out = [];
-          each$1(array, function(item, index2) {
-            out.push(callback(item, index2, array));
+          each$1(array, function(item, index) {
+            out.push(callback(item, index, array));
           });
           return out;
         };
         var filter$1 = function(a, f) {
           var o = [];
-          each$1(a, function(v, index2) {
-            if (!f || f(v, index2, a)) {
+          each$1(a, function(v, index) {
+            if (!f || f(v, index, a)) {
               o.push(v);
             }
           });
@@ -13485,7 +13400,7 @@ function requireTinymce() {
                 self2.toggleClass(this, state);
               });
             } else {
-              self2.each(function(index2, node2) {
+              self2.each(function(index, node2) {
                 var existingClassName, classState;
                 classState = hasClass(node2, className);
                 if (classState !== state) {
@@ -13534,8 +13449,8 @@ function requireTinymce() {
           slice: function() {
             return new DomQuery(slice$1.apply(this, arguments));
           },
-          eq: function(index2) {
-            return index2 === -1 ? this.slice(index2) : this.slice(index2, +index2 + 1);
+          eq: function(index) {
+            return index === -1 ? this.slice(index) : this.slice(index, +index + 1);
           },
           first: function() {
             return this.eq(0);
@@ -14477,9 +14392,9 @@ function requireTinymce() {
         var children = function(element) {
           return map2(element.dom().childNodes, Element2.fromDom);
         };
-        var child = function(element, index2) {
+        var child = function(element, index) {
           var cs = element.dom().childNodes;
-          return Option.from(cs[index2]).map(Element2.fromDom);
+          return Option.from(cs[index]).map(Element2.fromDom);
         };
         var firstChild = function(element) {
           return child(element, 0);
@@ -19029,10 +18944,10 @@ function requireTinymce() {
           };
         };
         var normalizedNodeIndex = function(node2) {
-          var nodes, index2, numTextFragments;
+          var nodes, index, numTextFragments;
           nodes = getChildNodes(normalizedParent(node2));
-          index2 = ArrUtils.findIndex(nodes, equal(node2), node2);
-          nodes = nodes.slice(0, index2 + 1);
+          index = ArrUtils.findIndex(nodes, equal(node2), node2);
+          nodes = nodes.slice(0, index + 1);
           numTextFragments = ArrUtils.reduce(nodes, function(result, node3, i2) {
             if (isText$5(node3) && isText$5(nodes[i2 - 1])) {
               result++;
@@ -19040,8 +18955,8 @@ function requireTinymce() {
             return result;
           }, 0);
           nodes = ArrUtils.filter(nodes, NodeType.matchNodeNames(node2.nodeName));
-          index2 = ArrUtils.findIndex(nodes, equal(node2), node2);
-          return index2 - numTextFragments;
+          index = ArrUtils.findIndex(nodes, equal(node2), node2);
+          return index - numTextFragments;
         };
         var createPathItem = function(node2) {
           var name2;
@@ -19083,13 +18998,13 @@ function requireTinymce() {
           }));
           return path2.reverse().join("/") + "," + outputOffset;
         };
-        var resolvePathItem = function(node2, name2, index2) {
+        var resolvePathItem = function(node2, name2, index) {
           var nodes = getChildNodes(node2);
-          nodes = ArrUtils.filter(nodes, function(node3, index3) {
-            return !isText$5(node3) || !isText$5(nodes[index3 - 1]);
+          nodes = ArrUtils.filter(nodes, function(node3, index2) {
+            return !isText$5(node3) || !isText$5(nodes[index2 - 1]);
           });
           nodes = ArrUtils.filter(nodes, NodeType.matchNodeNames(name2));
-          return nodes[index2];
+          return nodes[index];
         };
         var findTextPosition = function(container, offset) {
           var node2 = container, targetOffset = 0, dataLen;
@@ -19409,8 +19324,8 @@ function requireTinymce() {
         };
         var removeElementAndReposition = function(caretContainer, pos) {
           var parentNode = pos.container();
-          var newPosition = indexOf(from$1(parentNode.childNodes), caretContainer).map(function(index2) {
-            return index2 < pos.offset() ? CaretPosition$1(parentNode, pos.offset() - 1) : pos;
+          var newPosition = indexOf(from$1(parentNode.childNodes), caretContainer).map(function(index) {
+            return index < pos.offset() ? CaretPosition$1(parentNode, pos.offset() - 1) : pos;
           }).getOr(pos);
           remove$5(caretContainer);
           return newPosition;
@@ -20667,15 +20582,15 @@ function requireTinymce() {
         };
         var ExpandRange = { expandRng };
         var each$8 = Tools.each;
-        var getEndChild = function(container, index2) {
+        var getEndChild = function(container, index) {
           var childNodes = container.childNodes;
-          index2--;
-          if (index2 > childNodes.length - 1) {
-            index2 = childNodes.length - 1;
-          } else if (index2 < 0) {
-            index2 = 0;
+          index--;
+          if (index > childNodes.length - 1) {
+            index = childNodes.length - 1;
+          } else if (index < 0) {
+            index = 0;
           }
-          return childNodes[index2] || container;
+          return childNodes[index] || container;
         };
         var walk$1 = function(dom2, rng, callback) {
           var startContainer = rng.startContainer;
@@ -22016,8 +21931,8 @@ function requireTinymce() {
           var children$1 = children(block2);
           return findIndex(children$1, isBlock2).fold(function() {
             return children$1;
-          }, function(index2) {
-            return children$1.slice(0, index2);
+          }, function(index) {
+            return children$1.slice(0, index);
           });
         };
         var extractChildren = function(block2) {
@@ -22944,7 +22859,7 @@ function requireTinymce() {
             });
           }
         };
-        var move2 = function(editor, caret2, forward) {
+        var move = function(editor, caret2, forward) {
           return function() {
             return isFeatureEnabled(editor) ? findLocation$1(editor, caret2, forward).isSome() : false;
           };
@@ -22969,7 +22884,7 @@ function requireTinymce() {
         var moveNextWord = curry(moveWord, true);
         var movePrevWord = curry(moveWord, false);
         var BoundarySelection = {
-          move: move2,
+          move,
           moveNextWord,
           movePrevWord,
           setupSelectedState,
@@ -23724,8 +23639,8 @@ function requireTinymce() {
         };
         var getParentInlines = function(rootElm, startElm) {
           var parents2 = Parents.parentsAndSelf(startElm, rootElm);
-          return findIndex(parents2, isBlock2).fold(constant(parents2), function(index2) {
-            return parents2.slice(0, index2);
+          return findIndex(parents2, isBlock2).fold(constant(parents2), function(index) {
+            return parents2.slice(0, index);
           });
         };
         var hasOnlyOneChild$1 = function(elm) {
@@ -25909,8 +25824,8 @@ function requireTinymce() {
           var closeNotification = function(notification) {
             findIndex(notifications, function(otherNotification) {
               return otherNotification === notification;
-            }).each(function(index2) {
-              notifications.splice(index2, 1);
+            }).each(function(index) {
+              notifications.splice(index, 1);
             });
           };
           var open = function(args) {
@@ -26005,8 +25920,8 @@ function requireTinymce() {
           var closeWindow = function(win) {
             findIndex(windows2, function(otherWindow) {
               return otherWindow === win;
-            }).each(function(index2) {
-              windows2.splice(index2, 1);
+            }).each(function(index) {
+              windows2.splice(index, 1);
               fireCloseEvent(win);
               if (windows2.length === 0) {
                 editor.focus();
@@ -26691,14 +26606,14 @@ function requireTinymce() {
             return "?" + (/* @__PURE__ */ new Date()).getTime();
           };
           var replaceString = function(content, search2, replace) {
-            var index2 = 0;
+            var index = 0;
             do {
-              index2 = content.indexOf(search2, index2);
-              if (index2 !== -1) {
-                content = content.substring(0, index2) + replace + content.substr(index2 + search2.length);
-                index2 += replace.length - search2.length + 1;
+              index = content.indexOf(search2, index);
+              if (index !== -1) {
+                content = content.substring(0, index) + replace + content.substr(index + search2.length);
+                index += replace.length - search2.length + 1;
               }
-            } while (index2 !== -1);
+            } while (index !== -1);
             return content;
           };
           var replaceImageUrl = function(content, targetUrl, replacementUrl) {
@@ -26748,8 +26663,8 @@ function requireTinymce() {
                 return imageInfo.blobInfo;
               });
               return uploader.upload(blobInfos, openNotification).then(aliveGuard(function(result) {
-                var filteredResult = map2(result, function(uploadInfo, index2) {
-                  var image2 = imageInfos[index2].image;
+                var filteredResult = map2(result, function(uploadInfo, index) {
+                  var image2 = imageInfos[index].image;
                   if (uploadInfo.status && Settings.shouldReplaceBlobUris(editor)) {
                     replaceImageUri(image2, uploadInfo.url);
                   } else if (uploadInfo.error) {
@@ -28050,12 +27965,12 @@ function requireTinymce() {
           }
         };
         var findEndTagIndex = function(schema, html2, startIndex) {
-          var count2 = 1, index2, matches2, tokenRegExp, shortEndedElements;
+          var count2 = 1, index, matches2, tokenRegExp, shortEndedElements;
           shortEndedElements = schema.getShortEndedElements();
           tokenRegExp = /<([!?\/])?([A-Za-z0-9\-_\:\.]+)((?:\s+[^"\'>]+(?:(?:"[^"]*")|(?:\'[^\']*\')|[^>]*))*|\/|\s+)>/g;
-          tokenRegExp.lastIndex = index2 = startIndex;
+          tokenRegExp.lastIndex = index = startIndex;
           while (matches2 = tokenRegExp.exec(html2)) {
-            index2 = tokenRegExp.lastIndex;
+            index = tokenRegExp.lastIndex;
             if (matches2[1] === "/") {
               count2--;
             } else if (!matches2[1]) {
@@ -28068,7 +27983,7 @@ function requireTinymce() {
               break;
             }
           }
-          return index2;
+          return index;
         };
         var checkBogusAttribute = function(regExp, attrString) {
           var matches2 = regExp.exec(attrString);
@@ -28098,7 +28013,7 @@ function requireTinymce() {
           var pi2 = settings.pi ? settings.pi : noop2;
           var doctype = settings.doctype ? settings.doctype : noop2;
           var parse2 = function(html2) {
-            var matches2, index2 = 0, value2, endRegExp;
+            var matches2, index = 0, value2, endRegExp;
             var stack = [];
             var attrList, i2, textData, name2;
             var isInternalElement, removeInternalElements, shortEndedElements, fillAttrsMap, isShortEnded;
@@ -28187,8 +28102,8 @@ function requireTinymce() {
             specialElements = schema.getSpecialElements();
             processHtml = html2 + ">";
             while (matches2 = tokenRegExp.exec(processHtml)) {
-              if (index2 < matches2.index) {
-                text2(decode3(html2.substr(index2, matches2.index - index2)));
+              if (index < matches2.index) {
+                text2(decode3(html2.substr(index, matches2.index - index)));
               }
               if (value2 = matches2[6]) {
                 value2 = value2.toLowerCase();
@@ -28199,7 +28114,7 @@ function requireTinymce() {
               } else if (value2 = matches2[7]) {
                 if (matches2.index + matches2[0].length > html2.length) {
                   text2(decode3(html2.substr(matches2.index)));
-                  index2 = matches2.index + matches2[0].length;
+                  index = matches2.index + matches2[0].length;
                   continue;
                 }
                 value2 = value2.toLowerCase();
@@ -28213,8 +28128,8 @@ function requireTinymce() {
                 var bogusValue = checkBogusAttribute(attrRegExp, matches2[8]);
                 if (bogusValue !== null) {
                   if (bogusValue === "all") {
-                    index2 = findEndTagIndex(schema, html2, tokenRegExp.lastIndex);
-                    tokenRegExp.lastIndex = index2;
+                    index = findEndTagIndex(schema, html2, tokenRegExp.lastIndex);
+                    tokenRegExp.lastIndex = index;
                     continue;
                   }
                   isValidElement = false;
@@ -28292,8 +28207,8 @@ function requireTinymce() {
                     }
                     if (attr = attrList.map["data-mce-bogus"]) {
                       if (attr === "all") {
-                        index2 = findEndTagIndex(schema, html2, tokenRegExp.lastIndex);
-                        tokenRegExp.lastIndex = index2;
+                        index = findEndTagIndex(schema, html2, tokenRegExp.lastIndex);
+                        tokenRegExp.lastIndex = index;
                         continue;
                       }
                       isValidElement = false;
@@ -28306,15 +28221,15 @@ function requireTinymce() {
                   isValidElement = false;
                 }
                 if (endRegExp = specialElements[value2]) {
-                  endRegExp.lastIndex = index2 = matches2.index + matches2[0].length;
+                  endRegExp.lastIndex = index = matches2.index + matches2[0].length;
                   if (matches2 = endRegExp.exec(html2)) {
                     if (isValidElement) {
-                      textData = html2.substr(index2, matches2.index - index2);
+                      textData = html2.substr(index, matches2.index - index);
                     }
-                    index2 = matches2.index + matches2[0].length;
+                    index = matches2.index + matches2[0].length;
                   } else {
-                    textData = html2.substr(index2);
-                    index2 = html2.length;
+                    textData = html2.substr(index);
+                    index = html2.length;
                   }
                   if (isValidElement) {
                     if (textData.length > 0) {
@@ -28322,7 +28237,7 @@ function requireTinymce() {
                     }
                     end2(value2);
                   }
-                  tokenRegExp.lastIndex = index2;
+                  tokenRegExp.lastIndex = index;
                   continue;
                 }
                 if (!isShortEnded) {
@@ -28350,10 +28265,10 @@ function requireTinymce() {
               } else if (value2 = matches2[4]) {
                 pi2(value2, matches2[5]);
               }
-              index2 = matches2.index + matches2[0].length;
+              index = matches2.index + matches2[0].length;
             }
-            if (index2 < html2.length) {
-              text2(decode3(html2.substr(index2)));
+            if (index < html2.length) {
+              text2(decode3(html2.substr(index)));
             }
             for (i2 = stack.length - 1; i2 >= 0; i2--) {
               value2 = stack[i2];
@@ -28375,20 +28290,20 @@ function requireTinymce() {
         var trimInternal = function(serializer, html2) {
           var content = html2;
           var bogusAllRegExp = /<(\w+) [^>]*data-mce-bogus="all"[^>]*>/g;
-          var endTagIndex, index2, matchLength, matches2, shortEndedElements;
+          var endTagIndex, index, matchLength, matches2, shortEndedElements;
           var schema = serializer.schema;
           content = trimHtml(serializer.getTempAttrs(), content);
           shortEndedElements = schema.getShortEndedElements();
           while (matches2 = bogusAllRegExp.exec(content)) {
-            index2 = bogusAllRegExp.lastIndex;
+            index = bogusAllRegExp.lastIndex;
             matchLength = matches2[0].length;
             if (shortEndedElements[matches2[1]]) {
-              endTagIndex = index2;
+              endTagIndex = index;
             } else {
-              endTagIndex = SaxParser$1.findEndTag(schema, content, index2);
+              endTagIndex = SaxParser$1.findEndTag(schema, content, index);
             }
-            content = content.substring(0, index2 - matchLength) + content.substring(endTagIndex);
-            bogusAllRegExp.lastIndex = index2 - matchLength;
+            content = content.substring(0, index - matchLength) + content.substring(endTagIndex);
+            bogusAllRegExp.lastIndex = index - matchLength;
           }
           return Zwsp.trim(content);
         };
@@ -28541,31 +28456,31 @@ function requireTinymce() {
           }
           return frag;
         };
-        var insertAt = function(elm, html2, index2) {
+        var insertAt = function(elm, html2, index) {
           var fragment = createFragment$1(html2);
-          if (elm.hasChildNodes() && index2 < elm.childNodes.length) {
-            var target2 = elm.childNodes[index2];
+          if (elm.hasChildNodes() && index < elm.childNodes.length) {
+            var target2 = elm.childNodes[index];
             target2.parentNode.insertBefore(fragment, target2);
           } else {
             elm.appendChild(fragment);
           }
         };
-        var removeAt = function(elm, index2) {
-          if (elm.hasChildNodes() && index2 < elm.childNodes.length) {
-            var target2 = elm.childNodes[index2];
+        var removeAt = function(elm, index) {
+          if (elm.hasChildNodes() && index < elm.childNodes.length) {
+            var target2 = elm.childNodes[index];
             target2.parentNode.removeChild(target2);
           }
         };
         var applyDiff = function(diff2, elm) {
-          var index2 = 0;
+          var index = 0;
           each(diff2, function(action2) {
             if (action2[0] === Diff.KEEP) {
-              index2++;
+              index++;
             } else if (action2[0] === Diff.INSERT) {
-              insertAt(elm, action2[1], index2);
-              index2++;
+              insertAt(elm, action2[1], index);
+              index++;
             } else if (action2[0] === Diff.DELETE) {
-              removeAt(elm, index2);
+              removeAt(elm, index);
             }
           });
         };
@@ -28662,7 +28577,7 @@ function requireTinymce() {
           isEq: isEq$4
         };
         function UndoManager(editor) {
-          var self2 = this, index2 = 0, data2 = [], beforeBookmark, isFirstTypedCharacter, locks = 0;
+          var self2 = this, index = 0, data2 = [], beforeBookmark, isFirstTypedCharacter, locks = 0;
           var isUnlocked = function() {
             return locks === 0;
           };
@@ -28790,7 +28705,7 @@ function requireTinymce() {
               if (isUnlocked() === false || editor.removed) {
                 return null;
               }
-              lastLevel = data2[index2];
+              lastLevel = data2[index];
               if (editor.fire("BeforeAddUndo", {
                 level,
                 lastLevel,
@@ -28801,8 +28716,8 @@ function requireTinymce() {
               if (lastLevel && Levels.isEq(lastLevel, level)) {
                 return null;
               }
-              if (data2[index2]) {
-                data2[index2].beforeBookmark = beforeBookmark;
+              if (data2[index]) {
+                data2[index].beforeBookmark = beforeBookmark;
               }
               if (settings.custom_undo_redo_levels) {
                 if (data2.length > settings.custom_undo_redo_levels) {
@@ -28810,22 +28725,22 @@ function requireTinymce() {
                     data2[i2] = data2[i2 + 1];
                   }
                   data2.length--;
-                  index2 = data2.length;
+                  index = data2.length;
                 }
               }
               level.bookmark = GetBookmark.getUndoBookmark(editor.selection);
-              if (index2 < data2.length - 1) {
-                data2.length = index2 + 1;
+              if (index < data2.length - 1) {
+                data2.length = index + 1;
               }
               data2.push(level);
-              index2 = data2.length - 1;
+              index = data2.length - 1;
               var args = {
                 level,
                 lastLevel,
                 originalEvent: event
               };
               editor.fire("AddUndo", args);
-              if (index2 > 0) {
+              if (index > 0) {
                 setDirty(true);
                 editor.fire("change", args);
               }
@@ -28838,8 +28753,8 @@ function requireTinymce() {
                 self2.typing = false;
                 setTyping(false);
               }
-              if (index2 > 0) {
-                level = data2[--index2];
+              if (index > 0) {
+                level = data2[--index];
                 Levels.applyToEditor(editor, level, true);
                 setDirty(true);
                 editor.fire("undo", { level });
@@ -28848,8 +28763,8 @@ function requireTinymce() {
             },
             redo: function() {
               var level;
-              if (index2 < data2.length - 1) {
-                level = data2[++index2];
+              if (index < data2.length - 1) {
+                level = data2[++index];
                 Levels.applyToEditor(editor, level, false);
                 setDirty(true);
                 editor.fire("redo", { level });
@@ -28858,16 +28773,16 @@ function requireTinymce() {
             },
             clear: function() {
               data2 = [];
-              index2 = 0;
+              index = 0;
               self2.typing = false;
               self2.data = data2;
               editor.fire("ClearUndos");
             },
             hasUndo: function() {
-              return index2 > 0 || self2.typing && data2[0] && !Levels.isEq(Levels.createFromEditor(editor), data2[0]);
+              return index > 0 || self2.typing && data2[0] && !Levels.isEq(Levels.createFromEditor(editor), data2[0]);
             },
             hasRedo: function() {
-              return index2 < data2.length - 1 && !self2.typing;
+              return index < data2.length - 1 && !self2.typing;
             },
             transact: function(callback) {
               endTyping();
@@ -28886,11 +28801,11 @@ function requireTinymce() {
             extra: function(callback1, callback2) {
               var lastLevel, bookmark;
               if (self2.transact(callback1)) {
-                bookmark = data2[index2].bookmark;
-                lastLevel = data2[index2 - 1];
+                bookmark = data2[index].bookmark;
+                lastLevel = data2[index - 1];
                 Levels.applyToEditor(editor, lastLevel, true);
                 if (self2.transact(callback2)) {
-                  data2[index2 - 1].beforeBookmark = bookmark;
+                  data2[index - 1].beforeBookmark = bookmark;
                 }
               }
             }
@@ -37607,8 +37522,8 @@ n\ff\rr""''\\\\`;
                 keys2.push(key);
                 data2[key] = String(value2);
               },
-              key: function(index2) {
-                return keys2[index2];
+              key: function(index) {
+                return keys2[index];
               },
               removeItem: function(key) {
                 keys2 = keys2.filter(function(k) {
@@ -39317,8 +39232,8 @@ function requireTheme() {
               name = /(?:not\((.+)\))|(.+)/i.exec(name);
               if (!name[1]) {
                 name = name[2];
-                return function(item, index2, length) {
-                  return name === "first" ? index2 === 0 : name === "last" ? index2 === length - 1 : name === "even" ? index2 % 2 === 0 : name === "odd" ? index2 % 2 === 1 : item[name] ? item[name]() : false;
+                return function(item, index, length) {
+                  return name === "first" ? index === 0 : name === "last" ? index === length - 1 : name === "even" ? index % 2 === 0 : name === "odd" ? index % 2 === 1 : item[name] ? item[name]() : false;
                 };
               }
               notSelectors = parseChunks(name[1], []);
@@ -39374,7 +39289,7 @@ function requireTheme() {
           this._selectors = parseChunks(selector, []);
         },
         match: function(control, selectors) {
-          var i, l, si, sl, selector, fi, fl, filters, index2, length, siblings, count2, item;
+          var i, l, si, sl, selector, fi, fl, filters, index, length, siblings, count2, item;
           selectors = selectors || this._selectors;
           for (i = 0, l = selectors.length; i < l; i++) {
             selector = selectors[i];
@@ -39386,15 +39301,15 @@ function requireTheme() {
               while (item) {
                 if (filters.pseudo) {
                   siblings = item.parent().items();
-                  index2 = length = siblings.length;
-                  while (index2--) {
-                    if (siblings[index2] === item) {
+                  index = length = siblings.length;
+                  while (index--) {
+                    if (siblings[index] === item) {
                       break;
                     }
                   }
                 }
                 for (fi = 0, fl = filters.length; fi < fl; fi++) {
-                  if (!filters[fi](item, index2, length)) {
+                  if (!filters[fi](item, index, length)) {
                     fi = fl + 1;
                     break;
                   }
@@ -39419,9 +39334,9 @@ function requireTheme() {
         find: function(container) {
           var matches = [], i, l;
           var selectors = this._selectors;
-          function collect(items, selector, index2) {
+          function collect(items, selector, index) {
             var i2, l2, fi, fl, item;
-            var filters = selector[index2];
+            var filters = selector[index];
             for (i2 = 0, l2 = items.length; i2 < l2; i2++) {
               item = items[i2];
               for (fi = 0, fl = filters.length; fi < fl; fi++) {
@@ -39431,18 +39346,18 @@ function requireTheme() {
                 }
               }
               if (fi === fl) {
-                if (index2 === selector.length - 1) {
+                if (index === selector.length - 1) {
                   matches.push(item);
                 } else {
                   if (item.items) {
-                    collect(item.items(), selector, index2 + 1);
+                    collect(item.items(), selector, index + 1);
                   }
                 }
               } else if (filters.direct) {
                 return;
               }
               if (item.items) {
-                collect(item.items(), selector, index2);
+                collect(item.items(), selector, index);
               }
             }
           }
@@ -39517,8 +39432,8 @@ function requireTheme() {
         slice: function() {
           return new Collection$1(slice.apply(this, arguments));
         },
-        eq: function(index2) {
-          return index2 === -1 ? this.slice(index2) : this.slice(index2, +index2 + 1);
+        eq: function(index) {
+          return index === -1 ? this.slice(index) : this.slice(index, +index + 1);
         },
         each: function(callback) {
           global$2.each(this, callback);
@@ -40816,13 +40731,13 @@ function requireTheme() {
         },
         renderNew: function() {
           var self2 = this;
-          self2.items().each(function(ctrl, index2) {
+          self2.items().each(function(ctrl, index) {
             var containerElm;
             ctrl.parent(self2);
             if (!ctrl.state.get("rendered")) {
               containerElm = self2.getEl("body");
-              if (containerElm.hasChildNodes() && index2 <= containerElm.childNodes.length - 1) {
-                global$9(containerElm.childNodes[index2]).before(ctrl.renderHtml());
+              if (containerElm.hasChildNodes() && index <= containerElm.childNodes.length - 1) {
+                global$9(containerElm.childNodes[index]).before(ctrl.renderHtml());
               } else {
                 global$9(containerElm).append(ctrl.renderHtml());
               }
@@ -40842,17 +40757,17 @@ function requireTheme() {
           self2.items().set(self2.create(items).concat(self2.items().toArray()));
           return self2.renderNew();
         },
-        insert: function(items, index2, before) {
+        insert: function(items, index, before) {
           var self2 = this;
           var curItems, beforeItems, afterItems;
           items = self2.create(items);
           curItems = self2.items();
-          if (!before && index2 < curItems.length - 1) {
-            index2 += 1;
+          if (!before && index < curItems.length - 1) {
+            index += 1;
           }
-          if (index2 >= 0 && index2 < curItems.length) {
-            beforeItems = curItems.slice(0, index2).toArray();
-            afterItems = curItems.slice(index2).toArray();
+          if (index >= 0 && index < curItems.length) {
+            beforeItems = curItems.slice(0, index).toArray();
+            afterItems = curItems.slice(index).toArray();
             curItems.set(beforeItems.concat(items, afterItems));
           }
           return self2.renderNew();
@@ -41847,9 +41762,9 @@ function requireTheme() {
             var firstItem = notifications.slice(0, 1)[0];
             var container = getEditorContainer(editor);
             firstItem.moveRel(container, "tc-tc");
-            each(notifications, function(notification, index2) {
-              if (index2 > 0) {
-                notification.moveRel(notifications[index2 - 1].getEl(), "bc-tc");
+            each(notifications, function(notification, index) {
+              if (index > 0) {
+                notification.moveRel(notifications[index - 1].getEl(), "bc-tc");
               }
             });
           }
@@ -43448,12 +43363,12 @@ function requireTheme() {
           self2.classes.add("path");
           self2.canFocus = true;
           self2.on("click", function(e) {
-            var index2;
+            var index;
             var target2 = e.target;
-            if (index2 = target2.getAttribute("data-index")) {
+            if (index = target2.getAttribute("data-index")) {
               self2.fire("select", {
-                value: self2.row()[index2],
-                index: index2
+                value: self2.row()[index],
+                index
               });
             }
           });
@@ -48851,9 +48766,9 @@ function requirePlugin$5() {
       var children = function(element) {
         return map2(element.dom().childNodes, Element2.fromDom);
       };
-      var child = function(element, index2) {
+      var child = function(element, index) {
         var cs = element.dom().childNodes;
-        return Option.from(cs[index2]).map(Element2.fromDom);
+        return Option.from(cs[index]).map(Element2.fromDom);
       };
       var firstChild = function(element) {
         return child(element, 0);
@@ -49861,10 +49776,10 @@ function requirePlugin$5() {
       };
       var Keyboard = { setup: setup$1 };
       var findIndex = function(list2, predicate) {
-        for (var index2 = 0; index2 < list2.length; index2++) {
-          var element = list2[index2];
+        for (var index = 0; index < list2.length; index++) {
+          var element = list2[index];
           if (predicate(element)) {
-            return index2;
+            return index;
           }
         }
         return -1;
@@ -50938,9 +50853,9 @@ function requirePlugin$4() {
       var children = function(element) {
         return map2(element.dom().childNodes, Element2.fromDom);
       };
-      var child = function(element, index2) {
+      var child = function(element, index) {
         var cs = element.dom().childNodes;
-        return Option.from(cs[index2]).map(Element2.fromDom);
+        return Option.from(cs[index]).map(Element2.fromDom);
       };
       var firstChild = function(element) {
         return child(element, 0);
@@ -51820,8 +51735,8 @@ function requirePlugin$4() {
       var brokenPath = Immutable("first", "second", "splits");
       var bisect = function(universe2, parent2, child2) {
         var children2 = universe2.property().children(parent2);
-        var index2 = findIndex(children2, curry(universe2.eq, child2));
-        return index2.map(function(ind) {
+        var index = findIndex(children2, curry(universe2.eq, child2));
+        return index.map(function(ind) {
           return {
             before: constant(children2.slice(0, ind)),
             after: constant(children2.slice(ind + 1))
@@ -51898,8 +51813,8 @@ function requirePlugin$4() {
         }
         var finder = function(ps) {
           var topDown = reverse(ps);
-          var index2 = findIndex(topDown, eq$1(universe2, common)).getOr(-1);
-          var item = index2 < topDown.length - 1 ? topDown[index2 + 1] : topDown[index2];
+          var index = findIndex(topDown, eq$1(universe2, common)).getOr(-1);
+          var item = index < topDown.length - 1 ? topDown[index + 1] : topDown[index];
           return findIndex(children2, eq$1(universe2, item));
         };
         var startIndex = finder(ps1);
@@ -51919,8 +51834,8 @@ function requirePlugin$4() {
         var ps1 = [start].concat(universe2.up().all(start));
         var ps2 = [end].concat(universe2.up().all(end));
         var prune2 = function(path2) {
-          var index2 = findIndex(path2, isRoot);
-          return index2.fold(function() {
+          var index = findIndex(path2, isRoot);
+          return index.fold(function() {
             return path2;
           }, function(ind) {
             return path2.slice(0, ind + 1);
@@ -52624,28 +52539,28 @@ function requirePlugin$4() {
       var ltrEdge = function(cell3) {
         return absolute(cell3).left();
       };
-      var getLeftEdge = function(index2, cell3) {
-        return colInfo(index2, ltrEdge(cell3));
+      var getLeftEdge = function(index, cell3) {
+        return colInfo(index, ltrEdge(cell3));
       };
-      var getRightEdge = function(index2, cell3) {
-        return colInfo(index2, rtlEdge(cell3));
+      var getRightEdge = function(index, cell3) {
+        return colInfo(index, rtlEdge(cell3));
       };
       var getTop = function(cell3) {
         return absolute(cell3).top();
       };
-      var getTopEdge = function(index2, cell3) {
-        return rowInfo(index2, getTop(cell3));
+      var getTopEdge = function(index, cell3) {
+        return rowInfo(index, getTop(cell3));
       };
-      var getBottomEdge = function(index2, cell3) {
-        return rowInfo(index2, getTop(cell3) + getOuter(cell3));
+      var getBottomEdge = function(index, cell3) {
+        return rowInfo(index, getTop(cell3) + getOuter(cell3));
       };
       var findPositions = function(getInnerEdge, getOuterEdge, array) {
         if (array.length === 0) {
           return [];
         }
-        var lines = map2(array.slice(1), function(cellOption, index2) {
+        var lines = map2(array.slice(1), function(cellOption, index) {
           return cellOption.map(function(cell3) {
-            return getInnerEdge(index2, cell3);
+            return getInnerEdge(index, cell3);
           });
         });
         var lastLine = array[array.length - 1].map(function(cell3) {
@@ -52900,12 +52815,12 @@ function requirePlugin$4() {
         }
         return r2;
       };
-      var deduce = function(xs, index2) {
-        if (index2 < 0 || index2 >= xs.length - 1) {
+      var deduce = function(xs, index) {
+        if (index < 0 || index >= xs.length - 1) {
           return Option.none();
         }
-        var current = xs[index2].fold(function() {
-          var rest = reverse(xs.slice(0, index2));
+        var current = xs[index].fold(function() {
+          var rest = reverse(xs.slice(0, index));
           return findMap(rest, function(a, i) {
             return a.map(function(aa) {
               return {
@@ -52920,8 +52835,8 @@ function requirePlugin$4() {
             delta: 0
           });
         });
-        var next3 = xs[index2 + 1].fold(function() {
-          var rest = xs.slice(index2 + 1);
+        var next3 = xs[index + 1].fold(function() {
+          var rest = xs.slice(index + 1);
           return findMap(rest, function(a, i) {
             return a.map(function(aa) {
               return {
@@ -53121,16 +53036,16 @@ function requirePlugin$4() {
         isRowBar,
         isColBar
       };
-      var addCell = function(gridRow, index2, cell3) {
+      var addCell = function(gridRow, index, cell3) {
         var cells2 = gridRow.cells();
-        var before2 = cells2.slice(0, index2);
-        var after2 = cells2.slice(index2);
+        var before2 = cells2.slice(0, index);
+        var after2 = cells2.slice(index);
         var newCells = before2.concat([cell3]).concat(after2);
         return setCells(gridRow, newCells);
       };
-      var mutateCell = function(gridRow, index2, cell3) {
+      var mutateCell = function(gridRow, index, cell3) {
         var cells2 = gridRow.cells();
-        cells2[index2] = cell3;
+        cells2[index] = cell3;
       };
       var setCells = function(gridRow, cells2) {
         return rowcells(cells2, gridRow.section());
@@ -53140,11 +53055,11 @@ function requirePlugin$4() {
         var r2 = map2(cells2, f);
         return rowcells(r2, gridRow.section());
       };
-      var getCell = function(gridRow, index2) {
-        return gridRow.cells()[index2];
+      var getCell = function(gridRow, index) {
+        return gridRow.cells()[index];
       };
-      var getCellElement = function(gridRow, index2) {
-        return getCell(gridRow, index2).element();
+      var getCellElement = function(gridRow, index) {
+        return getCell(gridRow, index).element();
       };
       var cellLength = function(gridRow) {
         return gridRow.cells().length;
@@ -53158,23 +53073,23 @@ function requirePlugin$4() {
         mapCells,
         cellLength
       };
-      var getColumn = function(grid2, index2) {
+      var getColumn = function(grid2, index) {
         return map2(grid2, function(row2) {
-          return GridRow.getCell(row2, index2);
+          return GridRow.getCell(row2, index);
         });
       };
-      var getRow = function(grid2, index2) {
-        return grid2[index2];
+      var getRow = function(grid2, index) {
+        return grid2[index];
       };
       var findDiff = function(xs, comp2) {
         if (xs.length === 0) {
           return 0;
         }
         var first2 = xs[0];
-        var index2 = findIndex(xs, function(x) {
+        var index = findIndex(xs, function(x) {
           return !comp2(first2.element(), x.element());
         });
-        return index2.fold(function() {
+        return index.fold(function() {
           return xs.length;
         }, function(ind) {
           return ind;
@@ -53525,9 +53440,9 @@ function requirePlugin$4() {
           }) ? rest : rest.concat([cell3]);
         }, []);
       };
-      var splitRows = function(grid2, index2, comparator, substitution) {
-        if (index2 > 0 && index2 < grid2.length) {
-          var rowPrevCells = grid2[index2 - 1].cells();
+      var splitRows = function(grid2, index, comparator, substitution) {
+        if (index > 0 && index < grid2.length) {
+          var rowPrevCells = grid2[index - 1].cells();
           var cells2 = uniqueCells(rowPrevCells, comparator);
           each(cells2, function(cell3) {
             var replacement = Option.none();
@@ -53548,7 +53463,7 @@ function requirePlugin$4() {
                 _loop_2(j);
               }
             };
-            for (var i = index2; i < grid2.length; i++) {
+            for (var i = index; i < grid2.length; i++) {
               _loop_1(i);
             }
           });
@@ -53592,47 +53507,47 @@ function requirePlugin$4() {
           return mergeTables(startAddress, fittedGrid, gridB, generator, comparator);
         });
       };
-      var insert = function(index2, gridA, gridB, generator, comparator) {
-        MergingOperations.splitRows(gridA, index2, comparator, generator.cell);
+      var insert = function(index, gridA, gridB, generator, comparator) {
+        MergingOperations.splitRows(gridA, index, comparator, generator.cell);
         var delta2 = Fitment.measureWidth(gridB, gridA);
         var fittedNewGrid = Fitment.tailor(gridB, delta2, generator);
         var secondDelta = Fitment.measureWidth(gridA, fittedNewGrid);
         var fittedOldGrid = Fitment.tailor(gridA, secondDelta, generator);
-        return fittedOldGrid.slice(0, index2).concat(fittedNewGrid).concat(fittedOldGrid.slice(index2, fittedOldGrid.length));
+        return fittedOldGrid.slice(0, index).concat(fittedNewGrid).concat(fittedOldGrid.slice(index, fittedOldGrid.length));
       };
       var TableMerge = {
         merge: merge$1,
         insert
       };
-      var insertRowAt = function(grid2, index2, example, comparator, substitution) {
-        var before2 = grid2.slice(0, index2);
-        var after2 = grid2.slice(index2);
+      var insertRowAt = function(grid2, index, example, comparator, substitution) {
+        var before2 = grid2.slice(0, index);
+        var after2 = grid2.slice(index);
         var between2 = GridRow.mapCells(grid2[example], function(ex, c) {
-          var withinSpan = index2 > 0 && index2 < grid2.length && comparator(GridRow.getCellElement(grid2[index2 - 1], c), GridRow.getCellElement(grid2[index2], c));
-          var ret = withinSpan ? GridRow.getCell(grid2[index2], c) : elementnew(substitution(ex.element(), comparator), true);
+          var withinSpan = index > 0 && index < grid2.length && comparator(GridRow.getCellElement(grid2[index - 1], c), GridRow.getCellElement(grid2[index], c));
+          var ret = withinSpan ? GridRow.getCell(grid2[index], c) : elementnew(substitution(ex.element(), comparator), true);
           return ret;
         });
         return before2.concat([between2]).concat(after2);
       };
-      var insertColumnAt = function(grid2, index2, example, comparator, substitution) {
+      var insertColumnAt = function(grid2, index, example, comparator, substitution) {
         return map2(grid2, function(row2) {
-          var withinSpan = index2 > 0 && index2 < GridRow.cellLength(row2) && comparator(GridRow.getCellElement(row2, index2 - 1), GridRow.getCellElement(row2, index2));
-          var sub2 = withinSpan ? GridRow.getCell(row2, index2) : elementnew(substitution(GridRow.getCellElement(row2, example), comparator), true);
-          return GridRow.addCell(row2, index2, sub2);
+          var withinSpan = index > 0 && index < GridRow.cellLength(row2) && comparator(GridRow.getCellElement(row2, index - 1), GridRow.getCellElement(row2, index));
+          var sub2 = withinSpan ? GridRow.getCell(row2, index) : elementnew(substitution(GridRow.getCellElement(row2, example), comparator), true);
+          return GridRow.addCell(row2, index, sub2);
         });
       };
       var splitCellIntoColumns = function(grid2, exampleRow, exampleCol, comparator, substitution) {
-        var index2 = exampleCol + 1;
+        var index = exampleCol + 1;
         return map2(grid2, function(row2, i) {
           var isTargetCell = i === exampleRow;
           var sub2 = isTargetCell ? elementnew(substitution(GridRow.getCellElement(row2, exampleCol), comparator), true) : GridRow.getCell(row2, exampleCol);
-          return GridRow.addCell(row2, index2, sub2);
+          return GridRow.addCell(row2, index, sub2);
         });
       };
       var splitCellIntoRows = function(grid2, exampleRow, exampleCol, comparator, substitution) {
-        var index2 = exampleRow + 1;
-        var before2 = grid2.slice(0, index2);
-        var after2 = grid2.slice(index2);
+        var index = exampleRow + 1;
+        var before2 = grid2.slice(0, index);
+        var after2 = grid2.slice(index);
         var between2 = GridRow.mapCells(grid2[exampleRow], function(ex, i) {
           var isTargetCell = i === exampleCol;
           return isTargetCell ? elementnew(substitution(ex.element(), comparator), true) : ex;
@@ -53683,21 +53598,21 @@ function requirePlugin$4() {
         }
       ]);
       var ColumnContext = __assign({}, adt);
-      var neighbours$1 = function(input, index2) {
+      var neighbours$1 = function(input, index) {
         if (input.length === 0) {
           return ColumnContext.none();
         }
         if (input.length === 1) {
           return ColumnContext.only(0);
         }
-        if (index2 === 0) {
+        if (index === 0) {
           return ColumnContext.left(0, 1);
         }
-        if (index2 === input.length - 1) {
-          return ColumnContext.right(index2 - 1, index2);
+        if (index === input.length - 1) {
+          return ColumnContext.right(index - 1, index);
         }
-        if (index2 > 0 && index2 < input.length - 1) {
-          return ColumnContext.middle(index2 - 1, index2, index2 + 1);
+        if (index > 0 && index < input.length - 1) {
+          return ColumnContext.middle(index - 1, index, index + 1);
         }
         return ColumnContext.none();
       };
@@ -53708,35 +53623,35 @@ function requirePlugin$4() {
           return map2(array, constant(0));
         };
         var onNone = constant(zero2(result));
-        var onOnly = function(index2) {
-          return tableSize.singleColumnWidth(result[index2], step);
+        var onOnly = function(index) {
+          return tableSize.singleColumnWidth(result[index], step);
         };
-        var onChange = function(index2, next3) {
+        var onChange = function(index, next3) {
           if (step >= 0) {
             var newNext = Math.max(tableSize.minCellWidth(), result[next3] - step);
-            return zero2(result.slice(0, index2)).concat([
+            return zero2(result.slice(0, index)).concat([
               step,
               newNext - result[next3]
             ]).concat(zero2(result.slice(next3 + 1)));
           } else {
-            var newThis = Math.max(tableSize.minCellWidth(), result[index2] + step);
-            var diffx = result[index2] - newThis;
-            return zero2(result.slice(0, index2)).concat([
-              newThis - result[index2],
+            var newThis = Math.max(tableSize.minCellWidth(), result[index] + step);
+            var diffx = result[index] - newThis;
+            return zero2(result.slice(0, index)).concat([
+              newThis - result[index],
               diffx
             ]).concat(zero2(result.slice(next3 + 1)));
           }
         };
         var onLeft = onChange;
-        var onMiddle = function(_prev, index2, next3) {
-          return onChange(index2, next3);
+        var onMiddle = function(_prev, index, next3) {
+          return onChange(index, next3);
         };
-        var onRight = function(_prev, index2) {
+        var onRight = function(_prev, index) {
           if (step >= 0) {
-            return zero2(result.slice(0, index2)).concat([step]);
+            return zero2(result.slice(0, index)).concat([step]);
           } else {
-            var size = Math.max(tableSize.minCellWidth(), result[index2] + step);
-            return zero2(result.slice(0, index2)).concat([size - result[index2]]);
+            var size = Math.max(tableSize.minCellWidth(), result[index] + step);
+            return zero2(result.slice(0, index)).concat([size - result[index]]);
           }
         };
         return context.fold(onNone, onOnly, onLeft, onMiddle, onRight);
@@ -53971,12 +53886,12 @@ function requirePlugin$4() {
         var list2 = DetailsList.fromTable(table3);
         return getWarehouse$1(list2);
       };
-      var adjustWidth = function(table3, delta2, index2, direction) {
+      var adjustWidth = function(table3, delta2, index, direction) {
         var tableSize = TableSize.getTableSize(table3);
         var step = tableSize.getCellDelta(delta2);
         var warehouse = getTableWarehouse(table3);
         var widths = tableSize.getWidths(warehouse, direction, tableSize);
-        var deltas = Deltas.determine(widths, index2, step, tableSize);
+        var deltas = Deltas.determine(widths, index, step, tableSize);
         var newWidths = map2(deltas, function(dx, i) {
           return dx + widths[i];
         });
@@ -53984,15 +53899,15 @@ function requirePlugin$4() {
         each(newSizes, function(cell3) {
           tableSize.setElementWidth(cell3.element(), cell3.width());
         });
-        if (index2 === warehouse.grid().columns() - 1) {
+        if (index === warehouse.grid().columns() - 1) {
           tableSize.setTableWidth(table3, newWidths, step);
         }
       };
-      var adjustHeight = function(table3, delta2, index2, direction) {
+      var adjustHeight = function(table3, delta2, index, direction) {
         var warehouse = getTableWarehouse(table3);
         var heights = ColumnSizes.getPixelHeights(warehouse, direction);
         var newHeights = map2(heights, function(dy, i) {
-          return index2 === i ? Math.max(delta2 + dy, CellUtils.minHeight()) : dy;
+          return index === i ? Math.max(delta2 + dy, CellUtils.minHeight()) : dy;
         });
         var newCellSizes = Recalculations.recalculateHeight(warehouse, newHeights);
         var newRowSizes = Recalculations.matchRowHeight(warehouse, newHeights);
@@ -54463,17 +54378,17 @@ function requirePlugin$4() {
       };
       var pasteRowsBefore = function(grid2, pasteDetails, comparator, _genWrappers) {
         var example = grid2[pasteDetails.cells[0].row()];
-        var index2 = pasteDetails.cells[0].row();
+        var index = pasteDetails.cells[0].row();
         var gridB = gridifyRows(pasteDetails.clipboard(), pasteDetails.generators(), example);
-        var mergedGrid = TableMerge.insert(index2, grid2, gridB, pasteDetails.generators(), comparator);
+        var mergedGrid = TableMerge.insert(index, grid2, gridB, pasteDetails.generators(), comparator);
         var cursor = elementFromGrid(mergedGrid, pasteDetails.cells[0].row(), pasteDetails.cells[0].column());
         return outcome(mergedGrid, cursor);
       };
       var pasteRowsAfter = function(grid2, pasteDetails, comparator, _genWrappers) {
         var example = grid2[pasteDetails.cells[0].row()];
-        var index2 = pasteDetails.cells[pasteDetails.cells.length - 1].row() + pasteDetails.cells[pasteDetails.cells.length - 1].rowspan();
+        var index = pasteDetails.cells[pasteDetails.cells.length - 1].row() + pasteDetails.cells[pasteDetails.cells.length - 1].rowspan();
         var gridB = gridifyRows(pasteDetails.clipboard(), pasteDetails.generators(), example);
-        var mergedGrid = TableMerge.insert(index2, grid2, gridB, pasteDetails.generators(), comparator);
+        var mergedGrid = TableMerge.insert(index, grid2, gridB, pasteDetails.generators(), comparator);
         var cursor = elementFromGrid(mergedGrid, pasteDetails.cells[0].row(), pasteDetails.cells[0].column());
         return outcome(mergedGrid, cursor);
       };
@@ -56638,10 +56553,10 @@ function requirePlugin$4() {
       var detect$4 = function(current, isRoot) {
         return TableLookup.table(current, isRoot).bind(function(table3) {
           var all2 = TableLookup.cells(table3);
-          var index2 = findIndex(all2, function(x) {
+          var index = findIndex(all2, function(x) {
             return eq(current, x);
           });
-          return index2.map(function(ind) {
+          return index.map(function(ind) {
             return {
               index: constant(ind),
               all: constant(all2)
@@ -57459,8 +57374,8 @@ function requirePlugin$4() {
       var indexInParent = function(element) {
         return parent(element).bind(function(parent2) {
           var children$12 = children(parent2);
-          return indexOf(children$12, element).map(function(index2) {
-            return inParent(parent2, children$12, element, index2);
+          return indexOf(children$12, element).map(function(index) {
+            return inParent(parent2, children$12, element, index);
           });
         });
       };
@@ -57779,9 +57694,9 @@ function requirePlugin$4() {
           });
         });
       };
-      var tryAgain = function(bridge, element, offset, move2, direction) {
+      var tryAgain = function(bridge, element, offset, move, direction) {
         return Rectangles.getBoxAt(bridge, element, offset).bind(function(box) {
-          return tryAt(bridge, direction, move2(box, Retries.getJumpSize()));
+          return tryAt(bridge, direction, move(box, Retries.getJumpSize()));
         });
       };
       var tryAt = function(bridge, direction, box) {
@@ -63753,8 +63668,8 @@ function requireSanitizeHtml() {
         EventEmitter.prototype.eventNames = function eventNames() {
           return this._eventsCount > 0 ? Reflect.ownKeys(this._events) : [];
         };
-        function spliceOne(list2, index2) {
-          for (var i = index2, k = i + 1, n = list2.length; k < n; i += 1, k += 1) {
+        function spliceOne(list2, index) {
+          for (var i = index, k = i + 1, n = list2.length; k < n; i += 1, k += 1) {
             list2[i] = list2[k];
           }
           list2.pop();
@@ -65226,10 +65141,10 @@ function requireSanitizeHtml() {
       }, { "./_getNative": 93, "./_root": 130 }], 34: [function(require2, module3, exports3) {
         var hashClear = require2("./_hashClear"), hashDelete = require2("./_hashDelete"), hashGet = require2("./_hashGet"), hashHas = require2("./_hashHas"), hashSet = require2("./_hashSet");
         function Hash(entries) {
-          var index2 = -1, length = entries == null ? 0 : entries.length;
+          var index = -1, length = entries == null ? 0 : entries.length;
           this.clear();
-          while (++index2 < length) {
-            var entry = entries[index2];
+          while (++index < length) {
+            var entry = entries[index];
             this.set(entry[0], entry[1]);
           }
         }
@@ -65242,10 +65157,10 @@ function requireSanitizeHtml() {
       }, { "./_hashClear": 100, "./_hashDelete": 101, "./_hashGet": 102, "./_hashHas": 103, "./_hashSet": 104 }], 35: [function(require2, module3, exports3) {
         var listCacheClear = require2("./_listCacheClear"), listCacheDelete = require2("./_listCacheDelete"), listCacheGet = require2("./_listCacheGet"), listCacheHas = require2("./_listCacheHas"), listCacheSet = require2("./_listCacheSet");
         function ListCache(entries) {
-          var index2 = -1, length = entries == null ? 0 : entries.length;
+          var index = -1, length = entries == null ? 0 : entries.length;
           this.clear();
-          while (++index2 < length) {
-            var entry = entries[index2];
+          while (++index < length) {
+            var entry = entries[index];
             this.set(entry[0], entry[1]);
           }
         }
@@ -65262,10 +65177,10 @@ function requireSanitizeHtml() {
       }, { "./_getNative": 93, "./_root": 130 }], 37: [function(require2, module3, exports3) {
         var mapCacheClear = require2("./_mapCacheClear"), mapCacheDelete = require2("./_mapCacheDelete"), mapCacheGet = require2("./_mapCacheGet"), mapCacheHas = require2("./_mapCacheHas"), mapCacheSet = require2("./_mapCacheSet");
         function MapCache(entries) {
-          var index2 = -1, length = entries == null ? 0 : entries.length;
+          var index = -1, length = entries == null ? 0 : entries.length;
           this.clear();
-          while (++index2 < length) {
-            var entry = entries[index2];
+          while (++index < length) {
+            var entry = entries[index];
             this.set(entry[0], entry[1]);
           }
         }
@@ -65324,9 +65239,9 @@ function requireSanitizeHtml() {
         module3.exports = apply;
       }, {}], 45: [function(require2, module3, exports3) {
         function arrayEach(array, iteratee) {
-          var index2 = -1, length = array == null ? 0 : array.length;
-          while (++index2 < length) {
-            if (iteratee(array[index2], index2, array) === false) {
+          var index = -1, length = array == null ? 0 : array.length;
+          while (++index < length) {
+            if (iteratee(array[index], index, array) === false) {
               break;
             }
           }
@@ -65335,10 +65250,10 @@ function requireSanitizeHtml() {
         module3.exports = arrayEach;
       }, {}], 46: [function(require2, module3, exports3) {
         function arrayFilter(array, predicate) {
-          var index2 = -1, length = array == null ? 0 : array.length, resIndex = 0, result = [];
-          while (++index2 < length) {
-            var value = array[index2];
-            if (predicate(value, index2, array)) {
+          var index = -1, length = array == null ? 0 : array.length, resIndex = 0, result = [];
+          while (++index < length) {
+            var value = array[index];
+            if (predicate(value, index, array)) {
               result[resIndex++] = value;
             }
           }
@@ -65365,18 +65280,18 @@ function requireSanitizeHtml() {
         module3.exports = arrayLikeKeys;
       }, { "./_baseTimes": 72, "./_isIndex": 108, "./isArguments": 145, "./isArray": 146, "./isBuffer": 149, "./isTypedArray": 159 }], 48: [function(require2, module3, exports3) {
         function arrayMap(array, iteratee) {
-          var index2 = -1, length = array == null ? 0 : array.length, result = Array(length);
-          while (++index2 < length) {
-            result[index2] = iteratee(array[index2], index2, array);
+          var index = -1, length = array == null ? 0 : array.length, result = Array(length);
+          while (++index < length) {
+            result[index] = iteratee(array[index], index, array);
           }
           return result;
         }
         module3.exports = arrayMap;
       }, {}], 49: [function(require2, module3, exports3) {
         function arrayPush(array, values) {
-          var index2 = -1, length = values.length, offset = array.length;
-          while (++index2 < length) {
-            array[offset + index2] = values[index2];
+          var index = -1, length = values.length, offset = array.length;
+          while (++index < length) {
+            array[offset + index] = values[index];
           }
           return array;
         }
@@ -65707,9 +65622,9 @@ function requireSanitizeHtml() {
         module3.exports = baseSetToString;
       }, { "./_defineProperty": 88, "./constant": 141, "./identity": 144 }], 72: [function(require2, module3, exports3) {
         function baseTimes(n, iteratee) {
-          var index2 = -1, result = Array(n);
-          while (++index2 < n) {
-            result[index2] = iteratee(index2);
+          var index = -1, result = Array(n);
+          while (++index < n) {
+            result[index] = iteratee(index);
           }
           return result;
         }
@@ -65792,10 +65707,10 @@ function requireSanitizeHtml() {
         module3.exports = cloneTypedArray;
       }, { "./_cloneArrayBuffer": 75 }], 81: [function(require2, module3, exports3) {
         function copyArray(source, array) {
-          var index2 = -1, length = source.length;
+          var index = -1, length = source.length;
           array || (array = Array(length));
-          while (++index2 < length) {
-            array[index2] = source[index2];
+          while (++index < length) {
+            array[index] = source[index];
           }
           return array;
         }
@@ -65805,9 +65720,9 @@ function requireSanitizeHtml() {
         function copyObject(source, props, object, customizer) {
           var isNew = !object;
           object || (object = {});
-          var index2 = -1, length = props.length;
-          while (++index2 < length) {
-            var key = props[index2];
+          var index = -1, length = props.length;
+          while (++index < length) {
+            var key = props[index];
             var newValue = customizer ? customizer(object[key], source[key], key, object, source) : void 0;
             if (newValue === void 0) {
               newValue = source[key];
@@ -65841,17 +65756,17 @@ function requireSanitizeHtml() {
         var baseRest = require2("./_baseRest"), isIterateeCall = require2("./_isIterateeCall");
         function createAssigner(assigner) {
           return baseRest(function(object, sources) {
-            var index2 = -1, length = sources.length, customizer = length > 1 ? sources[length - 1] : void 0, guard = length > 2 ? sources[2] : void 0;
+            var index = -1, length = sources.length, customizer = length > 1 ? sources[length - 1] : void 0, guard = length > 2 ? sources[2] : void 0;
             customizer = assigner.length > 3 && typeof customizer == "function" ? (length--, customizer) : void 0;
             if (guard && isIterateeCall(sources[0], sources[1], guard)) {
               customizer = length < 3 ? void 0 : customizer;
               length = 1;
             }
             object = Object(object);
-            while (++index2 < length) {
-              var source = sources[index2];
+            while (++index < length) {
+              var source = sources[index];
               if (source) {
-                assigner(object, source, index2, customizer);
+                assigner(object, source, index, customizer);
               }
             }
             return object;
@@ -65861,9 +65776,9 @@ function requireSanitizeHtml() {
       }, { "./_baseRest": 70, "./_isIterateeCall": 109 }], 87: [function(require2, module3, exports3) {
         function createBaseFor(fromRight) {
           return function(object, iteratee, keysFunc) {
-            var index2 = -1, iterable = Object(object), props = keysFunc(object), length = props.length;
+            var index = -1, iterable = Object(object), props = keysFunc(object), length = props.length;
             while (length--) {
-              var key = props[fromRight ? length : ++index2];
+              var key = props[fromRight ? length : ++index];
               if (iteratee(iterable[key], key, iterable) === false) {
                 break;
               }
@@ -66115,13 +66030,13 @@ function requireSanitizeHtml() {
         module3.exports = isIndex;
       }, {}], 109: [function(require2, module3, exports3) {
         var eq = require2("./eq"), isArrayLike = require2("./isArrayLike"), isIndex = require2("./_isIndex"), isObject = require2("./isObject");
-        function isIterateeCall(value, index2, object) {
+        function isIterateeCall(value, index, object) {
           if (!isObject(object)) {
             return false;
           }
-          var type = _typeof(index2);
-          if (type == "number" ? isArrayLike(object) && isIndex(index2, object.length) : type == "string" && index2 in object) {
-            return eq(object[index2], value);
+          var type = _typeof(index);
+          if (type == "number" ? isArrayLike(object) && isIndex(index, object.length) : type == "string" && index in object) {
+            return eq(object[index], value);
           }
           return false;
         }
@@ -66160,15 +66075,15 @@ function requireSanitizeHtml() {
         var arrayProto = Array.prototype;
         var splice = arrayProto.splice;
         function listCacheDelete(key) {
-          var data = this.__data__, index2 = assocIndexOf(data, key);
-          if (index2 < 0) {
+          var data = this.__data__, index = assocIndexOf(data, key);
+          if (index < 0) {
             return false;
           }
           var lastIndex = data.length - 1;
-          if (index2 == lastIndex) {
+          if (index == lastIndex) {
             data.pop();
           } else {
-            splice.call(data, index2, 1);
+            splice.call(data, index, 1);
           }
           --this.size;
           return true;
@@ -66177,8 +66092,8 @@ function requireSanitizeHtml() {
       }, { "./_assocIndexOf": 52 }], 115: [function(require2, module3, exports3) {
         var assocIndexOf = require2("./_assocIndexOf");
         function listCacheGet(key) {
-          var data = this.__data__, index2 = assocIndexOf(data, key);
-          return index2 < 0 ? void 0 : data[index2][1];
+          var data = this.__data__, index = assocIndexOf(data, key);
+          return index < 0 ? void 0 : data[index][1];
         }
         module3.exports = listCacheGet;
       }, { "./_assocIndexOf": 52 }], 116: [function(require2, module3, exports3) {
@@ -66190,12 +66105,12 @@ function requireSanitizeHtml() {
       }, { "./_assocIndexOf": 52 }], 117: [function(require2, module3, exports3) {
         var assocIndexOf = require2("./_assocIndexOf");
         function listCacheSet(key, value) {
-          var data = this.__data__, index2 = assocIndexOf(data, key);
-          if (index2 < 0) {
+          var data = this.__data__, index = assocIndexOf(data, key);
+          if (index < 0) {
             ++this.size;
             data.push([key, value]);
           } else {
-            data[index2][1] = value;
+            data[index][1] = value;
           }
           return this;
         }
@@ -66292,14 +66207,14 @@ function requireSanitizeHtml() {
         function overRest(func, start, transform) {
           start = nativeMax(start === void 0 ? func.length - 1 : start, 0);
           return function() {
-            var args = arguments, index2 = -1, length = nativeMax(args.length - start, 0), array = Array(length);
-            while (++index2 < length) {
-              array[index2] = args[start + index2];
+            var args = arguments, index = -1, length = nativeMax(args.length - start, 0), array = Array(length);
+            while (++index < length) {
+              array[index] = args[start + index];
             }
-            index2 = -1;
+            index = -1;
             var otherArgs = Array(start + 1);
-            while (++index2 < start) {
-              otherArgs[index2] = args[index2];
+            while (++index < start) {
+              otherArgs[index] = args[index];
             }
             otherArgs[start] = transform(array);
             return apply(func, this, otherArgs);
@@ -66798,7 +66713,7 @@ function requireSanitizeHtml() {
           };
           exports3.join = function() {
             var paths = Array.prototype.slice.call(arguments, 0);
-            return exports3.normalize(filter(paths, function(p, index2) {
+            return exports3.normalize(filter(paths, function(p, index) {
               if (typeof p !== "string") {
                 throw new TypeError("Arguments to path.join must be strings");
               }
@@ -67089,10 +67004,10 @@ function requireSanitizeHtml() {
             var id = this.lastEach;
             this.indexes[id] = 0;
             if (!this.nodes) return void 0;
-            var index2, result;
+            var index, result;
             while (this.indexes[id] < this.nodes.length) {
-              index2 = this.indexes[id];
-              result = callback(this.nodes[index2], index2);
+              index = this.indexes[id];
+              result = callback(this.nodes[index], index);
               if (result === false) break;
               this.indexes[id] += 1;
             }
@@ -67240,11 +67155,11 @@ function requireSanitizeHtml() {
               var node = _step5.value;
               this.nodes.splice(exist2, 0, node);
             }
-            var index2;
+            var index;
             for (var id in this.indexes) {
-              index2 = this.indexes[id];
-              if (exist2 <= index2) {
-                this.indexes[id] = index2 + nodes.length;
+              index = this.indexes[id];
+              if (exist2 <= index) {
+                this.indexes[id] = index + nodes.length;
               }
             }
             return this;
@@ -67256,11 +67171,11 @@ function requireSanitizeHtml() {
               var node = _step6.value;
               this.nodes.splice(exist2 + 1, 0, node);
             }
-            var index2;
+            var index;
             for (var id in this.indexes) {
-              index2 = this.indexes[id];
-              if (exist2 < index2) {
-                this.indexes[id] = index2 + nodes.length;
+              index = this.indexes[id];
+              if (exist2 < index) {
+                this.indexes[id] = index + nodes.length;
               }
             }
             return this;
@@ -67269,11 +67184,11 @@ function requireSanitizeHtml() {
             child = this.index(child);
             this.nodes[child].parent = void 0;
             this.nodes.splice(child, 1);
-            var index2;
+            var index;
             for (var id in this.indexes) {
-              index2 = this.indexes[id];
-              if (index2 >= child) {
-                this.indexes[id] = index2 - 1;
+              index = this.indexes[id];
+              if (index >= child) {
+                this.indexes[id] = index - 1;
               }
             }
             return this;
@@ -67304,7 +67219,7 @@ function requireSanitizeHtml() {
           _proto.some = function some(condition) {
             return this.nodes.some(condition);
           };
-          _proto.index = function index2(child) {
+          _proto.index = function index(child) {
             if (typeof child === "number") {
               return child;
             }
@@ -67523,8 +67438,8 @@ function requireSanitizeHtml() {
               }
               return text2;
             }
-            return lines.slice(start, end).map(function(line, index2) {
-              var number = start + 1 + index2;
+            return lines.slice(start, end).map(function(line, index) {
+              var number = start + 1 + index;
               var gutter = " " + (" " + number).slice(-maxWidth) + " | ";
               if (number === _this2.line) {
                 var spacing = aside(gutter.replace(/\d/g, " ")) + line.slice(0, _this2.column - 1).replace(/[^\t]/g, " ");
@@ -68453,13 +68368,13 @@ function requireSanitizeHtml() {
             };
             _proto.next = function next2() {
               if (!this.parent) return void 0;
-              var index2 = this.parent.index(this);
-              return this.parent.nodes[index2 + 1];
+              var index = this.parent.index(this);
+              return this.parent.nodes[index + 1];
             };
             _proto.prev = function prev() {
               if (!this.parent) return void 0;
-              var index2 = this.parent.index(this);
-              return this.parent.nodes[index2 - 1];
+              var index = this.parent.index(this);
+              return this.parent.nodes[index - 1];
             };
             _proto.before = function before(add) {
               this.parent.insertBefore(this, add);
@@ -68507,11 +68422,11 @@ function requireSanitizeHtml() {
               delete this.raws.after;
               if (!keepBetween) delete this.raws.between;
             };
-            _proto.positionInside = function positionInside(index2) {
+            _proto.positionInside = function positionInside(index) {
               var string = this.toString();
               var column = this.source.start.column;
               var line = this.source.start.line;
-              for (var i = 0; i < index2; i++) {
+              for (var i = 0; i < index; i++) {
                 if (string[i] === "\n") {
                   column = 1;
                   line += 1;
@@ -68526,8 +68441,8 @@ function requireSanitizeHtml() {
               if (opts.index) {
                 pos = this.positionInside(opts.index);
               } else if (opts.word) {
-                var index2 = this.toString().indexOf(opts.word);
-                if (index2 !== -1) pos = this.positionInside(index2);
+                var index = this.toString().indexOf(opts.word);
+                if (index !== -1) pos = this.positionInside(index);
               }
               return pos;
             };
@@ -69410,9 +69325,9 @@ function requireSanitizeHtml() {
           }
           var _proto = Root2.prototype;
           _proto.removeChild = function removeChild(child, ignore) {
-            var index2 = this.index(child);
-            if (!ignore && index2 === 0 && this.nodes.length > 1) {
-              this.nodes[1].raws.before = this.nodes[index2].raws.before;
+            var index = this.index(child);
+            if (!ignore && index === 0 && this.nodes.length > 1) {
+              this.nodes[1].raws.before = this.nodes[index].raws.before;
             }
             return _Container.prototype.removeChild.call(this, child);
           };
@@ -69541,7 +69456,7 @@ function requireSanitizeHtml() {
         exports3.__esModule = true;
         exports3["default"] = void 0;
         var DEFAULT_RAW = { colon: ": ", indent: "    ", beforeDecl: "\n", beforeRule: "\n", beforeOpen: " ", beforeClose: "\n", beforeComment: "\n", after: "\n", emptyBody: "", commentLeft: " ", commentRight: " ", semicolon: false };
-        function capitalize2(str) {
+        function capitalize(str) {
           return str[0].toUpperCase() + str.slice(1);
         }
         var Stringifier = /* @__PURE__ */ (function() {
@@ -69640,7 +69555,7 @@ function requireSanitizeHtml() {
             if (detect === "before" || detect === "after") {
               return this.beforeAfter(node, detect);
             } else {
-              var method = "raw" + capitalize2(detect);
+              var method = "raw" + capitalize(detect);
               if (this[method]) {
                 value = this[method](root2, node);
               } else {
@@ -70404,7 +70319,7 @@ function requireSanitizeHtml() {
               return floor2(k + (baseMinusTMin2 + 1) * delta2 / (delta2 + skew2));
             }
             function decode2(input) {
-              var output2 = [], inputLength = input.length, out, i = 0, n = initialN2, bias = initialBias2, basic, j, index2, oldi, w, k, digit, t, baseMinusT;
+              var output2 = [], inputLength = input.length, out, i = 0, n = initialN2, bias = initialBias2, basic, j, index, oldi, w, k, digit, t, baseMinusT;
               basic = input.lastIndexOf(delimiter2);
               if (basic < 0) {
                 basic = 0;
@@ -70415,17 +70330,17 @@ function requireSanitizeHtml() {
                 }
                 output2.push(input.charCodeAt(j));
               }
-              for (index2 = basic > 0 ? basic + 1 : 0; index2 < inputLength; ) {
+              for (index = basic > 0 ? basic + 1 : 0; index < inputLength; ) {
                 for (
                   oldi = i, w = 1, k = base2;
                   ;
                   /* no condition */
                   k += base2
                 ) {
-                  if (index2 >= inputLength) {
+                  if (index >= inputLength) {
                     error2("invalid-input");
                   }
-                  digit = basicToDigit2(input.charCodeAt(index2++));
+                  digit = basicToDigit2(input.charCodeAt(index++));
                   if (digit >= base2 || digit > floor2((maxInt2 - i) / w)) {
                     error2("overflow");
                   }
@@ -70838,17 +70753,17 @@ function requireSanitizeHtml() {
           if (aHaystack.length === 0) {
             return -1;
           }
-          var index2 = recursiveSearch(-1, aHaystack.length, aNeedle, aHaystack, aCompare, aBias || exports3.GREATEST_LOWER_BOUND);
-          if (index2 < 0) {
+          var index = recursiveSearch(-1, aHaystack.length, aNeedle, aHaystack, aCompare, aBias || exports3.GREATEST_LOWER_BOUND);
+          if (index < 0) {
             return -1;
           }
-          while (index2 - 1 >= 0) {
-            if (aCompare(aHaystack[index2], aHaystack[index2 - 1], true) !== 0) {
+          while (index - 1 >= 0) {
+            if (aCompare(aHaystack[index], aHaystack[index - 1], true) !== 0) {
               break;
             }
-            --index2;
+            --index;
           }
-          return index2;
+          return index;
         };
       }, {}], 202: [function(require2, module3, exports3) {
         var util = require2("./util");
@@ -70945,8 +70860,8 @@ function requireSanitizeHtml() {
           }
           return this.__originalMappings;
         } });
-        SourceMapConsumer.prototype._charIsMappingSeparator = function SourceMapConsumer_charIsMappingSeparator(aStr, index2) {
-          var c = aStr.charAt(index2);
+        SourceMapConsumer.prototype._charIsMappingSeparator = function SourceMapConsumer_charIsMappingSeparator(aStr, index) {
+          var c = aStr.charAt(index);
           return c === ";" || c === ",";
         };
         SourceMapConsumer.prototype._parseMappings = function SourceMapConsumer_parseMappings(aStr, aSourceRoot) {
@@ -70985,20 +70900,20 @@ function requireSanitizeHtml() {
             return [];
           }
           var mappings = [];
-          var index2 = this._findMapping(needle, this._originalMappings, "originalLine", "originalColumn", util.compareByOriginalPositions, binarySearch.LEAST_UPPER_BOUND);
-          if (index2 >= 0) {
-            var mapping = this._originalMappings[index2];
+          var index = this._findMapping(needle, this._originalMappings, "originalLine", "originalColumn", util.compareByOriginalPositions, binarySearch.LEAST_UPPER_BOUND);
+          if (index >= 0) {
+            var mapping = this._originalMappings[index];
             if (aArgs.column === void 0) {
               var originalLine = mapping.originalLine;
               while (mapping && mapping.originalLine === originalLine) {
                 mappings.push({ line: util.getArg(mapping, "generatedLine", null), column: util.getArg(mapping, "generatedColumn", null), lastColumn: util.getArg(mapping, "lastGeneratedColumn", null) });
-                mapping = this._originalMappings[++index2];
+                mapping = this._originalMappings[++index];
               }
             } else {
               var originalColumn = mapping.originalColumn;
               while (mapping && mapping.originalLine === line && mapping.originalColumn == originalColumn) {
                 mappings.push({ line: util.getArg(mapping, "generatedLine", null), column: util.getArg(mapping, "generatedColumn", null), lastColumn: util.getArg(mapping, "lastGeneratedColumn", null) });
-                mapping = this._originalMappings[++index2];
+                mapping = this._originalMappings[++index];
               }
             }
           }
@@ -71108,37 +71023,37 @@ function requireSanitizeHtml() {
           var previousSource = 0;
           var previousName = 0;
           var length = aStr.length;
-          var index2 = 0;
+          var index = 0;
           var cachedSegments = {};
           var temp = {};
           var originalMappings = [];
           var generatedMappings = [];
           var mapping, str, segment, end, value;
-          while (index2 < length) {
-            if (aStr.charAt(index2) === ";") {
+          while (index < length) {
+            if (aStr.charAt(index) === ";") {
               generatedLine++;
-              index2++;
+              index++;
               previousGeneratedColumn = 0;
-            } else if (aStr.charAt(index2) === ",") {
-              index2++;
+            } else if (aStr.charAt(index) === ",") {
+              index++;
             } else {
               mapping = new Mapping();
               mapping.generatedLine = generatedLine;
-              for (end = index2; end < length; end++) {
+              for (end = index; end < length; end++) {
                 if (this._charIsMappingSeparator(aStr, end)) {
                   break;
                 }
               }
-              str = aStr.slice(index2, end);
+              str = aStr.slice(index, end);
               segment = cachedSegments[str];
               if (segment) {
-                index2 += str.length;
+                index += str.length;
               } else {
                 segment = [];
-                while (index2 < end) {
-                  base64VLQ.decode(aStr, index2, temp);
+                while (index < end) {
+                  base64VLQ.decode(aStr, index, temp);
                   value = temp.value;
-                  index2 = temp.rest;
+                  index = temp.rest;
                   segment.push(value);
                 }
                 if (segment.length === 2) {
@@ -71185,10 +71100,10 @@ function requireSanitizeHtml() {
           return binarySearch.search(aNeedle, aMappings, aComparator, aBias);
         };
         BasicSourceMapConsumer.prototype.computeColumnSpans = function SourceMapConsumer_computeColumnSpans() {
-          for (var index2 = 0; index2 < this._generatedMappings.length; ++index2) {
-            var mapping = this._generatedMappings[index2];
-            if (index2 + 1 < this._generatedMappings.length) {
-              var nextMapping = this._generatedMappings[index2 + 1];
+          for (var index = 0; index < this._generatedMappings.length; ++index) {
+            var mapping = this._generatedMappings[index];
+            if (index + 1 < this._generatedMappings.length) {
+              var nextMapping = this._generatedMappings[index + 1];
               if (mapping.generatedLine === nextMapping.generatedLine) {
                 mapping.lastGeneratedColumn = nextMapping.generatedColumn - 1;
                 continue;
@@ -71199,9 +71114,9 @@ function requireSanitizeHtml() {
         };
         BasicSourceMapConsumer.prototype.originalPositionFor = function SourceMapConsumer_originalPositionFor(aArgs) {
           var needle = { generatedLine: util.getArg(aArgs, "line"), generatedColumn: util.getArg(aArgs, "column") };
-          var index2 = this._findMapping(needle, this._generatedMappings, "generatedLine", "generatedColumn", util.compareByGeneratedPositionsDeflated, util.getArg(aArgs, "bias", SourceMapConsumer.GREATEST_LOWER_BOUND));
-          if (index2 >= 0) {
-            var mapping = this._generatedMappings[index2];
+          var index = this._findMapping(needle, this._generatedMappings, "generatedLine", "generatedColumn", util.compareByGeneratedPositionsDeflated, util.getArg(aArgs, "bias", SourceMapConsumer.GREATEST_LOWER_BOUND));
+          if (index >= 0) {
+            var mapping = this._generatedMappings[index];
             if (mapping.generatedLine === needle.generatedLine) {
               var source = util.getArg(mapping, "source", null);
               if (source !== null) {
@@ -71229,9 +71144,9 @@ function requireSanitizeHtml() {
           if (!this.sourcesContent) {
             return null;
           }
-          var index2 = this._findSourceIndex(aSource);
-          if (index2 >= 0) {
-            return this.sourcesContent[index2];
+          var index = this._findSourceIndex(aSource);
+          if (index >= 0) {
+            return this.sourcesContent[index];
           }
           var relativeSource = aSource;
           if (this.sourceRoot != null) {
@@ -71260,9 +71175,9 @@ function requireSanitizeHtml() {
             return { line: null, column: null, lastColumn: null };
           }
           var needle = { source, originalLine: util.getArg(aArgs, "line"), originalColumn: util.getArg(aArgs, "column") };
-          var index2 = this._findMapping(needle, this._originalMappings, "originalLine", "originalColumn", util.compareByOriginalPositions, util.getArg(aArgs, "bias", SourceMapConsumer.GREATEST_LOWER_BOUND));
-          if (index2 >= 0) {
-            var mapping = this._originalMappings[index2];
+          var index = this._findMapping(needle, this._originalMappings, "originalLine", "originalColumn", util.compareByOriginalPositions, util.getArg(aArgs, "bias", SourceMapConsumer.GREATEST_LOWER_BOUND));
+          if (index >= 0) {
+            var mapping = this._originalMappings[index];
             if (mapping.source === needle.source) {
               return { line: util.getArg(mapping, "generatedLine", null), column: util.getArg(mapping, "generatedColumn", null), lastColumn: util.getArg(mapping, "lastGeneratedColumn", null) };
             }
@@ -71964,11 +71879,11 @@ function requireSanitizeHtml() {
           aRoot = aRoot.replace(/\/$/, "");
           var level = 0;
           while (aPath.indexOf(aRoot + "/") !== 0) {
-            var index2 = aRoot.lastIndexOf("/");
-            if (index2 < 0) {
+            var index = aRoot.lastIndexOf("/");
+            if (index < 0) {
               return aPath;
             }
-            aRoot = aRoot.slice(0, index2);
+            aRoot = aRoot.slice(0, index);
             if (aRoot.match(/^([^\/]+:\/)?\/*$/)) {
               return aPath;
             }
@@ -72121,9 +72036,9 @@ function requireSanitizeHtml() {
               throw new Error("sourceMapURL could not be parsed");
             }
             if (parsed.path) {
-              var index2 = parsed.path.lastIndexOf("/");
-              if (index2 >= 0) {
-                parsed.path = parsed.path.substring(0, index2 + 1);
+              var index = parsed.path.lastIndexOf("/");
+              if (index >= 0) {
+                parsed.path = parsed.path.substring(0, index + 1);
               }
             }
             sourceURL = join2(urlGenerate(parsed), sourceURL);
@@ -73700,11 +73615,11 @@ function requireOutput() {
     line.set_indent(this.__indent_count, this.__alignment_count);
     return line;
   };
-  OutputLine.prototype.item = function(index2) {
-    if (index2 < 0) {
-      return this.__items[this.__items.length + index2];
+  OutputLine.prototype.item = function(index) {
+    if (index < 0) {
+      return this.__items[this.__items.length + index];
     } else {
-      return this.__items[index2];
+      return this.__items[index];
     }
   };
   OutputLine.prototype.has_match = function(pattern2) {
@@ -73961,11 +73876,11 @@ function requireOutput() {
       this.current_line.push(" ");
     }
   };
-  Output.prototype.remove_indent = function(index2) {
+  Output.prototype.remove_indent = function(index) {
     var output_length = this.__lines.length;
-    while (index2 < output_length) {
-      this.__lines[index2]._remove_indent();
-      index2++;
+    while (index < output_length) {
+      this.__lines[index]._remove_indent();
+      index++;
     }
     this.current_line._remove_wrap_indent();
   };
@@ -73986,17 +73901,17 @@ function requireOutput() {
     return this.is_empty() || this.current_line.is_empty() && this.previous_line.is_empty();
   };
   Output.prototype.ensure_empty_line_above = function(starts_with, ends_with) {
-    var index2 = this.__lines.length - 2;
-    while (index2 >= 0) {
-      var potentialEmptyLine = this.__lines[index2];
+    var index = this.__lines.length - 2;
+    while (index >= 0) {
+      var potentialEmptyLine = this.__lines[index];
       if (potentialEmptyLine.is_empty()) {
         break;
       } else if (potentialEmptyLine.item(0).indexOf(starts_with) !== 0 && potentialEmptyLine.item(-1) !== ends_with) {
-        this.__lines.splice(index2 + 1, 0, new OutputLine(this));
+        this.__lines.splice(index + 1, 0, new OutputLine(this));
         this.previous_line = this.__lines[this.__lines.length - 2];
         break;
       }
-      index2--;
+      index--;
     }
   };
   output.Output = Output;
@@ -74251,36 +74166,36 @@ function requireInputscanner() {
     }
     return val;
   };
-  InputScanner.prototype.peek = function(index2) {
+  InputScanner.prototype.peek = function(index) {
     var val = null;
-    index2 = index2 || 0;
-    index2 += this.__position;
-    if (index2 >= 0 && index2 < this.__input_length) {
-      val = this.__input.charAt(index2);
+    index = index || 0;
+    index += this.__position;
+    if (index >= 0 && index < this.__input_length) {
+      val = this.__input.charAt(index);
     }
     return val;
   };
-  InputScanner.prototype.__match = function(pattern2, index2) {
-    pattern2.lastIndex = index2;
+  InputScanner.prototype.__match = function(pattern2, index) {
+    pattern2.lastIndex = index;
     var pattern_match = pattern2.exec(this.__input);
     if (pattern_match && !(regexp_has_sticky && pattern2.sticky)) {
-      if (pattern_match.index !== index2) {
+      if (pattern_match.index !== index) {
         pattern_match = null;
       }
     }
     return pattern_match;
   };
-  InputScanner.prototype.test = function(pattern2, index2) {
-    index2 = index2 || 0;
-    index2 += this.__position;
-    if (index2 >= 0 && index2 < this.__input_length) {
-      return !!this.__match(pattern2, index2);
+  InputScanner.prototype.test = function(pattern2, index) {
+    index = index || 0;
+    index += this.__position;
+    if (index >= 0 && index < this.__input_length) {
+      return !!this.__match(pattern2, index);
     } else {
       return false;
     }
   };
-  InputScanner.prototype.testChar = function(pattern2, index2) {
-    var val = this.peek(index2);
+  InputScanner.prototype.testChar = function(pattern2, index) {
+    var val = this.peek(index);
     pattern2.lastIndex = 0;
     return val !== null && pattern2.test(val);
   };
@@ -74385,12 +74300,12 @@ function requireTokenstream() {
     }
     return val;
   };
-  TokenStream.prototype.peek = function(index2) {
+  TokenStream.prototype.peek = function(index) {
     var val = null;
-    index2 = index2 || 0;
-    index2 += this.__position;
-    if (index2 >= 0 && index2 < this.__tokens_length) {
-      val = this.__tokens[index2];
+    index = index || 0;
+    index += this.__position;
+    if (index >= 0 && index < this.__tokens_length) {
+      val = this.__tokens[index];
     }
     return val;
   };
@@ -75767,12 +75682,12 @@ function requireBeautifier$2() {
     var empty_braces = !next_token.comments_before && next_token.text === "}";
     var empty_anonymous_function = empty_braces && this._flags.last_word === "function" && this._flags.last_token.type === TOKEN.END_EXPR;
     if (this._options.brace_preserve_inline) {
-      var index2 = 0;
+      var index = 0;
       var check_token = null;
       this._flags.inline_frame = true;
       do {
-        index2 += 1;
-        check_token = this._tokens.peek(index2 - 1);
+        index += 1;
+        check_token = this._tokens.peek(index - 1);
         if (check_token.newlines) {
           this._flags.inline_frame = false;
           break;
@@ -78363,11 +78278,18 @@ function init({ color = "#275fa6", content = "", settings = {}, callbackId } = {
       statusbar: true
     }, settings);
     if (settings.codeMode === "markdown") {
-      markdown = new Markdown({ linkify: true, breaks: true, typographer: true });
-      markdown.use(MarkdownItGitHubAlerts);
-      markdown.use(index, { divWrap: true, divClass: "checkbox" });
+      markdown = new Markdown({ linkify: true, breaks: true, typographer: true, html: true });
+      markdown.use(alertsPlugin, {
+        ignoreUnknownTypes: false
+      });
+      markdown.use(checklistPlugin$1);
       turndown = new TurndownService();
-      turndown.use(gfm);
+      turndown.use(checklistPlugin);
+      turndown.use([
+        tables,
+        strikethrough,
+        highlightedCodeBlock
+      ]);
       turndown.use(githubAlerts);
     }
     const topbar = document.querySelector(".editor-wrapper-menu");
@@ -78417,7 +78339,8 @@ function init({ color = "#275fa6", content = "", settings = {}, callbackId } = {
           insert: { title: "Insert", items: "link image hr" },
           view: { title: "View", items: "visualaid" }
         },
-        style_formats: formatMenuMD
+        style_formats: formatMenuMD,
+        extended_valid_elements: "svg[*],path[*],circle[*],rect[*],line[*],polyline[*],polygon[*],g[*],defs[*],use[*]"
       } : {
         plugins: [
           "fullpage",
@@ -78460,7 +78383,11 @@ function init({ color = "#275fa6", content = "", settings = {}, callbackId } = {
         init_instance_callback(editor) {
           editor.on("paste", (e) => {
             if (isMD) {
-              editor.setContent(markdown.render(turndown.turndown(editor.getContent())));
+              const turned = turndown.turndown(editor.getContent());
+              console.log("TURNED", turned, editor.getContent());
+              const markdowned = markdown.render(turned);
+              console.log("MARKDOWNED", markdowned);
+              editor.setContent(markdowned);
             }
           });
         },
@@ -78716,7 +78643,9 @@ function init({ color = "#275fa6", content = "", settings = {}, callbackId } = {
           function toWysiwyg(content2) {
             editor.settings.modifyingCode = true;
             if (settings.codeMode === "markdown") {
-              editor.setContent(markdown.render(content2));
+              const markdowned = markdown.render(content2);
+              console.log("MARKDOWNED2", markdowned);
+              editor.setContent(markdowned);
             } else {
               editor.setContent(content2);
             }
@@ -78732,7 +78661,9 @@ function init({ color = "#275fa6", content = "", settings = {}, callbackId } = {
             ignoreInput = true;
             const pos = codeEditor.session.selection.toJSON();
             if (settings.codeMode === "markdown") {
-              codeEditor.session.setValue(turndown.turndown(editor.getContent()));
+              const turned = turndown.turndown(editor.getContent());
+              console.log("TURNED2", turned, editor.getContent());
+              codeEditor.session.setValue(turned);
             } else {
               codeEditor.session.setValue(pretty(editor.getContent(), { "indent-with-tabs": true, "indent_char": "	", indent_size: 1 }));
             }
@@ -78787,7 +78718,7 @@ function init({ color = "#275fa6", content = "", settings = {}, callbackId } = {
     });
   });
 }
-function handleDrag(el2, { start, move: move2, end }) {
+function handleDrag(el2, { start, move, end }) {
   let last;
   let point;
   let pointerId;
@@ -78814,11 +78745,11 @@ function handleDrag(el2, { start, move: move2, end }) {
       event.stopPropagation();
       event.preventDefault();
       event.stopImmediatePropagation();
-      if (move2) {
+      if (move) {
         const point2 = { x: event.pageX, y: event.pageY };
         const delta2 = { x: point2.x - last.x, y: point2.y - last.y };
         last = point2;
-        move2(point2, delta2, event.pointerType, event.pressure);
+        move(point2, delta2, event.pointerType, event.pressure);
       }
     }
   };
