@@ -587,7 +587,7 @@ import tinymce from "tinymce/tinymce";
 		};
 		const $_g8k18qbgjdud7a9m = {register: register$1};
 
-		PluginManager.add("fullpage", (editor) => {
+		PluginManager.add("fullpage", function (editor) {
 			const headState = Cell("");
 			const footState = Cell("");
 			$_9bxf9tb6jdud7a8z.register(editor, headState);

@@ -66,5 +66,51 @@ html:hover::-webkit-scrollbar-thumb {
 ::-webkit-scrollbar-corner {
   background: transparent;
 }
-
-/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndpc3l3aWctY29udGVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7O0VBRUUsa0JBQWtCO0NBQ25CO0FBQ0Q7RUFDRSxrQkFBa0I7Q0FDbkI7QUFDRDtFQUNFLFVBQVU7RUFDVixhQUFhO0VBQ2IsdUJBQXVCO0NBQ3hCO0FBQ0Q7RUFDRSxXQUFXO0VBQ1gsWUFBWTtFQUNaLHdCQUF3QjtDQUN6QjtBQUNEO0VBQ0Usd0JBQXdCO0NBQ3pCO0FBQ0Q7RUFDRSxXQUFXO0VBQ1gsWUFBWTtFQUNaLHdCQUF3QjtDQUN6QjtBQUNEO0VBQ0UscUNBQXFDO0VBQ3JDLGlDQUFpQztDQUNsQztBQUNEO0VBQ0UsV0FBVztFQUNYLGtDQUFrQztDQUNuQztBQUNEO0VBQ0UsWUFBWTtFQUNaLGFBQWE7Q0FDZDtBQUNEO0VBQ0UsV0FBVztFQUNYLFlBQVk7RUFDWix3QkFBd0I7Q0FDekI7QUFDRDtFQUNFLGtDQUFrQztFQUNsQyxhQUFhO0VBQ2IsbUJBQW1CO0NBQ3BCO0FBQ0Q7RUFDRSxrQ0FBa0M7Q0FDbkM7QUFDRDtFQUNFLGtDQUFrQztDQUNuQztBQUNEOztFQUVFLHdCQUF3QjtFQUN4QixhQUFhO0VBQ2IsbUJBQW1CO0NBQ3BCO0FBQ0Q7RUFDRSx3QkFBd0I7Q0FDekI7QUFDRDtFQUNFLHdCQUF3QjtDQUN6QjtBQUNEO0VBQ0Usd0JBQXdCO0NBQ3pCIiwiZmlsZSI6Indpc3l3aWctY29udGVudC5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyJodG1sLFxuYm9keSB7XG4gIG1pbi1oZWlnaHQ6IDEwMHZoO1xufVxuaHRtbCB7XG4gIG92ZXJmbG93OiBvdmVybGF5O1xufVxuYm9keSB7XG4gIG1hcmdpbjogMDtcbiAgcGFkZGluZzogMWVtO1xuICBib3gtc2l6aW5nOiBib3JkZXItYm94O1xufVxuOjotd2Via2l0LXNjcm9sbGJhciB7XG4gIHdpZHRoOiA5cHg7XG4gIGhlaWdodDogOXB4O1xuICBiYWNrZ3JvdW5kOiB0cmFuc3BhcmVudDtcbn1cbjo6LXdlYmtpdC1zY3JvbGxiYXIgKiB7XG4gIGJhY2tncm91bmQ6IHRyYW5zcGFyZW50O1xufVxuOjotd2Via2l0LXNjcm9sbGJhciB7XG4gIHdpZHRoOiA1cHg7XG4gIGhlaWdodDogNXB4O1xuICBiYWNrZ3JvdW5kOiB0cmFuc3BhcmVudDtcbn1cbmh0bWw6Oi13ZWJraXQtc2Nyb2xsYmFyLXRodW1iIHtcbiAgYmFja2dyb3VuZDogcmdiYSgxMzYsIDEzNiwgMTM2LCAwLjIpO1xuICB0cmFuc2l0aW9uOiBiYWNrZ3JvdW5kIDAuM3MgZWFzZTtcbn1cbmh0bWw6aG92ZXI6Oi13ZWJraXQtc2Nyb2xsYmFyLXRodW1iIHtcbiAgb3BhY2l0eTogMTtcbiAgYmFja2dyb3VuZDogdmFyKC0tY29sb3ItLXByaW1hcnkpO1xufVxuOjotd2Via2l0LXNjcm9sbGJhciB7XG4gIHdpZHRoOiAxMHB4O1xuICBoZWlnaHQ6IDEwcHg7XG59XG46Oi13ZWJraXQtc2Nyb2xsYmFyLWJ1dHRvbiB7XG4gIHdpZHRoOiAwcHg7XG4gIGhlaWdodDogMHB4O1xuICBiYWNrZ3JvdW5kOiB0cmFuc3BhcmVudDtcbn1cbjo6LXdlYmtpdC1zY3JvbGxiYXItdGh1bWIge1xuICBiYWNrZ3JvdW5kOiB2YXIoLS1jb2xvci0tcHJpbWFyeSk7XG4gIGJvcmRlcjogbm9uZTtcbiAgYm9yZGVyLXJhZGl1czogMHB4O1xufVxuOjotd2Via2l0LXNjcm9sbGJhci10aHVtYjpob3ZlciB7XG4gIGJhY2tncm91bmQ6IHZhcigtLWNvbG9yLS1wcmltYXJ5KTtcbn1cbjo6LXdlYmtpdC1zY3JvbGxiYXItdGh1bWI6YWN0aXZlIHtcbiAgYmFja2dyb3VuZDogdmFyKC0tY29sb3ItLXByaW1hcnkpO1xufVxuOjotd2Via2l0LXNjcm9sbGJhci1jb3JuZXIsXG46Oi13ZWJraXQtc2Nyb2xsYmFyLXRyYWNrIHtcbiAgYmFja2dyb3VuZDogdHJhbnNwYXJlbnQ7XG4gIGJvcmRlcjogbm9uZTtcbiAgYm9yZGVyLXJhZGl1czogMHB4O1xufVxuOjotd2Via2l0LXNjcm9sbGJhci10cmFjazpob3ZlciB7XG4gIGJhY2tncm91bmQ6IHRyYW5zcGFyZW50O1xufVxuOjotd2Via2l0LXNjcm9sbGJhci10cmFjazphY3RpdmUge1xuICBiYWNrZ3JvdW5kOiB0cmFuc3BhcmVudDtcbn1cbjo6LXdlYmtpdC1zY3JvbGxiYXItY29ybmVyIHtcbiAgYmFja2dyb3VuZDogdHJhbnNwYXJlbnQ7XG59XG4iXX0= */
+.markdown-alert {
+  padding: var(--base-size-8, 0.5rem) var(--base-size-16, 1rem);
+  margin-bottom: var(--base-size-16, 1rem);
+  color: inherit;
+  border-left: 0.25em solid var(--borderColor-default, #3d444d);
+}
+.markdown-alert > :first-child {
+  margin-top: 0;
+}
+.markdown-alert > :last-child {
+  margin-bottom: 0;
+}
+.markdown-alert .markdown-alert-title {
+  font-weight: var(--base-text-weight-medium, 500);
+  align-items: center;
+  line-height: 1;
+  display: flex;
+}
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--borderColor-accent-emphasis, #1f6feb);
+}
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--fgColor-accent, #4493f8);
+}
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--borderColor-done-emphasis, #8957e5);
+}
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--fgColor-done, #ab7df8);
+}
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--borderColor-attention-emphasis, #9e6a03);
+}
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--fgColor-attention, #d29922);
+}
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--borderColor-success-emphasis, #238636);
+}
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--fgColor-success, #3fb950);
+}
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--borderColor-danger-emphasis, #da3633);
+}
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--fgColor-danger, #f85149);
+}
