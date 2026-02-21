@@ -95,6 +95,7 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 			});
 			markdown.use(MarkdownItChecklistPlugin);
 			turndown = new Turndown();
+			turndown.keep(["table", "thead", "caption", "tbody", "tr", "th", "td", "a", "img", "summary", "details", "figure", "figcaption"]);
 			turndown.use(trundownChecklistPlugin);
 			turndown.use([
 				turndownGFM.tables,

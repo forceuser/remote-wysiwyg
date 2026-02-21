@@ -99,7 +99,7 @@ html:hover::-webkit-scrollbar-thumb {
   color: var(--fgColor-accent, #4493f8);
 }
 .markdown-alert.markdown-alert-note .markdown-alert-title::before {
-  content: 'ℹ️';
+  content: "ℹ️";
 }
 .markdown-alert.markdown-alert-important {
   border-left-color: var(--borderColor-done-emphasis, #8957e5);
@@ -108,7 +108,7 @@ html:hover::-webkit-scrollbar-thumb {
   color: var(--fgColor-done, #ab7df8);
 }
 .markdown-alert.markdown-alert-important .markdown-alert-title::before {
-  content: '💬';
+  content: "💬";
 }
 .markdown-alert.markdown-alert-warning {
   border-left-color: var(--borderColor-attention-emphasis, #9e6a03);
@@ -117,7 +117,7 @@ html:hover::-webkit-scrollbar-thumb {
   color: var(--fgColor-attention, #d29922);
 }
 .markdown-alert.markdown-alert-warning .markdown-alert-title::before {
-  content: '⚠️';
+  content: "⚠️";
 }
 .markdown-alert.markdown-alert-tip {
   border-left-color: var(--borderColor-success-emphasis, #238636);
@@ -126,7 +126,7 @@ html:hover::-webkit-scrollbar-thumb {
   color: var(--fgColor-success, #3fb950);
 }
 .markdown-alert.markdown-alert-tip .markdown-alert-title::before {
-  content: '💡';
+  content: "💡";
 }
 .markdown-alert.markdown-alert-caution {
   border-left-color: var(--borderColor-danger-emphasis, #da3633);
@@ -135,7 +135,7 @@ html:hover::-webkit-scrollbar-thumb {
   color: var(--fgColor-danger, #f85149);
 }
 .markdown-alert.markdown-alert-caution .markdown-alert-title::before {
-  content: '🛑';
+  content: "🛑";
 }
 .task-list {
   list-style: none;

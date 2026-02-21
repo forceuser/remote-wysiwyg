@@ -78284,6 +78284,7 @@ function init({ color = "#275fa6", content = "", settings = {}, callbackId } = {
       });
       markdown.use(checklistPlugin$1);
       turndown = new TurndownService();
+      turndown.keep(["table", "thead", "caption", "tbody", "tr", "th", "td", "a", "img", "summary", "details", "figure", "figcaption"]);
       turndown.use(checklistPlugin);
       turndown.use([
         tables,

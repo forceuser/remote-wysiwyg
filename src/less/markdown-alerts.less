@@ -1,17 +1,16 @@
-
 .markdown-alert {
 	padding: var(--base-size-8, 0.5rem) var(--base-size-16, 1rem);
 	margin-bottom: var(--base-size-16, 1rem);
 	color: inherit;
-	border-left: .25em solid var(--borderColor-default, #3d444d);
+	border-left: 0.25em solid var(--borderColor-default, #3d444d);
 }
 
-.markdown-alert>:first-child {
-	margin-top: 0
+.markdown-alert > :first-child {
+	margin-top: 0;
 }
 
-.markdown-alert>:last-child {
-	margin-bottom: 0
+.markdown-alert > :last-child {
+	margin-bottom: 0;
 }
 
 .markdown-alert .markdown-alert-title {
@@ -34,50 +33,59 @@
 }
 
 .markdown-alert.markdown-alert-note {
-	border-left-color: var(--borderColor-accent-emphasis, #1f6feb)
+	border-left-color: var(--borderColor-accent-emphasis, #1f6feb);
 }
 
 .markdown-alert.markdown-alert-note .markdown-alert-title {
 	color: var(--fgColor-accent, #4493f8);
-	&::before { content: 'ℹ️' }
+	&::before {
+		content: "ℹ️";
+	}
 }
 
 .markdown-alert.markdown-alert-important {
-	border-left-color: var(--borderColor-done-emphasis, #8957e5)
+	border-left-color: var(--borderColor-done-emphasis, #8957e5);
 }
 
 .markdown-alert.markdown-alert-important .markdown-alert-title {
 	color: var(--fgColor-done, #ab7df8);
-	&::before { content: '💬' }
+	&::before {
+		content: "💬";
+	}
 }
 
 .markdown-alert.markdown-alert-warning {
-	border-left-color: var(--borderColor-attention-emphasis, #9e6a03)
+	border-left-color: var(--borderColor-attention-emphasis, #9e6a03);
 }
 
 .markdown-alert.markdown-alert-warning .markdown-alert-title {
 	color: var(--fgColor-attention, #d29922);
-	&::before { content: '⚠️' }
+	&::before {
+		content: "⚠️";
+	}
 }
 
 .markdown-alert.markdown-alert-tip {
-	border-left-color: var(--borderColor-success-emphasis, #238636)
+	border-left-color: var(--borderColor-success-emphasis, #238636);
 }
 
 .markdown-alert.markdown-alert-tip .markdown-alert-title {
 	color: var(--fgColor-success, #3fb950);
-	&::before { content: '💡' }
+	&::before {
+		content: "💡";
+	}
 }
 
 .markdown-alert.markdown-alert-caution {
-	border-left-color: var(--borderColor-danger-emphasis, #da3633)
+	border-left-color: var(--borderColor-danger-emphasis, #da3633);
 }
 
 .markdown-alert.markdown-alert-caution .markdown-alert-title {
 	color: var(--fgColor-danger, #f85149);
-	&::before { content: '🛑' }
+	&::before {
+		content: "🛑";
+	}
 }
-
 
 .task-list {
 	list-style: none;
@@ -87,3 +95,4 @@
 		padding-left: 1.5em;
 	}
 }
+
