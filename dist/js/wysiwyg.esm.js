@@ -9428,10 +9428,14 @@ const DEFAULT_TYPES = {
 function findBlockquoteClose(tokens, bqStart) {
   let depth = 0;
   for (let j = bqStart; j < tokens.length; j++) {
-    if (tokens[j].type === "blockquote_open") depth++;
+    if (tokens[j].type === "blockquote_open") {
+      depth++;
+    }
     if (tokens[j].type === "blockquote_close") {
       depth--;
-      if (depth === 0) return j;
+      if (depth === 0) {
+        return j;
+      }
     }
   }
   return -1;
@@ -9440,18 +9444,30 @@ function countInlineTokens(tokens, bqStart, bqEnd) {
   let count = 0;
   let depth = 0;
   for (let j = bqStart; j <= bqEnd; j++) {
-    if (tokens[j].type === "blockquote_open") depth++;
-    if (tokens[j].type === "blockquote_close") depth--;
-    if (depth === 1 && tokens[j].type === "inline") count++;
+    if (tokens[j].type === "blockquote_open") {
+      depth++;
+    }
+    if (tokens[j].type === "blockquote_close") {
+      depth--;
+    }
+    if (depth === 1 && tokens[j].type === "inline") {
+      count++;
+    }
   }
   return count;
 }
 function findFirstDirectInline(tokens, bqStart, bqEnd) {
   let depth = 0;
   for (let j = bqStart; j <= bqEnd; j++) {
-    if (tokens[j].type === "blockquote_open") depth++;
-    if (tokens[j].type === "blockquote_close") depth--;
-    if (depth === 1 && tokens[j].type === "inline") return j;
+    if (tokens[j].type === "blockquote_open") {
+      depth++;
+    }
+    if (tokens[j].type === "blockquote_close") {
+      depth--;
+    }
+    if (depth === 1 && tokens[j].type === "inline") {
+      return j;
+    }
   }
   return -1;
 }
@@ -9505,10 +9521,22 @@ function alertsPlugin(md, options2 = {}) {
       divOpenTok.content = `<div class="markdown-alert markdown-alert-${typeKey}${extraClass}">
 `;
       newTokens.push(divOpenTok);
-      const titleTok = new state.Token("html_block", "", 0);
-      titleTok.content = `<p class="markdown-alert-title" dir="auto">${icon}${titleText}</p>
-`;
-      newTokens.push(titleTok);
+      const titleParaOpen = new state.Token("paragraph_open", "p", 1);
+      titleParaOpen.attrSet("class", "markdown-alert-title");
+      titleParaOpen.attrSet("dir", "auto");
+      newTokens.push(titleParaOpen);
+      if (options2.icon !== false && icon) {
+        const iconTok = new state.Token("html_inline", "", 0);
+        iconTok.content = icon;
+        newTokens.push(iconTok);
+      }
+      const titleInline = new state.Token("inline", "", 0);
+      titleInline.content = titleText;
+      titleInline.children = [];
+      state.md.inline.parse(titleInline.content, state.md, state.env, titleInline.children);
+      newTokens.push(titleInline);
+      const titleParaClose = new state.Token("paragraph_close", "p", -1);
+      newTokens.push(titleParaClose);
       let skipFirstPara = false;
       for (let j = bqStart + 1; j < bqEnd; j++) {
         const tok = tokens[j];
@@ -9523,7 +9551,12 @@ function alertsPlugin(md, options2 = {}) {
           const newInline = new state.Token("inline", "", 0);
           newInline.content = firstParaContent;
           newInline.children = [];
-          state.md.inline.parse(newInline.content, state.md, state.env, newInline.children);
+          state.md.inline.parse(
+            newInline.content,
+            state.md,
+            state.env,
+            newInline.children
+          );
           newTokens.push(newInline);
           j++;
           newTokens.push(tokens[j]);
@@ -10515,6 +10548,12 @@ function githubAlerts(turndownService) {
     }
     return null;
   }
+  function isOneLiner(node) {
+    return node.classList.contains("markdown-alert-oneliner");
+  }
+  function prefixLines(text2) {
+    return text2.split("\n").map((line) => line).join("\n> ");
+  }
   turndownService.addRule("githubAlerts", {
     filter: (node) => {
       if (node.nodeName !== "DIV") return false;
@@ -10524,21 +10563,36 @@ function githubAlerts(turndownService) {
     replacement: (content, node) => {
       const alertType = getAlertType(node);
       const typeStr = alertType.toUpperCase();
+      const isOneline = isOneLiner(node);
       const titleEl = node.querySelector(":scope > p.markdown-alert-title");
-      const titleText = titleEl ? titleEl.textContent.trim() : "";
+      let titleText = "";
+      if (titleEl) {
+        const titleClone = titleEl.cloneNode(true);
+        const svg = titleClone.querySelector("svg");
+        if (svg) svg.remove();
+        titleText = turndownService.turndown(titleClone.innerHTML).trim();
+      }
       const defaultLabel = alertType.charAt(0).toUpperCase() + alertType.slice(1);
       const inlineTitle = titleText && titleText !== defaultLabel ? ` ${titleText}` : "";
-      const paragraphs = node.querySelectorAll(":scope > p:not(.markdown-alert-title)");
+      if (isOneline) {
+        return `> [!${typeStr}]${inlineTitle}
+
+`;
+      }
+      const bodyElements = Array.from(node.children).filter(
+        (child) => !child.classList.contains("markdown-alert-title")
+      );
       let bodyContent = "";
-      paragraphs.forEach((p, index) => {
-        const text2 = turndownService.turndown(p.innerHTML);
+      bodyElements.forEach((element, index) => {
+        const markdown = turndownService.turndown(element.outerHTML).trim();
+        if (!markdown) return;
         if (index === 0) {
-          bodyContent += text2;
+          bodyContent += prefixLines(markdown);
         } else {
-          bodyContent += "\n>\n> " + text2;
+          bodyContent += "\n>\n> " + prefixLines(markdown);
         }
       });
-      if (inlineTitle && !bodyContent) {
+      if (!bodyContent) {
         return `> [!${typeStr}]${inlineTitle}
 
 `;

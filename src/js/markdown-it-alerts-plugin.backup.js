@@ -41,11 +41,11 @@ const ICONS = {
 
 // Default type definitions
 const DEFAULT_TYPES = {
-	note: {label: "Note", icon: ICONS.note},
-	tip: {label: "Tip", icon: ICONS.tip},
-	important: {label: "Important", icon: ICONS.important},
-	warning: {label: "Warning", icon: ICONS.warning},
-	caution: {label: "Caution", icon: ICONS.caution},
+	note:      { label: 'Note',      icon: ICONS.note },
+	tip:       { label: 'Tip',       icon: ICONS.tip },
+	important: { label: 'Important', icon: ICONS.important },
+	warning:   { label: 'Warning',   icon: ICONS.warning },
+	caution:   { label: 'Caution',   icon: ICONS.caution },
 };
 
 // ------------------------------------------------------------
@@ -53,37 +53,27 @@ const DEFAULT_TYPES = {
 // ------------------------------------------------------------
 
 /** Find the index of the matching blockquote_close for bqStart. */
-function findBlockquoteClose(tokens, bqStart) {
+function findBlockquoteClose (tokens, bqStart) {
 	let depth = 0;
 	for (let j = bqStart; j < tokens.length; j++) {
-		if (tokens[j].type === "blockquote_open") {
-			depth++;
-		}
-		if (tokens[j].type === "blockquote_close") {
+		if (tokens[j].type === 'blockquote_open')  depth++;
+		if (tokens[j].type === 'blockquote_close') {
 			depth--;
-			if (depth === 0) {
-				return j;
-			}
+			if (depth === 0) return j;
 		}
 	}
 	return -1;
 }
 
 /** Count inline (paragraph) tokens directly inside a blockquote span. */
-function countInlineTokens(tokens, bqStart, bqEnd) {
+function countInlineTokens (tokens, bqStart, bqEnd) {
 	let count = 0;
 	let depth = 0;
 	for (let j = bqStart; j <= bqEnd; j++) {
-		if (tokens[j].type === "blockquote_open") {
-			depth++;
-		}
-		if (tokens[j].type === "blockquote_close") {
-			depth--;
-		}
+		if (tokens[j].type === 'blockquote_open')  depth++;
+		if (tokens[j].type === 'blockquote_close') depth--;
 		// Only count direct children (depth === 1 means we are inside the bq but not a nested bq)
-		if (depth === 1 && tokens[j].type === "inline") {
-			count++;
-		}
+		if (depth === 1 && tokens[j].type === 'inline') count++;
 	}
 	return count;
 }
@@ -92,18 +82,12 @@ function countInlineTokens(tokens, bqStart, bqEnd) {
  * Find the first inline token that is a direct child of the blockquote.
  * (Skips tokens belonging to nested blockquotes.)
  */
-function findFirstDirectInline(tokens, bqStart, bqEnd) {
+function findFirstDirectInline (tokens, bqStart, bqEnd) {
 	let depth = 0;
 	for (let j = bqStart; j <= bqEnd; j++) {
-		if (tokens[j].type === "blockquote_open") {
-			depth++;
-		}
-		if (tokens[j].type === "blockquote_close") {
-			depth--;
-		}
-		if (depth === 1 && tokens[j].type === "inline") {
-			return j;
-		}
+		if (tokens[j].type === 'blockquote_open')  depth++;
+		if (tokens[j].type === 'blockquote_close') depth--;
+		if (depth === 1 && tokens[j].type === 'inline') return j;
 	}
 	return -1;
 }
@@ -112,69 +96,57 @@ function findFirstDirectInline(tokens, bqStart, bqEnd) {
 // Plugin
 // ------------------------------------------------------------
 
-export default function alertsPlugin(md, options = {}) {
+export default function alertsPlugin (md, options = {}) {
 	const ignoreUnknown = options.ignoreUnknownTypes !== false; // default true
 
 	// Merge built-in types with user-supplied ones (user wins)
 	const alertTypes = Object.assign({}, DEFAULT_TYPES, options.types || {});
 
-	md.core.ruler.push("github_alerts", (state) => {
+	md.core.ruler.push('github_alerts', (state) => {
 		const tokens = state.tokens;
 		let i = 0;
 
 		while (i < tokens.length) {
-			if (tokens[i].type !== "blockquote_open") {
+			if (tokens[i].type !== 'blockquote_open') {
 				i++;
 				continue;
 			}
 
 			const bqStart = i;
-			const bqEnd = findBlockquoteClose(tokens, bqStart);
+			const bqEnd   = findBlockquoteClose(tokens, bqStart);
 
-			if (bqEnd === -1) {
-				i++;
-				continue;
-			}
+			if (bqEnd === -1) { i++; continue; }
 
 			// ---- Find the first direct inline (paragraph) token ----
 			const firstInlineIdx = findFirstDirectInline(tokens, bqStart, bqEnd);
-			if (firstInlineIdx === -1) {
-				i++;
-				continue;
-			}
+			if (firstInlineIdx === -1) { i++; continue; }
 
-			const rawContent = tokens[firstInlineIdx].content;
-			const firstLine = rawContent.split("\n")[0];
+			const rawContent  = tokens[firstInlineIdx].content;
+			const firstLine   = rawContent.split('\n')[0];
 
 			// Match [!TYPE] with optional inline body on the same line
 			// e.g.  "[!NOTE]"  or  "[!WARNING] short text"
 			const headerMatch = firstLine.match(/^\[!([\w-]+)\][ \t]?(.*)?$/);
-			if (!headerMatch) {
-				i++;
-				continue;
-			}
+			if (!headerMatch) { i++; continue; }
 
-			const typeKey = headerMatch[1].toLowerCase();
-			const typeInfo = alertTypes[typeKey];
+			const typeKey    = headerMatch[1].toLowerCase();
+			const typeInfo   = alertTypes[typeKey];
 
-			if (!typeInfo && ignoreUnknown) {
-				i++;
-				continue;
-			}
+			if (!typeInfo && ignoreUnknown) { i++; continue; }
 
 			// ---- Determine content sections ----
 
 			// Text on the same line as [!TYPE] → used as title override
-			const sameLine = (headerMatch[2] || "").trim();
+			const sameLine   = (headerMatch[2] || '').trim();
 			// Remaining lines of the opening paragraph (after the [!TYPE] line)
-			const nlPos = rawContent.indexOf("\n");
-			const restLines = nlPos !== -1 ? rawContent.slice(nlPos + 1) : "";
+			const nlPos      = rawContent.indexOf('\n');
+			const restLines  = nlPos !== -1 ? rawContent.slice(nlPos + 1) : '';
 
 			// Count all direct inline tokens to detect one-liners
 			const inlineCount = countInlineTokens(tokens, bqStart, bqEnd);
 
 			// A one-liner: title on the [!TYPE] line, no body text at all
-			const isOneLiner = sameLine !== "" && restLines === "" && inlineCount === 1;
+			const isOneLiner = sameLine !== '' && restLines === '' && inlineCount === 1;
 
 			// ---- Build the body first-paragraph content ----
 			// restLines becomes the first paragraph; null means remove the empty paragraph
@@ -184,40 +156,20 @@ export default function alertsPlugin(md, options = {}) {
 			const newTokens = [];
 
 			// Opening wrapper
-			const label = typeInfo
-				? typeInfo.label
-				: typeKey.charAt(0).toUpperCase() + typeKey.slice(1);
+			const label      = typeInfo ? typeInfo.label : typeKey.charAt(0).toUpperCase() + typeKey.slice(1);
 			// sameLine overrides the default label when present
-			const titleText = sameLine || label;
-			const icon = typeInfo ? typeInfo.icon || "" : "";
-			const extraClass = isOneLiner ? " markdown-alert-oneliner" : "";
+			const titleText  = sameLine || label;
+			const icon       = typeInfo ? (typeInfo.icon || '') : '';
+			const extraClass = isOneLiner ? ' markdown-alert-oneliner' : '';
 
-			const divOpenTok = new state.Token("html_block", "", 0);
+			const divOpenTok = new state.Token('html_block', '', 0);
 			divOpenTok.content = `<div class="markdown-alert markdown-alert-${typeKey}${extraClass}">\n`;
 			newTokens.push(divOpenTok);
 
-			// Title paragraph - parse markdown in title text
-			const titleParaOpen = new state.Token("paragraph_open", "p", 1);
-			titleParaOpen.attrSet("class", "markdown-alert-title");
-			titleParaOpen.attrSet("dir", "auto");
-			newTokens.push(titleParaOpen);
-
-			// Add icon as raw HTML if enabled
-			if (options.icon !== false && icon) {
-				const iconTok = new state.Token("html_inline", "", 0);
-				iconTok.content = icon;
-				newTokens.push(iconTok);
-			}
-
-			// Parse title text as inline markdown
-			const titleInline = new state.Token("inline", "", 0);
-			titleInline.content = titleText;
-			titleInline.children = [];
-			state.md.inline.parse(titleInline.content, state.md, state.env, titleInline.children);
-			newTokens.push(titleInline);
-
-			const titleParaClose = new state.Token("paragraph_close", "p", -1);
-			newTokens.push(titleParaClose);
+			// Title paragraph
+			const titleTok = new state.Token('html_block', '', 0);
+			titleTok.content = `<p class="markdown-alert-title" dir="auto">${icon}${titleText}</p>\n`;
+			newTokens.push(titleTok);
 
 			// Body tokens (everything between bqStart+1 and bqEnd-1, minus old blockquote wrappers)
 			// We skip the original first `paragraph_open / inline / paragraph_close` triple
@@ -227,7 +179,7 @@ export default function alertsPlugin(md, options = {}) {
 			for (let j = bqStart + 1; j < bqEnd; j++) {
 				const tok = tokens[j];
 
-				if (!skipFirstPara && tok.type === "paragraph_open") {
+				if (!skipFirstPara && tok.type === 'paragraph_open') {
 					// Handle first paragraph: replace its inline content
 					if (firstParaContent === null) {
 						// Empty first paragraph ([!TYPE] alone, rest in separate paragraphs)
@@ -242,17 +194,12 @@ export default function alertsPlugin(md, options = {}) {
 					j++; // advance to inline token
 
 					// Replace inline content
-					const newInline = new state.Token("inline", "", 0);
-					newInline.content = firstParaContent;
+					const newInline    = new state.Token('inline', '', 0);
+					newInline.content  = firstParaContent;
 					newInline.children = [];
 					// Inline tokens created after the inline-parse phase need their
 					// children populated manually. The 4th arg must be the children array.
-					state.md.inline.parse(
-						newInline.content,
-						state.md,
-						state.env,
-						newInline.children
-					);
+					state.md.inline.parse(newInline.content, state.md, state.env, newInline.children);
 					newTokens.push(newInline);
 					j++; // advance to paragraph_close
 
@@ -265,7 +212,7 @@ export default function alertsPlugin(md, options = {}) {
 			}
 
 			// Closing wrapper
-			const divCloseTok = new state.Token("html_block", "", 0);
+			const divCloseTok = new state.Token('html_block', '', 0);
 			divCloseTok.content = `</div>\n`;
 			newTokens.push(divCloseTok);
 
