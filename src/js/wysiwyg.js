@@ -101,7 +101,7 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 				hr: "---",
 				fence: "```",
 			});
-			turndown.keep(["table", "thead", "caption", "tbody", "tr", "th", "td", "a", "img", "summary", "details", "figure", "figcaption", "div", "span"]);
+			turndown.keep(["table", "thead", "caption", "tbody", "tr", "th", "td", "a", "img", "summary", "details", "figure", "figcaption", "div", "span", "p"]);
 			turndown.use(trundownChecklistPlugin);
 			turndown.use([
 				turndownGFM.tables,
