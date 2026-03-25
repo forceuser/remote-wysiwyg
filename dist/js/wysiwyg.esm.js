@@ -7543,12 +7543,12 @@ function requireBackticks() {
   };
   return backticks;
 }
-var strikethrough$1 = {};
+var strikethrough = {};
 var hasRequiredStrikethrough;
 function requireStrikethrough() {
-  if (hasRequiredStrikethrough) return strikethrough$1;
+  if (hasRequiredStrikethrough) return strikethrough;
   hasRequiredStrikethrough = 1;
-  strikethrough$1.tokenize = function strikethrough2(state, silent) {
+  strikethrough.tokenize = function strikethrough2(state, silent) {
     var i, scanned, token2, len, ch, start = state.pos, marker2 = state.src.charCodeAt(start);
     if (silent) {
       return false;
@@ -7624,7 +7624,7 @@ function requireStrikethrough() {
       }
     }
   }
-  strikethrough$1.postProcess = function strikethrough2(state) {
+  strikethrough.postProcess = function strikethrough2(state) {
     var curr, tokens_meta = state.tokens_meta, max = state.tokens_meta.length;
     postProcess2(state, state.delimiters);
     for (curr = 0; curr < max; curr++) {
@@ -7633,7 +7633,7 @@ function requireStrikethrough() {
       }
     }
   };
-  return strikethrough$1;
+  return strikethrough;
 }
 var emphasis = {};
 var hasRequiredEmphasis;
@@ -9742,20 +9742,20 @@ function has(node, tagNames) {
     return node.getElementsByTagName(tagName).length;
   });
 }
-var rules$1 = {};
-rules$1.paragraph = {
+var rules = {};
+rules.paragraph = {
   filter: "p",
   replacement: function(content) {
     return "\n\n" + content + "\n\n";
   }
 };
-rules$1.lineBreak = {
+rules.lineBreak = {
   filter: "br",
   replacement: function(content, node, options2) {
     return options2.br + "\n";
   }
 };
-rules$1.heading = {
+rules.heading = {
   filter: ["h1", "h2", "h3", "h4", "h5", "h6"],
   replacement: function(content, node, options2) {
     var hLevel = Number(node.nodeName.charAt(1));
@@ -9767,14 +9767,14 @@ rules$1.heading = {
     }
   }
 };
-rules$1.blockquote = {
+rules.blockquote = {
   filter: "blockquote",
   replacement: function(content) {
     content = trimNewlines(content).replace(/^/gm, "> ");
     return "\n\n" + content + "\n\n";
   }
 };
-rules$1.list = {
+rules.list = {
   filter: ["ul", "ol"],
   replacement: function(content, node) {
     var parent = node.parentNode;
@@ -9785,7 +9785,7 @@ rules$1.list = {
     }
   }
 };
-rules$1.listItem = {
+rules.listItem = {
   filter: "li",
   replacement: function(content, node, options2) {
     var prefix = options2.bulletListMarker + "   ";
@@ -9801,7 +9801,7 @@ rules$1.listItem = {
     return prefix + content + (node.nextSibling ? "\n" : "");
   }
 };
-rules$1.indentedCodeBlock = {
+rules.indentedCodeBlock = {
   filter: function(node, options2) {
     return options2.codeBlockStyle === "indented" && node.nodeName === "PRE" && node.firstChild && node.firstChild.nodeName === "CODE";
   },
@@ -9809,7 +9809,7 @@ rules$1.indentedCodeBlock = {
     return "\n\n    " + node.firstChild.textContent.replace(/\n/g, "\n    ") + "\n\n";
   }
 };
-rules$1.fencedCodeBlock = {
+rules.fencedCodeBlock = {
   filter: function(node, options2) {
     return options2.codeBlockStyle === "fenced" && node.nodeName === "PRE" && node.firstChild && node.firstChild.nodeName === "CODE";
   },
@@ -9830,13 +9830,13 @@ rules$1.fencedCodeBlock = {
     return "\n\n" + fence2 + language + "\n" + code2.replace(/\n$/, "") + "\n" + fence2 + "\n\n";
   }
 };
-rules$1.horizontalRule = {
+rules.horizontalRule = {
   filter: "hr",
   replacement: function(content, node, options2) {
     return "\n\n" + options2.hr + "\n\n";
   }
 };
-rules$1.inlineLink = {
+rules.inlineLink = {
   filter: function(node, options2) {
     return options2.linkStyle === "inlined" && node.nodeName === "A" && node.getAttribute("href");
   },
@@ -9848,7 +9848,7 @@ rules$1.inlineLink = {
     return "[" + content + "](" + href + title + ")";
   }
 };
-rules$1.referenceLink = {
+rules.referenceLink = {
   filter: function(node, options2) {
     return options2.linkStyle === "referenced" && node.nodeName === "A" && node.getAttribute("href");
   },
@@ -9885,21 +9885,21 @@ rules$1.referenceLink = {
     return references;
   }
 };
-rules$1.emphasis = {
+rules.emphasis = {
   filter: ["em", "i"],
   replacement: function(content, node, options2) {
     if (!content.trim()) return "";
     return options2.emDelimiter + content + options2.emDelimiter;
   }
 };
-rules$1.strong = {
+rules.strong = {
   filter: ["strong", "b"],
   replacement: function(content, node, options2) {
     if (!content.trim()) return "";
     return options2.strongDelimiter + content + options2.strongDelimiter;
   }
 };
-rules$1.code = {
+rules.code = {
   filter: function(node) {
     var hasSiblings = node.previousSibling || node.nextSibling;
     var isCodeBlock = node.parentNode.nodeName === "PRE" && !hasSiblings;
@@ -9915,7 +9915,7 @@ rules$1.code = {
     return delimiter2 + extraSpace + content + extraSpace + delimiter2;
   }
 };
-rules$1.image = {
+rules.image = {
   filter: "img",
   replacement: function(content, node) {
     var alt = cleanAttribute(node.getAttribute("alt"));
@@ -10208,7 +10208,7 @@ var escapes = [
 function TurndownService(options2) {
   if (!(this instanceof TurndownService)) return new TurndownService(options2);
   var defaults = {
-    rules: rules$1,
+    rules,
     headingStyle: "setext",
     hr: "* * *",
     bulletListMarker: "*",
@@ -10354,190 +10354,287 @@ function join(output2, replacement) {
 function canConvert(input) {
   return input != null && (typeof input === "string" || input.nodeType && (input.nodeType === 1 || input.nodeType === 9 || input.nodeType === 11));
 }
-var highlightRegExp = /highlight-(?:(?:text|source)-)?([a-z0-9]+)/;
-function highlightedCodeBlock(turndownService) {
-  turndownService.addRule("highlightedCodeBlock", {
-    filter: function(node) {
-      var firstChild = node.firstChild;
-      return node.nodeName === "DIV" && highlightRegExp.test(node.className) && firstChild && firstChild.nodeName === "PRE";
-    },
-    replacement: function(content, node, options2) {
-      var className = node.className || "";
-      var language = (className.match(highlightRegExp) || [null, ""])[1];
-      return "\n\n" + options2.fence + language + "\n" + node.firstChild.textContent + "\n" + options2.fence + "\n\n";
-    }
-  });
-}
-function strikethrough(turndownService) {
-  turndownService.addRule("strikethrough", {
-    filter: ["del", "s", "strike"],
-    replacement: function(content) {
-      return "~~" + content + "~~";
-    }
-  });
-}
-var rules = {};
-function cleanCellContent(content) {
-  if (!content) return "   ";
-  let cleaned = content.trim().replace(/\s+/g, " ").replace(/\|/g, "\\|").replace(/\\/g, "\\\\").replace(/\n+/g, " ").replace(/\r+/g, " ");
-  if (!cleaned || cleaned.match(/^\s*$/)) {
-    return "   ";
-  }
-  if (cleaned.length < 3) {
-    cleaned += " ".repeat(3 - cleaned.length);
-  }
-  return cleaned;
-}
-function cell(content, node, index) {
-  if (index === null && node && node.parentNode) {
-    index = Array.prototype.indexOf.call(node.parentNode.childNodes, node);
-  }
-  if (index === null) index = 0;
-  var prefix = " ";
-  if (index === 0) prefix = "| ";
-  let cellContent = cleanCellContent(content);
-  let colspan = 1;
-  if (node && node.getAttribute) {
-    colspan = parseInt(node.getAttribute("colspan") || "1", 10);
-    if (isNaN(colspan) || colspan < 1) colspan = 1;
-  }
-  let result = prefix + cellContent + " |";
-  for (let i = 1; i < colspan; i++) {
-    result += "   |";
-  }
-  return result;
-}
-function isHeadingRow(tr) {
-  if (!tr || !tr.parentNode) return false;
-  var parentNode = tr.parentNode;
-  if (parentNode.nodeName === "THEAD") return true;
-  if (parentNode.firstChild === tr && (parentNode.nodeName === "TABLE" || parentNode.nodeName === "TBODY")) {
-    var cellNodes = Array.prototype.filter.call(tr.childNodes, function(n) {
-      return n.nodeType === 1;
+var turndownPluginGfm_cjs = {};
+var hasRequiredTurndownPluginGfm_cjs;
+function requireTurndownPluginGfm_cjs() {
+  if (hasRequiredTurndownPluginGfm_cjs) return turndownPluginGfm_cjs;
+  hasRequiredTurndownPluginGfm_cjs = 1;
+  Object.defineProperty(turndownPluginGfm_cjs, "__esModule", { value: true });
+  var highlightRegExp = /highlight-(?:text|source)-([a-z0-9]+)/;
+  function highlightedCodeBlock(turndownService) {
+    turndownService.addRule("highlightedCodeBlock", {
+      filter: function(node) {
+        var firstChild = node.firstChild;
+        return node.nodeName === "DIV" && highlightRegExp.test(node.className) && firstChild && firstChild.nodeName === "PRE";
+      },
+      replacement: function(content, node, options2) {
+        var className = node.className || "";
+        var language = (className.match(highlightRegExp) || [null, ""])[1];
+        return "\n\n" + options2.fence + language + "\n" + node.firstChild.textContent + "\n" + options2.fence + "\n\n";
+      }
     });
-    if (cellNodes.length === 0) return false;
-    return Array.prototype.every.call(cellNodes, function(n) {
+  }
+  function strikethrough2(turndownService) {
+    turndownService.addRule("strikethrough", {
+      filter: ["del", "s", "strike"],
+      replacement: function(content) {
+        return "~~" + content + "~~";
+      }
+    });
+  }
+  var indexOf = Array.prototype.indexOf;
+  var every = Array.prototype.every;
+  var rules2 = {};
+  var alignMap = { left: ":---", right: "---:", center: ":---:" };
+  let isCodeBlock_ = null;
+  let options_ = null;
+  const tableShouldBeSkippedCache_ = /* @__PURE__ */ new WeakMap();
+  function getAlignment(node) {
+    return node ? (node.getAttribute("align") || node.style.textAlign || "").toLowerCase() : "";
+  }
+  function getBorder(alignment) {
+    return alignment ? alignMap[alignment] : "---";
+  }
+  function getColumnAlignment(table2, columnIndex) {
+    var votes = {
+      left: 0,
+      right: 0,
+      center: 0,
+      "": 0
+    };
+    var align = "";
+    for (var i = 0; i < table2.rows.length; ++i) {
+      var row = table2.rows[i];
+      if (columnIndex < row.childNodes.length) {
+        var cellAlignment = getAlignment(row.childNodes[columnIndex]);
+        ++votes[cellAlignment];
+        if (votes[cellAlignment] > votes[align]) {
+          align = cellAlignment;
+        }
+      }
+    }
+    return align;
+  }
+  rules2.tableCell = {
+    filter: ["th", "td"],
+    replacement: function(content, node) {
+      if (tableShouldBeSkipped(nodeParentTable(node))) return content;
+      return cell(content, node);
+    }
+  };
+  rules2.tableRow = {
+    filter: "tr",
+    replacement: function(content, node) {
+      const parentTable = nodeParentTable(node);
+      if (tableShouldBeSkipped(parentTable)) return content;
+      var borderCells = "";
+      if (isHeadingRow(node)) {
+        const colCount = tableColCount(parentTable);
+        for (var i = 0; i < colCount; i++) {
+          const childNode = i < node.childNodes.length ? node.childNodes[i] : null;
+          var border = getBorder(getColumnAlignment(parentTable, i));
+          borderCells += cell(border, childNode, i);
+        }
+      }
+      return "\n" + content + (borderCells ? "\n" + borderCells : "");
+    }
+  };
+  rules2.table = {
+    filter: function(node, options2) {
+      return node.nodeName === "TABLE";
+    },
+    replacement: function(content, node) {
+      if (tableShouldBeHtml(node, options_)) {
+        let html2 = node.outerHTML;
+        let divParent = nodeParentDiv(node);
+        if (divParent === null || !divParent.classList.contains("joplin-table-wrapper")) {
+          return `
+
+<div class="joplin-table-wrapper">${html2}</div>
+
+`;
+        } else {
+          return html2;
+        }
+      } else {
+        if (tableShouldBeSkipped(node)) return content;
+        content = content.replace(/\n+/g, "\n");
+        var secondLine = content.trim().split("\n");
+        if (secondLine.length >= 2) secondLine = secondLine[1];
+        var secondLineIsDivider = /\| :?---/.test(secondLine);
+        var columnCount = tableColCount(node);
+        var emptyHeader = "";
+        if (columnCount && !secondLineIsDivider) {
+          emptyHeader = "|" + "     |".repeat(columnCount) + "\n|";
+          for (var columnIndex = 0; columnIndex < columnCount; ++columnIndex) {
+            emptyHeader += " " + getBorder(getColumnAlignment(node, columnIndex)) + " |";
+          }
+        }
+        const captionContent = node.caption ? node.caption.textContent || "" : "";
+        const caption = captionContent ? `${captionContent}
+
+` : "";
+        const tableContent = `${emptyHeader}${content}`.trimStart();
+        return `
+
+${caption}${tableContent}
+
+`;
+      }
+    }
+  };
+  rules2.tableCaption = {
+    filter: ["caption"],
+    replacement: () => ""
+  };
+  rules2.tableColgroup = {
+    filter: ["colgroup", "col"],
+    replacement: () => ""
+  };
+  rules2.tableSection = {
+    filter: ["thead", "tbody", "tfoot"],
+    replacement: function(content) {
+      return content;
+    }
+  };
+  function isHeadingRow(tr) {
+    var parentNode = tr.parentNode;
+    return parentNode.nodeName === "THEAD" || parentNode.firstChild === tr && (parentNode.nodeName === "TABLE" || isFirstTbody(parentNode)) && every.call(tr.childNodes, function(n) {
       return n.nodeName === "TH";
     });
   }
-  return false;
-}
-function getTableColCount(table2) {
-  if (!table2 || !table2.rows) return 0;
-  let maxCols = 0;
-  for (let i = 0; i < table2.rows.length; i++) {
-    const row = table2.rows[i];
-    if (!row || !row.childNodes) continue;
-    let colCount = 0;
-    for (let j = 0; j < row.childNodes.length; j++) {
-      const cell2 = row.childNodes[j];
-      if (cell2.nodeType === 1 && (cell2.nodeName === "TD" || cell2.nodeName === "TH")) {
-        const colspan = parseInt(cell2.getAttribute("colspan") || "1", 10);
-        colCount += isNaN(colspan) ? 1 : Math.max(1, colspan);
-      }
-    }
-    if (colCount > maxCols) maxCols = colCount;
+  function isFirstTbody(element) {
+    var previousSibling = element.previousSibling;
+    return element.nodeName === "TBODY" && (!previousSibling || previousSibling.nodeName === "THEAD" && /^\s*$/i.test(previousSibling.textContent));
   }
-  return maxCols;
-}
-function shouldSkipTable(table2) {
-  if (!table2) return true;
-  if (!table2.rows || table2.rows.length === 0) return true;
-  let contentCells = 0;
-  let totalCells = 0;
-  for (let i = 0; i < table2.rows.length; i++) {
-    const row = table2.rows[i];
-    if (!row || !row.childNodes) continue;
-    for (let j = 0; j < row.childNodes.length; j++) {
-      const cell2 = row.childNodes[j];
-      if (cell2.nodeType === 1 && (cell2.nodeName === "TD" || cell2.nodeName === "TH")) {
-        totalCells++;
-        if (cell2.textContent && cell2.textContent.trim()) {
-          contentCells++;
-        }
-      }
-    }
+  function cell(content, node = null, index = null) {
+    if (index === null) index = indexOf.call(node.parentNode.childNodes, node);
+    var prefix = " ";
+    if (index === 0) prefix = "| ";
+    let filteredContent = content.trim().replace(/\n\r/g, "<br>").replace(/\n/g, "<br>");
+    filteredContent = filteredContent.replace(/\|+/g, "\\|");
+    while (filteredContent.length < 3) filteredContent += " ";
+    if (node) filteredContent = handleColSpan(filteredContent, node, " ");
+    return prefix + filteredContent + " |";
   }
-  if (totalCells === 0) return true;
-  if (totalCells === 1 && contentCells === 0) return true;
-  return false;
-}
-rules.tableCell = {
-  filter: ["th", "td"],
-  replacement: function(content, node) {
-    return cell(content, node, null);
-  }
-};
-rules.tableRow = {
-  filter: "tr",
-  replacement: function(content, node) {
-    if (!content || !content.trim()) return "";
-    var borderCells = "";
-    if (isHeadingRow(node)) {
-      const table2 = node.closest("table");
-      if (table2) {
-        const colCount = getTableColCount(table2);
-        if (colCount > 0) {
-          for (var i = 0; i < colCount; i++) {
-            const prefix = i === 0 ? "| " : " ";
-            borderCells += prefix + "--- |";
-          }
-        }
-      }
+  function nodeContainsTable(node) {
+    if (!node.childNodes) return false;
+    for (let i = 0; i < node.childNodes.length; i++) {
+      const child = node.childNodes[i];
+      if (child.nodeName === "TABLE") return true;
+      if (nodeContainsTable(child)) return true;
     }
-    return "\n" + content + (borderCells ? "\n" + borderCells : "");
+    return false;
   }
-};
-rules.table = {
-  filter: "table",
-  replacement: function(content, node) {
-    if (shouldSkipTable(node)) {
-      return "";
+  const nodeContains = (node, types) => {
+    if (!node.childNodes) return false;
+    for (let i = 0; i < node.childNodes.length; i++) {
+      const child = node.childNodes[i];
+      if (types === "code" && isCodeBlock_ && isCodeBlock_(child)) return true;
+      if (types.includes(child.nodeName)) return true;
+      if (nodeContains(child, types)) return true;
     }
-    content = content.replace(/\n+/g, "\n").trim();
-    if (!content) return "";
-    const lines = content.split("\n").filter((line) => line.trim());
-    if (lines.length === 0) return "";
-    const hasHeaderSeparator = lines.length >= 2 && /\|\s*-+/.test(lines[1]);
-    let result = lines.join("\n");
-    if (!hasHeaderSeparator && lines.length >= 1) {
-      const firstLine = lines[0];
-      const colCount = (firstLine.match(/\|/g) || []).length - 1;
-      if (colCount > 0) {
-        let separator = "|";
-        for (let i = 0; i < colCount; i++) {
-          separator += " --- |";
-        }
-        const resultLines = [lines[0], separator, ...lines.slice(1)];
-        result = resultLines.join("\n");
-      }
-    }
-    return "\n\n" + result + "\n\n";
+    return false;
+  };
+  const tableShouldBeHtml = (tableNode, options2) => {
+    const possibleTags = [
+      "UL",
+      "OL",
+      "H1",
+      "H2",
+      "H3",
+      "H4",
+      "H5",
+      "H6",
+      "HR",
+      "BLOCKQUOTE"
+    ];
+    if (options2.preserveNestedTables) possibleTags.push("TABLE");
+    return nodeContains(tableNode, "code") || nodeContains(tableNode, possibleTags);
+  };
+  function tableShouldBeSkipped(tableNode) {
+    const cached = tableShouldBeSkippedCache_.get(tableNode);
+    if (cached !== void 0) return cached;
+    const result = tableShouldBeSkipped_(tableNode);
+    tableShouldBeSkippedCache_.set(tableNode, result);
+    return result;
   }
-};
-rules.tableSection = {
-  filter: ["thead", "tbody", "tfoot"],
-  replacement: function(content) {
+  function tableShouldBeSkipped_(tableNode) {
+    if (!tableNode) return true;
+    if (!tableNode.rows) return true;
+    if (tableNode.rows.length === 1 && tableNode.rows[0].childNodes.length <= 1) return true;
+    if (nodeContainsTable(tableNode)) return true;
+    return false;
+  }
+  function nodeParentDiv(node) {
+    let parent = node.parentNode;
+    while (parent.nodeName !== "DIV") {
+      parent = parent.parentNode;
+      if (!parent) return null;
+    }
+    return parent;
+  }
+  function nodeParentTable(node) {
+    let parent = node.parentNode;
+    while (parent.nodeName !== "TABLE") {
+      parent = parent.parentNode;
+      if (!parent) return null;
+    }
+    return parent;
+  }
+  function handleColSpan(content, node, emptyChar) {
+    const colspan = node.getAttribute("colspan") || 1;
+    for (let i = 1; i < colspan; i++) {
+      content += " | " + emptyChar.repeat(3);
+    }
     return content;
   }
-};
-rules.tableCaption = {
-  filter: ["caption"],
-  replacement: function() {
-    return "";
+  function tableColCount(node) {
+    let maxColCount = 0;
+    for (let i = 0; i < node.rows.length; i++) {
+      const row = node.rows[i];
+      const colCount = row.childNodes.length;
+      if (colCount > maxColCount) maxColCount = colCount;
+    }
+    return maxColCount;
   }
-};
-rules.tableColgroup = {
-  filter: ["colgroup", "col"],
-  replacement: function() {
-    return "";
+  function tables(turndownService) {
+    isCodeBlock_ = turndownService.isCodeBlock;
+    options_ = turndownService.options;
+    turndownService.keep(function(node) {
+      if (node.nodeName === "TABLE" && tableShouldBeHtml(node, turndownService.options)) return true;
+      return false;
+    });
+    for (var key in rules2) turndownService.addRule(key, rules2[key]);
   }
-};
-function tables(turndownService) {
-  for (var key in rules) {
-    turndownService.addRule(key, rules[key]);
+  function taskListItems(turndownService) {
+    turndownService.addRule("taskListItems", {
+      filter: function(node) {
+        const parent = node.parentNode;
+        const grandparent = parent.parentNode;
+        return node.type === "checkbox" && (parent.nodeName === "LI" || parent.nodeName === "LABEL" && grandparent && grandparent.nodeName === "LI");
+      },
+      replacement: function(content, node) {
+        return (node.checked ? "[x]" : "[ ]") + " ";
+      }
+    });
   }
+  function gfm(turndownService) {
+    turndownService.use([
+      highlightedCodeBlock,
+      strikethrough2,
+      tables,
+      taskListItems
+    ]);
+  }
+  turndownPluginGfm_cjs.gfm = gfm;
+  turndownPluginGfm_cjs.highlightedCodeBlock = highlightedCodeBlock;
+  turndownPluginGfm_cjs.strikethrough = strikethrough2;
+  turndownPluginGfm_cjs.tables = tables;
+  turndownPluginGfm_cjs.taskListItems = taskListItems;
+  return turndownPluginGfm_cjs;
 }
+var turndownPluginGfm_cjsExports = requireTurndownPluginGfm_cjs();
 function githubAlerts(turndownService) {
   function getAlertType(node) {
     for (const cls of node.classList) {
@@ -23042,8 +23139,8 @@ function requireTinymce() {
         var getClosestCell = function(container, isRoot) {
           return closest$1(Element2.fromDom(container), "td,th", isRoot);
         };
-        var getClosestTable = function(cell2, isRoot) {
-          return ancestor$1(cell2, "table", isRoot);
+        var getClosestTable = function(cell, isRoot) {
+          return ancestor$1(cell, "table", isRoot);
         };
         var isExpandedCellRng = function(cellRng) {
           return eq(cellRng.start(), cellRng.end()) === false;
@@ -23111,9 +23208,9 @@ function requireTinymce() {
             return getTableSelectionFromCellRng(cellRng, isRoot);
           });
         };
-        var getCellIndex = function(cells, cell2) {
+        var getCellIndex = function(cells, cell) {
           return findIndex(cells, function(x) {
-            return eq(x, cell2);
+            return eq(x, cell);
           });
         };
         var getSelectedCells = function(tableSelection2) {
@@ -32086,8 +32183,8 @@ function requireTinymce() {
         };
         var modelRowsToDomRows = function(table2) {
           return map2(table2.rows(), function(row) {
-            var cells = map2(row.cells(), function(cell2) {
-              var td = deep(cell2);
+            var cells = map2(row.cells(), function(cell) {
+              var td = deep(cell);
               remove2(td, "colspan");
               remove2(td, "rowspan");
               return td;
@@ -32173,8 +32270,8 @@ function requireTinymce() {
         var getFragmentFromRange = function(rootNode, rng) {
           return wrap$3(Element2.fromDom(rng.cloneContents()), getWrapElements(rootNode, rng));
         };
-        var getParentTable = function(rootElm, cell2) {
-          return ancestor$1(cell2, "table", curry(eq, rootElm));
+        var getParentTable = function(rootElm, cell) {
+          return ancestor$1(cell, "table", curry(eq, rootElm));
         };
         var getTableFragment = function(rootNode, selectedTableCells) {
           return getParentTable(rootNode, selectedTableCells[0]).bind(function(tableElm) {
@@ -33103,15 +33200,15 @@ function requireTinymce() {
         var findClosestPositionInAboveCell = function(table2, pos) {
           return head(pos.getClientRects()).bind(function(rect2) {
             return getClosestCellAbove(table2, rect2.left, rect2.top);
-          }).bind(function(cell2) {
-            return findClosestHorizontalPosition(getLastLinePositions(cell2), pos);
+          }).bind(function(cell) {
+            return findClosestHorizontalPosition(getLastLinePositions(cell), pos);
           });
         };
         var findClosestPositionInBelowCell = function(table2, pos) {
           return last(pos.getClientRects()).bind(function(rect2) {
             return getClosestCellBelow(table2, rect2.left, rect2.top);
-          }).bind(function(cell2) {
-            return findClosestHorizontalPosition(getFirstLinePositions(cell2), pos);
+          }).bind(function(cell) {
+            return findClosestHorizontalPosition(getFirstLinePositions(cell), pos);
           });
         };
         var hasNextBreak = function(getPositionsUntil2, scope, lineInfo) {
@@ -51114,7 +51211,7 @@ function requirePlugin$4() {
         };
         return ancestor$1(element, tags.join(","), isRootOrUpperTable);
       };
-      var cell2 = function(element, isRoot) {
+      var cell = function(element, isRoot) {
         return lookup([
           "td",
           "th"
@@ -51160,7 +51257,7 @@ function requirePlugin$4() {
         return grid(rowsCount, cols);
       };
       var TableLookup = {
-        cell: cell2,
+        cell,
         firstCell,
         cells,
         neighbourCells,
@@ -51181,20 +51278,20 @@ function requirePlugin$4() {
             var parentName = name(p);
             return parentName === "tfoot" || parentName === "thead" || parentName === "tbody" ? parentName : "tbody";
           }).getOr("tbody");
-          var cells2 = map2(TableLookup.cells(row2), function(cell3) {
-            var rowspan = has2(cell3, "rowspan") ? parseInt(get(cell3, "rowspan"), 10) : 1;
-            var colspan = has2(cell3, "colspan") ? parseInt(get(cell3, "colspan"), 10) : 1;
-            return detail(cell3, rowspan, colspan);
+          var cells2 = map2(TableLookup.cells(row2), function(cell2) {
+            var rowspan = has2(cell2, "rowspan") ? parseInt(get(cell2, "rowspan"), 10) : 1;
+            var colspan = has2(cell2, "colspan") ? parseInt(get(cell2, "colspan"), 10) : 1;
+            return detail(cell2, rowspan, colspan);
           });
           return rowdata(element, cells2, parentSection);
         });
       };
       var fromPastedRows = function(rows2, example) {
         return map2(rows2, function(row2) {
-          var cells2 = map2(TableLookup.cells(row2), function(cell3) {
-            var rowspan = has2(cell3, "rowspan") ? parseInt(get(cell3, "rowspan"), 10) : 1;
-            var colspan = has2(cell3, "colspan") ? parseInt(get(cell3, "colspan"), 10) : 1;
-            return detail(cell3, rowspan, colspan);
+          var cells2 = map2(TableLookup.cells(row2), function(cell2) {
+            var rowspan = has2(cell2, "rowspan") ? parseInt(get(cell2, "rowspan"), 10) : 1;
+            var colspan = has2(cell2, "colspan") ? parseInt(get(cell2, "colspan"), 10) : 1;
+            return detail(cell2, rowspan, colspan);
           });
           return rowdata(row2, cells2, example.section());
         });
@@ -51326,9 +51423,9 @@ function requirePlugin$4() {
         });
         each(emptyRows, remove$2);
         if (stats.minCol() === stats.maxCol() || stats.minRow() === stats.maxRow()) {
-          each(LayerSelector.firstLayer(table3, "th,td"), function(cell3) {
-            remove2(cell3, "rowspan");
-            remove2(cell3, "colspan");
+          each(LayerSelector.firstLayer(table3, "th,td"), function(cell2) {
+            remove2(cell2, "rowspan");
+            remove2(cell2, "colspan");
           });
         }
         remove2(table3, "width");
@@ -51344,8 +51441,8 @@ function requirePlugin$4() {
         var house = Warehouse.generate(list2);
         var stats = findSelectedStats(house, isSelected);
         var selector = "th:not(" + selectedSelector2 + "),td:not(" + selectedSelector2 + ")";
-        var unselectedCells = LayerSelector.filterFirstLayer(table3, "th,td", function(cell3) {
-          return is2(cell3, selector);
+        var unselectedCells = LayerSelector.filterFirstLayer(table3, "th,td", function(cell2) {
+          return is2(cell2, selector);
         });
         each(unselectedCells, remove$2);
         fillInGaps(list2, house, stats, isSelected);
@@ -51455,8 +51552,8 @@ function requirePlugin$4() {
         append(td, Element2.fromTag("br"));
         return td;
       };
-      var replace = function(cell3, tag, attrs) {
-        var replica = copy$1(cell3, tag);
+      var replace = function(cell2, tag, attrs) {
+        var replica = copy$1(cell2, tag);
         each$1(attrs, function(v, k) {
           if (v === null) {
             remove2(replica, k);
@@ -51466,8 +51563,8 @@ function requirePlugin$4() {
         });
         return replica;
       };
-      var pasteReplace = function(cell3) {
-        return cell3;
+      var pasteReplace = function(cell2) {
+        return cell2;
       };
       var newRow = function(doc) {
         return function() {
@@ -51590,8 +51687,8 @@ function requirePlugin$4() {
         getAnyBox,
         getBox
       };
-      var moveBy = function(warehouse, cell3, row2, column) {
-        return Warehouse.findItem(warehouse, cell3, eq).bind(function(detail2) {
+      var moveBy = function(warehouse, cell2, row2, column) {
+        return Warehouse.findItem(warehouse, cell2, eq).bind(function(detail2) {
           var startRow = row2 > 0 ? detail2.row() + detail2.rowspan() - 1 : detail2.row();
           var startCol = column > 0 ? detail2.column() + detail2.colspan() - 1 : detail2.column();
           var dest = Warehouse.getAt(warehouse, startRow + row2, startCol + column);
@@ -51621,10 +51718,10 @@ function requirePlugin$4() {
         intercepts,
         parentCell
       };
-      var moveBy$1 = function(cell3, deltaRow, deltaColumn) {
-        return TableLookup.table(cell3).bind(function(table3) {
+      var moveBy$1 = function(cell2, deltaRow, deltaColumn) {
+        return TableLookup.table(cell2).bind(function(table3) {
           var warehouse = getWarehouse(table3);
-          return CellFinder.moveBy(warehouse, cell3, deltaRow, deltaColumn);
+          return CellFinder.moveBy(warehouse, cell2, deltaRow, deltaColumn);
         });
       };
       var intercepts$1 = function(table3, first2, last2) {
@@ -52198,14 +52295,14 @@ function requirePlugin$4() {
         multiple: type$1.multiple,
         single: type$1.single
       };
-      var selection = function(cell3, selections) {
-        return SelectionTypes.cata(selections.get(), constant([]), identity, constant([cell3]));
+      var selection = function(cell2, selections) {
+        return SelectionTypes.cata(selections.get(), constant([]), identity, constant([cell2]));
       };
-      var unmergable = function(cell3, selections) {
+      var unmergable = function(cell2, selections) {
         var hasSpan = function(elem) {
           return has2(elem, "rowspan") && parseInt(get(elem, "rowspan"), 10) > 1 || has2(elem, "colspan") && parseInt(get(elem, "colspan"), 10) > 1;
         };
-        var candidates = selection(cell3, selections);
+        var candidates = selection(cell2, selections);
         return candidates.length > 0 && forall2(candidates, hasSpan) ? Option.some(candidates) : Option.none();
       };
       var mergable = function(table3, selections) {
@@ -52226,32 +52323,32 @@ function requirePlugin$4() {
         unmergable,
         selection
       };
-      var noMenu = function(cell3) {
+      var noMenu = function(cell2) {
         return {
-          element: constant(cell3),
+          element: constant(cell2),
           mergable: Option.none,
           unmergable: Option.none,
-          selection: constant([cell3])
+          selection: constant([cell2])
         };
       };
-      var forMenu = function(selections, table3, cell3) {
+      var forMenu = function(selections, table3, cell2) {
         return {
-          element: constant(cell3),
+          element: constant(cell2),
           mergable: constant(CellOperations.mergable(table3, selections)),
-          unmergable: constant(CellOperations.unmergable(cell3, selections)),
-          selection: constant(CellOperations.selection(cell3, selections))
+          unmergable: constant(CellOperations.unmergable(cell2, selections)),
+          selection: constant(CellOperations.selection(cell2, selections))
         };
       };
       var notCell$1 = function(element) {
         return noMenu(element);
       };
       var paste$1 = Immutable("element", "clipboard", "generators");
-      var pasteRows = function(selections, table3, cell3, clipboard, generators) {
+      var pasteRows = function(selections, table3, cell2, clipboard, generators) {
         return {
-          element: constant(cell3),
+          element: constant(cell2),
           mergable: Option.none,
           unmergable: Option.none,
-          selection: constant(CellOperations.selection(cell3, selections)),
+          selection: constant(CellOperations.selection(cell2, selections)),
           clipboard: constant(clipboard),
           generators: constant(generators)
         };
@@ -52294,8 +52391,8 @@ function requirePlugin$4() {
           if (e.selection === true && e.paste === true) {
             var cellOpt = Option.from(editor.dom.getParent(editor.selection.getStart(), "th,td"));
             cellOpt.each(function(domCell) {
-              var cell3 = Element2.fromDom(domCell);
-              TableLookup.table(cell3).each(function(table3) {
+              var cell2 = Element2.fromDom(domCell);
+              TableLookup.table(cell2).each(function(table3) {
                 var elements = filter(fromHtml$1(e.content), function(content) {
                   return name(content) !== "meta";
                 });
@@ -52303,7 +52400,7 @@ function requirePlugin$4() {
                   e.preventDefault();
                   var doc = Element2.fromDom(editor.getDoc());
                   var generators = TableFill.paste(doc);
-                  var targets = TableTargets.paste(cell3, elements[0], generators);
+                  var targets = TableTargets.paste(cell2, elements[0], generators);
                   actions.pasteCells(table3, targets).each(function(rng) {
                     editor.selection.setRng(rng);
                     editor.focus();
@@ -52385,21 +52482,21 @@ function requirePlugin$4() {
       var getProp = function(elm, name2, fallback) {
         return toNumber(get$1(elm, name2), fallback);
       };
-      var getCalculatedHeight = function(cell3) {
-        var paddingTop = getProp(cell3, "padding-top", 0);
-        var paddingBottom = getProp(cell3, "padding-bottom", 0);
-        var borderTop = getProp(cell3, "border-top-width", 0);
-        var borderBottom = getProp(cell3, "border-bottom-width", 0);
-        var height2 = cell3.dom().getBoundingClientRect().height;
-        var boxSizing = get$1(cell3, "box-sizing");
+      var getCalculatedHeight = function(cell2) {
+        var paddingTop = getProp(cell2, "padding-top", 0);
+        var paddingBottom = getProp(cell2, "padding-bottom", 0);
+        var borderTop = getProp(cell2, "border-top-width", 0);
+        var borderBottom = getProp(cell2, "border-bottom-width", 0);
+        var height2 = cell2.dom().getBoundingClientRect().height;
+        var boxSizing = get$1(cell2, "box-sizing");
         var borders = borderTop + borderBottom;
         return boxSizing === "border-box" ? height2 : height2 - paddingTop - paddingBottom - borders;
       };
-      var getWidth = function(cell3) {
-        return getProp(cell3, "width", get$4(cell3));
+      var getWidth = function(cell2) {
+        return getProp(cell2, "width", get$4(cell2));
       };
-      var getHeight = function(cell3) {
-        return needManualCalc() ? getCalculatedHeight(cell3) : getProp(cell3, "height", get$3(cell3));
+      var getHeight = function(cell2) {
+        return needManualCalc() ? getCalculatedHeight(cell2) : getProp(cell2, "height", get$3(cell2));
       };
       var RuntimeSize = {
         getWidth,
@@ -52408,46 +52505,46 @@ function requirePlugin$4() {
       var genericSizeRegex = /(\d+(\.\d+)?)(\w|%)*/;
       var percentageBasedSizeRegex = /(\d+(\.\d+)?)%/;
       var pixelBasedSizeRegex = /(\d+(\.\d+)?)px|em/;
-      var setPixelWidth = function(cell3, amount) {
-        set$1(cell3, "width", amount + "px");
+      var setPixelWidth = function(cell2, amount) {
+        set$1(cell2, "width", amount + "px");
       };
-      var setPercentageWidth = function(cell3, amount) {
-        set$1(cell3, "width", amount + "%");
+      var setPercentageWidth = function(cell2, amount) {
+        set$1(cell2, "width", amount + "%");
       };
-      var setHeight = function(cell3, amount) {
-        set$1(cell3, "height", amount + "px");
+      var setHeight = function(cell2, amount) {
+        set$1(cell2, "height", amount + "px");
       };
-      var getHeightValue = function(cell3) {
-        return getRaw(cell3, "height").getOrThunk(function() {
-          return RuntimeSize.getHeight(cell3) + "px";
+      var getHeightValue = function(cell2) {
+        return getRaw(cell2, "height").getOrThunk(function() {
+          return RuntimeSize.getHeight(cell2) + "px";
         });
       };
-      var convert = function(cell3, number, getter, setter) {
-        var newSize = TableLookup.table(cell3).map(function(table3) {
+      var convert = function(cell2, number, getter, setter) {
+        var newSize = TableLookup.table(cell2).map(function(table3) {
           var total2 = getter(table3);
           return Math.floor(number / 100 * total2);
         }).getOr(number);
-        setter(cell3, newSize);
+        setter(cell2, newSize);
         return newSize;
       };
-      var normalizePixelSize = function(value2, cell3, getter, setter) {
+      var normalizePixelSize = function(value2, cell2, getter, setter) {
         var number = parseInt(value2, 10);
-        return endsWith(value2, "%") && name(cell3) !== "table" ? convert(cell3, number, getter, setter) : number;
+        return endsWith(value2, "%") && name(cell2) !== "table" ? convert(cell2, number, getter, setter) : number;
       };
-      var getTotalHeight = function(cell3) {
-        var value2 = getHeightValue(cell3);
+      var getTotalHeight = function(cell2) {
+        var value2 = getHeightValue(cell2);
         if (!value2) {
-          return get$3(cell3);
+          return get$3(cell2);
         }
-        return normalizePixelSize(value2, cell3, get$3, setHeight);
+        return normalizePixelSize(value2, cell2, get$3, setHeight);
       };
-      var get$5 = function(cell3, type2, f) {
-        var v = f(cell3);
-        var span = getSpan(cell3, type2);
+      var get$5 = function(cell2, type2, f) {
+        var v = f(cell2);
+        var span = getSpan(cell2, type2);
         return v / span;
       };
-      var getSpan = function(cell3, type2) {
-        return has2(cell3, type2) ? parseInt(get(cell3, type2), 10) : 1;
+      var getSpan = function(cell2, type2) {
+        return has2(cell2, type2) ? parseInt(get(cell2, type2), 10) : 1;
       };
       var getRawWidth = function(element) {
         var cssWidth = getRaw(element, "width");
@@ -52469,13 +52566,13 @@ function requirePlugin$4() {
           return normalizePercentageWidth(intWidth, tableSize);
         }
       };
-      var getPercentageWidth = function(cell3, tableSize) {
-        var width = getRawWidth(cell3);
+      var getPercentageWidth = function(cell2, tableSize) {
+        var width = getRawWidth(cell2);
         return width.fold(function() {
-          var intWidth = get$4(cell3);
+          var intWidth = get$4(cell2);
           return normalizePercentageWidth(intWidth, tableSize);
         }, function(w) {
-          return choosePercentageSize(cell3, w, tableSize);
+          return choosePercentageSize(cell2, w, tableSize);
         });
       };
       var normalizePixelWidth = function(cellWidth, tableSize) {
@@ -52493,19 +52590,19 @@ function requirePlugin$4() {
         }
         return get$4(element);
       };
-      var getPixelWidth = function(cell3, tableSize) {
-        var width = getRawWidth(cell3);
+      var getPixelWidth = function(cell2, tableSize) {
+        var width = getRawWidth(cell2);
         return width.fold(function() {
-          return get$4(cell3);
+          return get$4(cell2);
         }, function(w) {
-          return choosePixelSize(cell3, w, tableSize);
+          return choosePixelSize(cell2, w, tableSize);
         });
       };
-      var getHeight$1 = function(cell3) {
-        return get$5(cell3, "rowspan", getTotalHeight);
+      var getHeight$1 = function(cell2) {
+        return get$5(cell2, "rowspan", getTotalHeight);
       };
-      var getGenericWidth = function(cell3) {
-        var width = getRawWidth(cell3);
+      var getGenericWidth = function(cell2) {
+        var width = getRawWidth(cell2);
         return width.bind(function(w) {
           var match = genericSizeRegex.exec(w);
           if (match !== null) {
@@ -52518,8 +52615,8 @@ function requirePlugin$4() {
           }
         });
       };
-      var setGenericWidth = function(cell3, amount, unit) {
-        set$1(cell3, "width", amount + unit);
+      var setGenericWidth = function(cell2, amount, unit) {
+        set$1(cell2, "width", amount + unit);
       };
       var Sizes = {
         percentageBasedSizeRegex: constant(percentageBasedSizeRegex),
@@ -52586,39 +52683,39 @@ function requirePlugin$4() {
       };
       var rowInfo = Immutable("row", "y");
       var colInfo = Immutable("col", "x");
-      var rtlEdge = function(cell3) {
-        var pos = absolute(cell3);
-        return pos.left() + getOuter$1(cell3);
+      var rtlEdge = function(cell2) {
+        var pos = absolute(cell2);
+        return pos.left() + getOuter$1(cell2);
       };
-      var ltrEdge = function(cell3) {
-        return absolute(cell3).left();
+      var ltrEdge = function(cell2) {
+        return absolute(cell2).left();
       };
-      var getLeftEdge = function(index, cell3) {
-        return colInfo(index, ltrEdge(cell3));
+      var getLeftEdge = function(index, cell2) {
+        return colInfo(index, ltrEdge(cell2));
       };
-      var getRightEdge = function(index, cell3) {
-        return colInfo(index, rtlEdge(cell3));
+      var getRightEdge = function(index, cell2) {
+        return colInfo(index, rtlEdge(cell2));
       };
-      var getTop = function(cell3) {
-        return absolute(cell3).top();
+      var getTop = function(cell2) {
+        return absolute(cell2).top();
       };
-      var getTopEdge = function(index, cell3) {
-        return rowInfo(index, getTop(cell3));
+      var getTopEdge = function(index, cell2) {
+        return rowInfo(index, getTop(cell2));
       };
-      var getBottomEdge = function(index, cell3) {
-        return rowInfo(index, getTop(cell3) + getOuter(cell3));
+      var getBottomEdge = function(index, cell2) {
+        return rowInfo(index, getTop(cell2) + getOuter(cell2));
       };
       var findPositions = function(getInnerEdge, getOuterEdge, array) {
         if (array.length === 0) {
           return [];
         }
         var lines = map2(array.slice(1), function(cellOption, index) {
-          return cellOption.map(function(cell3) {
-            return getInnerEdge(index, cell3);
+          return cellOption.map(function(cell2) {
+            return getInnerEdge(index, cell2);
           });
         });
-        var lastLine = array[array.length - 1].map(function(cell3) {
-          return getOuterEdge(array.length - 1, cell3);
+        var lastLine = array[array.length - 1].map(function(cell2) {
+          return getOuterEdge(array.length - 1, cell2);
         });
         return lines.concat([lastLine]);
       };
@@ -52665,8 +52762,8 @@ function requirePlugin$4() {
         var positions = function(cols, table3) {
           return auto(table3).positions(cols, table3);
         };
-        var edge2 = function(cell3) {
-          return auto(cell3).edge(cell3);
+        var edge2 = function(cell2) {
+          return auto(cell2).edge(cell2);
         };
         return {
           delta: delta2,
@@ -52734,13 +52831,13 @@ function requirePlugin$4() {
             }
             var tr = row2.element();
             empty2(tr);
-            each(row2.cells(), function(cell3) {
-              if (cell3.isNew()) {
-                newCells.push(cell3.element());
+            each(row2.cells(), function(cell2) {
+              if (cell2.isNew()) {
+                newCells.push(cell2.element());
               }
-              setIfNot(cell3.element(), "colspan", cell3.colspan(), 1);
-              setIfNot(cell3.element(), "rowspan", cell3.rowspan(), 1);
-              append(tr, cell3.element());
+              setIfNot(cell2.element(), "colspan", cell2.colspan(), 1);
+              setIfNot(cell2.element(), "rowspan", cell2.rowspan(), 1);
+              append(tr, cell2.element());
             });
             return tr;
           });
@@ -52783,10 +52880,10 @@ function requirePlugin$4() {
       var copy$2 = function(grid2) {
         var rows2 = map2(grid2, function(row2) {
           var tr = shallow(row2.element());
-          each(row2.cells(), function(cell3) {
-            var clonedCell = deep(cell3.element());
-            setIfNot(clonedCell, "colspan", cell3.colspan(), 1);
-            setIfNot(clonedCell, "rowspan", cell3.rowspan(), 1);
+          each(row2.cells(), function(cell2) {
+            var clonedCell = deep(cell2.element());
+            setIfNot(clonedCell, "colspan", cell2.colspan(), 1);
+            setIfNot(clonedCell, "rowspan", cell2.rowspan(), 1);
             append(tr, clonedCell);
           });
           return tr;
@@ -53090,16 +53187,16 @@ function requirePlugin$4() {
         isRowBar,
         isColBar
       };
-      var addCell = function(gridRow, index, cell3) {
+      var addCell = function(gridRow, index, cell2) {
         var cells2 = gridRow.cells();
         var before2 = cells2.slice(0, index);
         var after2 = cells2.slice(index);
-        var newCells = before2.concat([cell3]).concat(after2);
+        var newCells = before2.concat([cell2]).concat(after2);
         return setCells(gridRow, newCells);
       };
-      var mutateCell = function(gridRow, index, cell3) {
+      var mutateCell = function(gridRow, index, cell2) {
         var cells2 = gridRow.cells();
-        cells2[index] = cell3;
+        cells2[index] = cell2;
       };
       var setCells = function(gridRow, cells2) {
         return rowcells(cells2, gridRow.section());
@@ -53174,11 +53271,11 @@ function requirePlugin$4() {
           }
         };
         return map2(grid2, function(row2, ri) {
-          var details = bind(row2.cells(), function(cell3, ci) {
+          var details = bind(row2.cells(), function(cell2, ci) {
             if (seen[ri][ci] === false) {
               var result = TableGrid.subgrid(grid2, ri, ci, comparator);
               updateSeen(ri, ci, result.rowspan(), result.colspan());
-              return [detailnew(cell3.element(), result.rowspan(), result.colspan(), cell3.isNew())];
+              return [detailnew(cell2.element(), result.rowspan(), result.colspan(), cell2.isNew())];
             } else {
               return [];
             }
@@ -53268,8 +53365,8 @@ function requirePlugin$4() {
         };
       };
       var onPaste = function(warehouse, target2) {
-        return TableLookup.cell(target2.element()).bind(function(cell3) {
-          return findInWarehouse(warehouse, cell3).map(function(details) {
+        return TableLookup.cell(target2.element()).bind(function(cell2) {
+          return findInWarehouse(warehouse, cell2).map(function(details) {
             var value2 = __assign(__assign({}, details), {
               generators: target2.generators,
               clipboard: target2.clipboard
@@ -53279,8 +53376,8 @@ function requirePlugin$4() {
         });
       };
       var onPasteRows = function(warehouse, target2) {
-        var details = map2(target2.selection(), function(cell3) {
-          return TableLookup.cell(cell3).bind(function(lc) {
+        var details = map2(target2.selection(), function(cell2) {
+          return TableLookup.cell(cell2).bind(function(lc) {
             return findInWarehouse(warehouse, lc);
           });
         });
@@ -53298,8 +53395,8 @@ function requirePlugin$4() {
         return target2.unmergable();
       };
       var onCells = function(warehouse, target2) {
-        var details = map2(target2.selection(), function(cell3) {
-          return TableLookup.cell(cell3).bind(function(lc) {
+        var details = map2(target2.selection(), function(cell2) {
+          return TableLookup.cell(cell2).bind(function(lc) {
             return findInWarehouse(warehouse, lc);
           });
         });
@@ -53488,22 +53585,22 @@ function requirePlugin$4() {
         return grid2;
       };
       var uniqueCells = function(row2, comparator) {
-        return foldl(row2, function(rest, cell3) {
+        return foldl(row2, function(rest, cell2) {
           return exists(rest, function(currentCell) {
-            return comparator(currentCell.element(), cell3.element());
-          }) ? rest : rest.concat([cell3]);
+            return comparator(currentCell.element(), cell2.element());
+          }) ? rest : rest.concat([cell2]);
         }, []);
       };
       var splitRows = function(grid2, index, comparator, substitution) {
         if (index > 0 && index < grid2.length) {
           var rowPrevCells = grid2[index - 1].cells();
           var cells2 = uniqueCells(rowPrevCells, comparator);
-          each(cells2, function(cell3) {
+          each(cells2, function(cell2) {
             var replacement = Option.none();
             var _loop_1 = function(i2) {
               var _loop_2 = function(j2) {
                 var current = grid2[i2].cells()[j2];
-                var isToReplace = comparator(current.element(), cell3.element());
+                var isToReplace = comparator(current.element(), cell2.element());
                 if (isToReplace) {
                   if (replacement.isNone()) {
                     replacement = Option.some(substitution());
@@ -53711,14 +53808,14 @@ function requirePlugin$4() {
         return context.fold(onNone, onOnly, onLeft, onMiddle, onRight);
       };
       var Deltas = { determine };
-      var getSpan$1 = function(cell3, type2) {
-        return has2(cell3, type2) && parseInt(get(cell3, type2), 10) > 1;
+      var getSpan$1 = function(cell2, type2) {
+        return has2(cell2, type2) && parseInt(get(cell2, type2), 10) > 1;
       };
-      var hasColspan = function(cell3) {
-        return getSpan$1(cell3, "colspan");
+      var hasColspan = function(cell2) {
+        return getSpan$1(cell2, "colspan");
       };
-      var hasRowspan = function(cell3) {
-        return getSpan$1(cell3, "rowspan");
+      var hasRowspan = function(cell2) {
+        return getSpan$1(cell2, "rowspan");
       };
       var getInt = function(element, property) {
         return parseInt(get$1(element, property), 10);
@@ -53730,20 +53827,20 @@ function requirePlugin$4() {
         minHeight: constant(10),
         getInt
       };
-      var getRaw$1 = function(cell3, property, getter) {
-        return getRaw(cell3, property).fold(function() {
-          return getter(cell3) + "px";
+      var getRaw$1 = function(cell2, property, getter) {
+        return getRaw(cell2, property).fold(function() {
+          return getter(cell2) + "px";
         }, function(raw) {
           return raw;
         });
       };
-      var getRawW = function(cell3, tableSize) {
-        return getRaw$1(cell3, "width", function(e) {
+      var getRawW = function(cell2, tableSize) {
+        return getRaw$1(cell2, "width", function(e) {
           return Sizes.getPixelWidth(e, tableSize);
         });
       };
-      var getRawH = function(cell3) {
-        return getRaw$1(cell3, "height", Sizes.getHeight);
+      var getRawH = function(cell2) {
+        return getRaw$1(cell2, "height", Sizes.getHeight);
       };
       var getWidthFrom = function(warehouse, direction, getWidth2, fallback, tableSize) {
         var columns2 = Blocks.columns(warehouse);
@@ -53755,8 +53852,8 @@ function requirePlugin$4() {
           return columnCell.fold(function() {
             var deduced = deduce(backups, c);
             return fallback(deduced);
-          }, function(cell3) {
-            return getWidth2(cell3, tableSize);
+          }, function(cell2) {
+            return getWidth2(cell2, tableSize);
           });
         });
       };
@@ -53792,8 +53889,8 @@ function requirePlugin$4() {
           return rowCell.fold(function() {
             var deduced = deduce(backups, c);
             return fallback(deduced);
-          }, function(cell3) {
-            return getHeight2(cell3);
+          }, function(cell2) {
+            return getHeight2(cell2);
           });
         });
       };
@@ -53821,23 +53918,23 @@ function requirePlugin$4() {
       };
       var recalculateWidth = function(warehouse, widths) {
         var all2 = Warehouse.justCells(warehouse);
-        return map2(all2, function(cell3) {
-          var width = total(cell3.column(), cell3.column() + cell3.colspan(), widths);
+        return map2(all2, function(cell2) {
+          var width = total(cell2.column(), cell2.column() + cell2.colspan(), widths);
           return {
-            element: cell3.element,
+            element: cell2.element,
             width: constant(width),
-            colspan: cell3.colspan
+            colspan: cell2.colspan
           };
         });
       };
       var recalculateHeight = function(warehouse, heights) {
         var all2 = Warehouse.justCells(warehouse);
-        return map2(all2, function(cell3) {
-          var height2 = total(cell3.row(), cell3.row() + cell3.rowspan(), heights);
+        return map2(all2, function(cell2) {
+          var height2 = total(cell2.row(), cell2.row() + cell2.rowspan(), heights);
           return {
-            element: cell3.element,
+            element: cell2.element,
             height: constant(height2),
-            rowspan: cell3.rowspan
+            rowspan: cell2.rowspan
           };
         });
       };
@@ -53950,8 +54047,8 @@ function requirePlugin$4() {
           return dx + widths[i];
         });
         var newSizes = Recalculations.recalculateWidth(warehouse, newWidths);
-        each(newSizes, function(cell3) {
-          tableSize.setElementWidth(cell3.element(), cell3.width());
+        each(newSizes, function(cell2) {
+          tableSize.setElementWidth(cell2.element(), cell2.width());
         });
         if (index === warehouse.grid().columns() - 1) {
           tableSize.setTableWidth(table3, newWidths, step);
@@ -53968,8 +54065,8 @@ function requirePlugin$4() {
         each(newRowSizes, function(row2) {
           Sizes.setHeight(row2.element(), row2.height());
         });
-        each(newCellSizes, function(cell3) {
-          Sizes.setHeight(cell3.element(), cell3.height());
+        each(newCellSizes, function(cell2) {
+          Sizes.setHeight(cell2.element(), cell2.height());
         });
         var total2 = sumUp(newHeights);
         Sizes.setHeight(table3, total2);
@@ -53979,8 +54076,8 @@ function requirePlugin$4() {
         var warehouse = getWarehouse$1(list2);
         var widths = tableSize.getWidths(warehouse, direction, tableSize);
         var newSizes = Recalculations.recalculateWidth(warehouse, widths);
-        each(newSizes, function(cell3) {
-          tableSize.setElementWidth(cell3.element(), cell3.width());
+        each(newSizes, function(cell2) {
+          tableSize.setElementWidth(cell2.element(), cell2.width());
         });
         if (newSizes.length > 0) {
           tableSize.setTableWidth(table3, widths, tableSize.getCellDelta(0));
@@ -54104,18 +54201,18 @@ function requirePlugin$4() {
       var merging = function(generators) {
         verifyGenerators(generators);
         var position = Cell(Option.none());
-        var combine = function(cell3) {
+        var combine = function(cell2) {
           if (position.get().isNone()) {
-            position.set(Option.some(cell3));
+            position.set(Option.some(cell2));
           }
           return function() {
             var raw = generators.cell({
-              element: constant(cell3),
+              element: constant(cell2),
               colspan: constant(1),
               rowspan: constant(1)
             });
             remove$1(raw, "width");
-            remove$1(cell3, "width");
+            remove$1(cell2, "width");
             return raw;
           };
         };
@@ -54289,18 +54386,18 @@ function requirePlugin$4() {
             return false;
           }).getOr(false);
         };
-        var markCell = function(cell3) {
-          return last$1(cell3).bind(function(rightEdge) {
+        var markCell = function(cell2) {
+          return last$1(cell2).bind(function(rightEdge) {
             var rightSiblingIsBlock = siblingIsBlock(rightEdge);
             return parent(rightEdge).map(function(parent2) {
-              return rightSiblingIsBlock === true || isListItem(parent2) || isBr2(rightEdge) || DomStructure.isBlock(parent2) && !eq(cell3, parent2) ? [] : [Element2.fromTag("br")];
+              return rightSiblingIsBlock === true || isListItem(parent2) || isBr2(rightEdge) || DomStructure.isBlock(parent2) && !eq(cell2, parent2) ? [] : [Element2.fromTag("br")];
             });
           }).getOr([]);
         };
         var markContent = function() {
-          var content = bind(cells2, function(cell3) {
-            var children$12 = children(cell3);
-            return advancedBr(children$12) ? [] : children$12.concat(markCell(cell3));
+          var content = bind(cells2, function(cell2) {
+            var children$12 = children(cell2);
+            return advancedBr(children$12) ? [] : children$12.concat(markCell(cell2));
           });
           return content.length === 0 ? [Element2.fromTag("br")] : content;
         };
@@ -54404,8 +54501,8 @@ function requirePlugin$4() {
         return outcome(newGrid, Option.from(cells2[0]));
       };
       var unmergeCells = function(grid2, unmergable2, comparator, genWrappers) {
-        var newGrid = foldr(unmergable2, function(b, cell3) {
-          return MergingOperations.unmerge(b, cell3, comparator, genWrappers.combine(cell3));
+        var newGrid = foldr(unmergable2, function(b, cell2) {
+          return MergingOperations.unmerge(b, cell2, comparator, genWrappers.combine(cell2));
         }, grid2);
         return outcome(newGrid, Option.from(unmergable2[0]));
       };
@@ -54486,8 +54583,8 @@ function requirePlugin$4() {
       var removeDataStyle = function(table3) {
         var dataStyleCells = descendants$1(table3, "td[data-mce-style],th[data-mce-style]");
         remove2(table3, "data-mce-style");
-        each(dataStyleCells, function(cell3) {
-          remove2(cell3, "data-mce-style");
+        each(dataStyleCells, function(cell2) {
+          remove2(cell2, "data-mce-style");
         });
       };
       var getDirection = function(element) {
@@ -54591,8 +54688,8 @@ function requirePlugin$4() {
       var fireNewRow = function(editor, row2) {
         return editor.fire("newrow", { node: row2 });
       };
-      var fireNewCell = function(editor, cell3) {
-        return editor.fire("newcell", { node: cell3 });
+      var fireNewCell = function(editor, cell2) {
+        return editor.fire("newcell", { node: cell2 });
       };
       var fireObjectResizeStart = function(editor, target2, width, height2) {
         editor.fire("ObjectResizeStart", {
@@ -54632,13 +54729,13 @@ function requirePlugin$4() {
               each(result.newRows(), function(row2) {
                 fireNewRow(editor, row2.dom());
               });
-              each(result.newCells(), function(cell3) {
-                fireNewCell(editor, cell3.dom());
+              each(result.newCells(), function(cell2) {
+                fireNewCell(editor, cell2.dom());
               });
-              return result.cursor().map(function(cell3) {
+              return result.cursor().map(function(cell2) {
                 var rng = editor.dom.createRng();
-                rng.setStart(cell3.dom(), 0);
-                rng.setEnd(cell3.dom(), 0);
+                rng.setStart(cell2.dom(), 0);
+                rng.setEnd(cell2.dom(), 0);
                 return rng;
               });
             }) : Option.none();
@@ -55264,8 +55361,8 @@ function requirePlugin$4() {
         tableElm = dom.getParent(editor.selection.getStart(), "table");
         cellElm = dom.getParent(editor.selection.getStart(), "td,th");
         global$1.each(tableElm.rows, function(row2) {
-          global$1.each(row2.cells, function(cell3) {
-            if (dom.getAttrib(cell3, "data-mce-selected") || cell3 === cellElm) {
+          global$1.each(row2.cells, function(cell2) {
+            if (dom.getAttrib(cell2, "data-mce-selected") || cell2 === cellElm) {
               rows2.push(row2);
               return false;
             }
@@ -55452,8 +55549,8 @@ function requirePlugin$4() {
         append(container, clone2);
         return get$7(container);
       };
-      var placeCaretInCell = function(editor, cell3) {
-        editor.selection.select(cell3.dom(), true);
+      var placeCaretInCell = function(editor, cell2) {
+        editor.selection.select(cell2.dom(), true);
         editor.selection.collapse(true);
       };
       var selectFirstCellInTable = function(editor, tableElm) {
@@ -55462,8 +55559,8 @@ function requirePlugin$4() {
       var fireEvents = function(editor, table3) {
         each(descendants$1(table3, "tr"), function(row2) {
           fireNewRow(editor, row2.dom());
-          each(descendants$1(row2, "th,td"), function(cell3) {
-            fireNewCell(editor, cell3.dom());
+          each(descendants$1(row2, "th,td"), function(cell2) {
+            fireNewCell(editor, cell2.dom());
           });
         });
       };
@@ -55779,8 +55876,8 @@ function requirePlugin$4() {
         };
         var getSelectionStartCaption = getSelectionStartFromSelector("caption");
         var getSelectionStartCell = getSelectionStartFromSelector("th,td");
-        var getTableFromCell = function(cell3) {
-          return TableLookup.table(cell3, isRoot);
+        var getTableFromCell = function(cell2) {
+          return TableLookup.table(cell2, isRoot);
         };
         var getSize = function(table3) {
           return {
@@ -55796,9 +55893,9 @@ function requirePlugin$4() {
           }
         };
         var actOnSelection = function(execute) {
-          getSelectionStartCell().each(function(cell3) {
-            getTableFromCell(cell3).each(function(table3) {
-              var targets = TableTargets.forMenu(selections, table3, cell3);
+          getSelectionStartCell().each(function(cell2) {
+            getTableFromCell(cell2).each(function(table3) {
+              var targets = TableTargets.forMenu(selections, table3, cell2);
               var beforeSize = getSize(table3);
               execute(table3, targets).each(function(rng) {
                 resizeChange(editor, beforeSize, table3);
@@ -55811,10 +55908,10 @@ function requirePlugin$4() {
           });
         };
         var copyRowSelection = function(execute) {
-          return getSelectionStartCell().bind(function(cell3) {
-            return getTableFromCell(cell3).bind(function(table3) {
+          return getSelectionStartCell().bind(function(cell2) {
+            return getTableFromCell(cell2).bind(function(table3) {
               var doc = Element2.fromDom(editor.getDoc());
-              var targets = TableTargets.forMenu(selections, table3, cell3);
+              var targets = TableTargets.forMenu(selections, table3, cell2);
               var generators = TableFill.cellOperations(noop, doc, Option.none());
               return CopyRows.copyRows(table3, targets, generators);
             });
@@ -55825,11 +55922,11 @@ function requirePlugin$4() {
             var clonedRows = map2(rows2, function(row2) {
               return deep(row2);
             });
-            getSelectionStartCell().each(function(cell3) {
-              getTableFromCell(cell3).each(function(table3) {
+            getSelectionStartCell().each(function(cell2) {
+              getTableFromCell(cell2).each(function(table3) {
                 var doc = Element2.fromDom(editor.getDoc());
                 var generators = TableFill.paste(doc);
-                var targets = TableTargets.pasteRows(selections, table3, cell3, clonedRows, generators);
+                var targets = TableTargets.pasteRows(selections, table3, cell2, clonedRows, generators);
                 execute(table3, targets).each(function(rng) {
                   editor.selection.setRng(rng);
                   editor.focus();
@@ -56565,10 +56662,10 @@ function requirePlugin$4() {
             } else {
               var newCellSizes_1 = [];
               global$1.each(table3.rows, function(row2) {
-                global$1.each(row2.cells, function(cell3) {
-                  var width = editor.dom.getStyle(cell3, "width", true);
+                global$1.each(row2.cells, function(cell2) {
+                  var width = editor.dom.getStyle(cell2, "width", true);
                   newCellSizes_1.push({
-                    cell: cell3,
+                    cell: cell2,
                     width
                   });
                 });
@@ -57130,14 +57227,14 @@ function requirePlugin$4() {
         selection2.removeAllRanges();
       };
       var global$3 = tinymce.util.Tools.resolve("tinymce.util.VK");
-      var forward = function(editor, isRoot, cell3, lazyWire) {
-        return go(editor, isRoot, CellNavigation.next(cell3), lazyWire);
+      var forward = function(editor, isRoot, cell2, lazyWire) {
+        return go(editor, isRoot, CellNavigation.next(cell2), lazyWire);
       };
-      var backward = function(editor, isRoot, cell3, lazyWire) {
-        return go(editor, isRoot, CellNavigation.prev(cell3), lazyWire);
+      var backward = function(editor, isRoot, cell2, lazyWire) {
+        return go(editor, isRoot, CellNavigation.prev(cell2), lazyWire);
       };
-      var getCellFirstCursorPosition = function(editor, cell3) {
-        var selection2 = Selection.exact(cell3, 0, cell3, 0);
+      var getCellFirstCursorPosition = function(editor, cell2) {
+        var selection2 = Selection.exact(cell2, 0, cell2, 0);
         return toNative(selection2);
       };
       var getNewRowCursorPosition = function(editor, table3) {
@@ -57148,10 +57245,10 @@ function requirePlugin$4() {
           });
         });
       };
-      var go = function(editor, isRoot, cell3, actions, lazyWire) {
-        return cell3.fold(Option.none, Option.none, function(current, next3) {
-          return first(next3).map(function(cell4) {
-            return getCellFirstCursorPosition(editor, cell4);
+      var go = function(editor, isRoot, cell2, actions, lazyWire) {
+        return cell2.fold(Option.none, Option.none, function(current, next3) {
+          return first(next3).map(function(cell3) {
+            return getCellFirstCursorPosition(editor, cell3);
           });
         }, function(current) {
           return TableLookup.table(current, isRoot).bind(function(table3) {
@@ -57178,10 +57275,10 @@ function requirePlugin$4() {
           var rng = editor.selection.getRng();
           if (rng.collapsed) {
             var start = Element2.fromDom(rng.startContainer);
-            TableLookup.cell(start, isRoot_1).each(function(cell3) {
+            TableLookup.cell(start, isRoot_1).each(function(cell2) {
               event.preventDefault();
               var navigation = event.shiftKey ? backward : forward;
-              var rng2 = navigation(editor, isRoot_1, cell3, actions);
+              var rng2 = navigation(editor, isRoot_1, cell2, actions);
               rng2.each(function(range3) {
                 editor.selection.setRng(range3);
               });
@@ -57479,10 +57576,10 @@ function requirePlugin$4() {
           return Option.none();
         }, function() {
           return Option.none();
-        }, function(cell3) {
-          return Option.some(point(cell3, 0));
-        }, function(cell3) {
-          return Option.some(point(cell3, getEnd(cell3)));
+        }, function(cell2) {
+          return Option.some(point(cell2, 0));
+        }, function(cell2) {
+          return Option.some(point(cell2, getEnd(cell2)));
         });
       };
       var BrTags = {
@@ -57608,8 +57705,8 @@ function requirePlugin$4() {
         return caret2.left() < box.left() || Math.abs(box.right() - caret2.left()) < 1 || caret2.left() > box.right();
       };
       var inOutsideBlock = function(bridge, element, caret2) {
-        return closest(element, DomStructure.isBlock).fold(constant(false), function(cell3) {
-          return Rectangles.getEntireBox(bridge, cell3).exists(function(box) {
+        return closest(element, DomStructure.isBlock).fold(constant(false), function(cell2) {
+          return Rectangles.getEntireBox(bridge, cell2).exists(function(box) {
             return isOutside(caret2, box);
           });
         });
@@ -57733,17 +57830,17 @@ function requirePlugin$4() {
             return Option.none();
           }, function() {
             return Option.some(situs);
-          }, function(cell3) {
-            if (eq(element, cell3) && offset === 0) {
+          }, function(cell2) {
+            if (eq(element, cell2) && offset === 0) {
               return tryAgain(bridge, element, offset, Carets.moveUp, direction);
             } else {
-              return scan(bridge, isRoot, cell3, 0, direction, numRetries - 1);
+              return scan(bridge, isRoot, cell2, 0, direction, numRetries - 1);
             }
-          }, function(cell3) {
-            if (eq(element, cell3) && offset === getEnd(cell3)) {
+          }, function(cell2) {
+            if (eq(element, cell2) && offset === getEnd(cell2)) {
               return tryAgain(bridge, element, offset, Carets.moveDown, direction);
             } else {
-              return scan(bridge, isRoot, cell3, getEnd(cell3), direction, numRetries - 1);
+              return scan(bridge, isRoot, cell2, getEnd(cell2), direction, numRetries - 1);
             }
           });
         });
@@ -58517,10 +58614,10 @@ function requirePlugin$4() {
           editor.on("nodechange", function(e) {
             var cellOpt = Option.from(editor.dom.getParent(editor.selection.getStart(), "th,td"));
             targets = cellOpt.bind(function(cellDom) {
-              var cell4 = Element2.fromDom(cellDom);
-              var table3 = TableLookup.table(cell4);
+              var cell3 = Element2.fromDom(cellDom);
+              var table3 = TableLookup.table(cell3);
               return table3.map(function(table4) {
-                return TableTargets.forMenu(selections, table4, cell4);
+                return TableTargets.forMenu(selections, table4, cell3);
               });
             });
             setDisabledCtrls();
@@ -58542,7 +58639,7 @@ function requirePlugin$4() {
         };
         var selectGrid = function(editor2, tx, ty, control) {
           var table3 = control.getEl().getElementsByTagName("table")[0];
-          var x, y, focusCell, cell4, active;
+          var x, y, focusCell, cell3, active;
           var rtl2 = control.isRtl() || control.parent().rel === "tl-tr";
           table3.nextSibling.innerHTML = tx + 1 + " x " + (ty + 1);
           if (rtl2) {
@@ -58550,11 +58647,11 @@ function requirePlugin$4() {
           }
           for (y = 0; y < 10; y++) {
             for (x = 0; x < 10; x++) {
-              cell4 = table3.rows[y].childNodes[x].firstChild;
+              cell3 = table3.rows[y].childNodes[x].firstChild;
               active = (rtl2 ? x >= tx : x <= tx) && y <= ty;
-              editor2.dom.toggleClass(cell4, "mce-active", active);
+              editor2.dom.toggleClass(cell3, "mce-active", active);
               if (active) {
-                focusCell = cell4;
+                focusCell = cell3;
               }
             }
           }
@@ -58706,7 +58803,7 @@ function requirePlugin$4() {
             }
           ]
         };
-        var cell3 = {
+        var cell2 = {
           separator: "before",
           text: "Cell",
           context: "table",
@@ -58733,7 +58830,7 @@ function requirePlugin$4() {
         editor.addMenuItem("deletetable", deleteTable);
         editor.addMenuItem("row", row2);
         editor.addMenuItem("column", column);
-        editor.addMenuItem("cell", cell3);
+        editor.addMenuItem("cell", cell2);
       };
       var MenuItems = { addMenuItems };
       var getClipboardRows = function(clipboardRows) {
@@ -65274,8 +65371,8 @@ function requireSanitizeHtml() {
         module3.exports = Uint8Array2;
       }, { "./_root": 130 }], 43: [function(require2, module3, exports3) {
         var getNative = require2("./_getNative"), root2 = require2("./_root");
-        var WeakMap = getNative(root2, "WeakMap");
-        module3.exports = WeakMap;
+        var WeakMap2 = getNative(root2, "WeakMap");
+        module3.exports = WeakMap2;
       }, { "./_getNative": 93, "./_root": 130 }], 44: [function(require2, module3, exports3) {
         function apply(func, thisArg, args) {
           switch (args.length) {
@@ -65939,12 +66036,12 @@ function requireSanitizeHtml() {
         };
         module3.exports = getSymbolsIn;
       }, { "./_arrayPush": 49, "./_getPrototype": 94, "./_getSymbols": 96, "./stubArray": 163 }], 98: [function(require2, module3, exports3) {
-        var DataView = require2("./_DataView"), Map2 = require2("./_Map"), Promise2 = require2("./_Promise"), Set2 = require2("./_Set"), WeakMap = require2("./_WeakMap"), baseGetTag = require2("./_baseGetTag"), toSource = require2("./_toSource");
+        var DataView = require2("./_DataView"), Map2 = require2("./_Map"), Promise2 = require2("./_Promise"), Set2 = require2("./_Set"), WeakMap2 = require2("./_WeakMap"), baseGetTag = require2("./_baseGetTag"), toSource = require2("./_toSource");
         var mapTag = "[object Map]", objectTag = "[object Object]", promiseTag = "[object Promise]", setTag = "[object Set]", weakMapTag = "[object WeakMap]";
         var dataViewTag = "[object DataView]";
-        var dataViewCtorString = toSource(DataView), mapCtorString = toSource(Map2), promiseCtorString = toSource(Promise2), setCtorString = toSource(Set2), weakMapCtorString = toSource(WeakMap);
+        var dataViewCtorString = toSource(DataView), mapCtorString = toSource(Map2), promiseCtorString = toSource(Promise2), setCtorString = toSource(Set2), weakMapCtorString = toSource(WeakMap2);
         var getTag = baseGetTag;
-        if (DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag || Map2 && getTag(new Map2()) != mapTag || Promise2 && getTag(Promise2.resolve()) != promiseTag || Set2 && getTag(new Set2()) != setTag || WeakMap && getTag(new WeakMap()) != weakMapTag) {
+        if (DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag || Map2 && getTag(new Map2()) != mapTag || Promise2 && getTag(Promise2.resolve()) != promiseTag || Set2 && getTag(new Set2()) != setTag || WeakMap2 && getTag(new WeakMap2()) != weakMapTag) {
           getTag = function getTag2(value) {
             var result = baseGetTag(value), Ctor = result == objectTag ? value.constructor : void 0, ctorString = Ctor ? toSource(Ctor) : "";
             if (ctorString) {
@@ -78347,9 +78444,9 @@ function init({ color = "#275fa6", content = "", settings = {}, callbackId } = {
       turndown.keep(["table", "thead", "caption", "tbody", "tr", "th", "td", "a", "img", "iframe", "summary", "details", "figure", "figcaption", "div", "span", "p"]);
       turndown.use(checklistPlugin);
       turndown.use([
-        tables,
-        strikethrough,
-        highlightedCodeBlock
+        turndownPluginGfm_cjsExports.tables,
+        turndownPluginGfm_cjsExports.strikethrough,
+        turndownPluginGfm_cjsExports.highlightedCodeBlock
       ]);
       turndown.use(githubAlerts);
     }

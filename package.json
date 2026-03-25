@@ -17,7 +17,7 @@
 		"clean": "rm -rf ./dist/ > /dev/null",
 		"dev": "npm run build:vite:once && run-p dev:watch dev:serve",
 		"dev:watch": "vite build --config vite.config.js --watch",
-		"dev:serve": "vite preview --host 0.0.0.0 --open /wysiwyg.html",
+		"dev:serve": "vite preview --config vite.config.css.js --host 0.0.0.0 --open /wysiwyg.html",
 		"dev:css": "vite build --config vite.config.css.js --watch",
 		"build": "run-s clean build:vite build:minify",
 		"build:vite": "vite build --config vite.config.css.js && vite build --config vite.config.js && vite build --config vite.config.js --mode wysiwyg && vite build --config vite.config.js --mode code-editor",
@@ -34,6 +34,7 @@
 	},
 	"dependencies": {
 		"@gerhobbelt/markdown-it-checkbox": "^1.2.0-3",
+		"@joplin/turndown-plugin-gfm": "^1.0.64",
 		"@truto/turndown-plugin-gfm": "^1.0.2",
 		"brace": "^0.11.1",
 		"markdown-it": "^13.0.2",

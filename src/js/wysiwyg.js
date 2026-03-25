@@ -3,7 +3,7 @@ import MarkdownItAlertsPlugin from './markdown-it-alerts-plugin.js';
 // import MarkdownItCheckbox from "@gerhobbelt/markdown-it-checkbox";
 import MarkdownItChecklistPlugin from './markdown-it-checklist-plugin.js';
 import Turndown from "turndown";
-import * as turndownGFM from "@truto/turndown-plugin-gfm";
+import * as turndownGFM from "@joplin/turndown-plugin-gfm";
 import turndownGithubAlerts from "./turndown-github-alerts.js";
 import trundownChecklistPlugin from "./turndown-checklist-plugin.js";
 import tinymce from "tinymce/tinymce";
