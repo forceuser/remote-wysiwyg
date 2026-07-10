@@ -173,7 +173,7 @@ function init ({color = "#275fa6", content = "", settings = {}, callbackId} = {}
 					toolbar: `${defaultToolbar} | forecolor backcolor`,
 					table_toolbar: false,
 					valid_elements: "+*[*]",
-					valid_children: "+body[style]",
+					valid_children: "+body[style],+a[div|img|article|section|span|p|h1|h2|h3|h4|h5|h6]",
 					object_resizing: false,
 					paste_data_images: true,
 				},
